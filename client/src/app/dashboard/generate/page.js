@@ -9,6 +9,10 @@ export default function GeneratePage() {
     const [generatedDoc, setGeneratedDoc] = useState(null);
     const [generating, setGenerating] = useState(false);
 
+    // New state for QR Code coordinates
+    const [qrX, setQrX] = useState(50);
+    const [qrY, setQrY] = useState(50);
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         fetch('http://localhost:5000/api/templates', {
@@ -49,7 +53,8 @@ export default function GeneratePage() {
                 body: JSON.stringify({
                     templateId: selectedTemplate._id,
                     data: formData,
-                    certificateTitle: certificateTitle
+                    qrX: qrX, // Send X coordinate
+                    qrY: qrY  // Send Y coordinate
                 })
             });
             const result = await res.json();
@@ -99,8 +104,31 @@ export default function GeneratePage() {
                                         </div>
                                     ))
                             ) : (
-                                <p className="text-gray-500 italic pb-4">No placeholders found in this template. It will be converted to PDF as is.</p>
+                                <p className="text-gray-500 italic pb-4">No placeholders found in this template.</p>
                             )}
+
+                            {/* QR Code Location Inputs */}
+                            <div className="grid grid-cols-2 gap-4 border-t border-gray-700 pt-4 mt-4">
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">QR Code X Position</label>
+                                    <input
+                                        type="number"
+                                        className="input mb-0"
+                                        value={qrX}
+                                        onChange={(e) => setQrX(parseInt(e.target.value) || 0)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">QR Code Y Position</label>
+                                    <input
+                                        type="number"
+                                        className="input mb-0"
+                                        value={qrY}
+                                        onChange={(e) => setQrY(parseInt(e.target.value) || 0)}
+                                    />
+                                </div>
+                            </div>
+
                         </div>
                         <button type="submit" className="btn w-full" disabled={generating}>
                             {generating ? 'Generating PDF...' : 'Generate PDF'}
@@ -109,17 +137,19 @@ export default function GeneratePage() {
                 )}
             </div>
 
-            {generatedDoc && (
-                <div className="mt-8 p-6 bg-green-900/20 border border-green-500/50 rounded-xl animate-fade-in">
-                    <h3 className="text-green-400 font-bold text-xl mb-2">Document Generated!</h3>
-                    <p className="mb-4">ID: <span className="font-mono bg-black/30 px-2 py-1 rounded">{generatedDoc.document.uniqueId}</span></p>
+            {
+                generatedDoc && (
+                    <div className="mt-8 p-6 bg-green-900/20 border border-green-500/50 rounded-xl animate-fade-in">
+                        <h3 className="text-green-400 font-bold text-xl mb-2">Document Generated!</h3>
+                        <p className="mb-4">ID: <span className="font-mono bg-black/30 px-2 py-1 rounded">{generatedDoc.document.uniqueId}</span></p>
 
-                    <div className="flex gap-4">
-                        <a href={`http://localhost:5000${generatedDoc.downloadUrl}`} target="_blank" className="btn bg-green-600">Download PDF</a>
-                        <a href={`/verify/${generatedDoc.document.uniqueId}`} target="_blank" className="btn btn-outline">Verify Link</a>
+                        <div className="flex gap-4">
+                            <a href={`http://localhost:5000${generatedDoc.downloadUrl}`} target="_blank" className="btn bg-green-600">Download PDF</a>
+                            <a href={`/verify/${generatedDoc.document.uniqueId}`} target="_blank" className="btn btn-outline">Verify Link</a>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

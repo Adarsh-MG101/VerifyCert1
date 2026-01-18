@@ -112,7 +112,7 @@ router.get('/stats', auth, async (req, res) => {
 // 3. Generate Document (Protected)
 router.post('/generate', auth, async (req, res) => {
     try {
-        const { templateId, data } = req.body;
+        const { templateId, data, qrX, qrY } = req.body; // Extract user coordinates
         const template = await Template.findById(templateId);
         if (!template) return res.status(404).json({ error: 'Template not found' });
 
@@ -200,12 +200,11 @@ router.post('/generate', auth, async (req, res) => {
             const firstPage = pages[0];
             const { width, height } = firstPage.getSize();
 
-            // Draw the QR Code
-            // Adjust these coordinates as needed (currently bottom-left corner)
+            // Draw the QR Code using user coordinates or default to bottom-left (50, 50)
             const qrDims = 100; // 100x100 pixels
             firstPage.drawImage(qrImage, {
-                x: 50,
-                y: 50,
+                x: qrX ? parseInt(qrX) : 50,
+                y: qrY ? parseInt(qrY) : 50,
                 width: qrDims,
                 height: qrDims,
             });
