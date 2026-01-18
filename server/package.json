@@ -1,0 +1,32 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "npx nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "docx-merger": "^1.2.2",
+    "docx-templates": "^4.15.0",
+    "docxtemplater": "^3.67.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "libreoffice-convert": "^1.7.0",
+    "mammoth": "^1.11.0",
+    "mongoose": "^9.1.4",
+    "multer": "^2.0.2",
+    "pizzip": "^3.2.0",
+    "puppeteer": "^24.35.0",
+    "qrcode": "^1.5.4",
+    "util": "^0.12.5"
+  }
+}
