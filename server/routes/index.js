@@ -109,6 +109,7 @@ router.get('/stats', auth, async (req, res) => {
 
 // 3. Generate Document (Protected)
 // 3. Generate Document (Protected)
+// 3. Generate Document (Protected)
 router.post('/generate', auth, async (req, res) => {
     try {
         const { templateId, data } = req.body;
@@ -118,38 +119,28 @@ router.post('/generate', auth, async (req, res) => {
         const uniqueId = crypto.randomUUID();
 
         // Generate QR Code
-        // Generate QR Code
         const verificationUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/verify/${uniqueId}`;
         const qrCodeBuffer = await QRCode.toBuffer(verificationUrl);
 
         // Prepare Data
-        // IMPORTANT: For docx-templates to treat this as an image, it needs { width, height, data, extension }
-        // and 'data' should be a Buffer (or base64).
+        // We set qr_code to empty string so the {{qr_code}} tag is removed from the DOCX text
         const finalData = {
             certificate_id: uniqueId,
-            qr_code: {
-                width: 3,
-                height: 3,
-                data: qrCodeBuffer, // raw buffer
-                extension: '.png'
-            },
+            qr_code: "",
             ...data
         };
 
         // Load template file
         const templateBuffer = fs.readFileSync(template.filePath);
 
-        // 1. Fill the DOCX Template
+        // 1. Fill the DOCX Template (Text only)
         let outputBuffer;
         try {
             outputBuffer = await createReport({
                 template: templateBuffer,
                 data: finalData,
-                cmdDelimiter: ['{{', '}}'],
-                // processLineBreaks: true, // typical option
-                // noSandbox: true // sometimes helps
+                cmdDelimiter: ['{{', '}}']
             });
-            // (No temp file to clean up)
         } catch (error) {
             console.error('❌ Template filling error:', error.message);
             return res.status(400).json({
@@ -159,47 +150,32 @@ router.post('/generate', auth, async (req, res) => {
         }
 
         // 2. Save Filled Data to Temp DOCX path
-        // We name it identical to the target PDF so conversion is straightforward
         const tempDocxPath = path.join(__dirname, `../uploads/${uniqueId}.docx`);
         fs.writeFileSync(tempDocxPath, outputBuffer);
 
-        // 3. Convert DOCX to PDF using LibreOffice (Direct Command)
-        // This avoids issues with libreoffice-convert wrapper on Windows
-        const pdfPath = `uploads/${uniqueId}.pdf`;
-        const absolutePdfPath = path.join(__dirname, `../${pdfPath}`);
+        // 3. Convert DOCX to PDF using LibreOffice
+        const pdfFilename = `uploads/${uniqueId}.pdf`;
+        const absolutePdfPath = path.join(__dirname, `../${pdfFilename}`);
 
         try {
-            // Path to LibreOffice - Check common Windows paths
+            // Path to LibreOffice
             const possiblePaths = [
                 'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
                 'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
             ];
             let sofficePath = possiblePaths.find(p => fs.existsSync(p));
-
-            // Fallback: If not found in default paths, try using 'soffice' command (requires PATH)
-            if (!sofficePath) {
-                sofficePath = 'soffice';
-            }
+            if (!sofficePath) sofficePath = 'soffice';
 
             const outputDir = path.dirname(absolutePdfPath);
-
-            // Execute conversion
-            // --headless: no GUI
-            // --convert-to pdf: target format
-            // --outdir: where to save
             const cmd = `"${sofficePath}" --headless --convert-to pdf --outdir "${outputDir}" "${tempDocxPath}"`;
 
             await new Promise((resolve, reject) => {
                 exec(cmd, (error, stdout, stderr) => {
-                    if (error) {
-                        reject(new Error(stderr || error.message));
-                    } else {
-                        resolve(stdout);
-                    }
+                    if (error) reject(new Error(stderr || error.message));
+                    else resolve(stdout);
                 });
             });
 
-            // Verify output exists
             if (!fs.existsSync(absolutePdfPath)) {
                 throw new Error('PDF file was not created by LibreOffice.');
             }
@@ -207,24 +183,55 @@ router.post('/generate', auth, async (req, res) => {
             // Cleanup temp docx
             fs.unlinkSync(tempDocxPath);
 
+            // ---------------------------------------------------------
+            // 4. Post-Process: Add QR Code to the PDF
+            // ---------------------------------------------------------
+            const { PDFDocument } = require('pdf-lib');
+
+            // Read the generated PDF
+            const pdfBytes = fs.readFileSync(absolutePdfPath);
+            const pdfDoc = await PDFDocument.load(pdfBytes);
+
+            // Embed the QR Code image
+            const qrImage = await pdfDoc.embedPng(qrCodeBuffer);
+
+            // Get the first page
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[0];
+            const { width, height } = firstPage.getSize();
+
+            // Draw the QR Code
+            // Adjust these coordinates as needed (currently bottom-left corner)
+            const qrDims = 100; // 100x100 pixels
+            firstPage.drawImage(qrImage, {
+                x: 50,
+                y: 50,
+                width: qrDims,
+                height: qrDims,
+            });
+
+            // Save the modified PDF back to the file
+            const modifiedPdfBytes = await pdfDoc.save();
+            fs.writeFileSync(absolutePdfPath, modifiedPdfBytes);
+
         } catch (pdfErr) {
-            console.error('❌ PDF Conversion Error:', pdfErr);
+            console.error('❌ PDF Processing Error:', pdfErr);
             return res.status(500).json({
-                error: 'PDF Conversion Failed.',
+                error: 'PDF conversion or QR embedding failed.',
                 details: pdfErr.message
             });
         }
 
-        // 4. Save Document Record
+        // 5. Save Document Record
         const newDoc = new Document({
             uniqueId,
             data: finalData,
-            filePath: pdfPath,
+            filePath: pdfFilename,
             template: template._id
         });
         await newDoc.save();
 
-        res.json({ success: true, document: newDoc, downloadUrl: `/uploads/${uniqueId}.pdf` });
+        res.json({ success: true, document: newDoc, downloadUrl: `/${pdfFilename}` });
 
     } catch (err) {
         console.error('❌ Generation error:', err);
