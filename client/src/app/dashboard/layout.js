@@ -45,7 +45,8 @@ export default function DashboardLayout({ children }) {
                 <nav className="flex-1 space-y-2">
                     <Link href="/dashboard" className="block p-3 rounded hover:bg-slate-800">Overview</Link>
                     <Link href="/dashboard/templates" className="block p-3 rounded hover:bg-slate-800">Templates</Link>
-                    <Link href="/dashboard/generate" className="block p-3 rounded hover:bg-slate-800">Generate</Link>
+                    <Link href="/dashboard/generate" className="block p-3 rounded hover:bg-slate-800">Generate Single</Link>
+                    <Link href="/dashboard/bulk-generate" className="block p-3 rounded hover:bg-slate-800">Bulk Generate</Link>
                 </nav>
 
                 <div className="mt-16 mb-10">

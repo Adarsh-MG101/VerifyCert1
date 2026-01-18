@@ -9,6 +9,8 @@ const QRCode = require('qrcode');
 const crypto = require('crypto');
 const mammoth = require('mammoth');
 const { exec } = require('child_process');
+const csv = require('csv-parser');
+const archiver = require('archiver');
 
 const Template = require('../models/Template');
 const Document = require('../models/Document');
@@ -251,6 +253,188 @@ router.get('/verify/:id', async (req, res) => {
             issuedAt: doc.createdAt
         });
     } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 5. Bulk Generate from CSV (Protected)
+router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ error: 'No CSV file uploaded' });
+
+        const { templateId, qrX, qrY } = req.body;
+        const template = await Template.findById(templateId);
+        if (!template) return res.status(404).json({ error: 'Template not found' });
+
+        // Parse CSV
+        const csvData = [];
+        const csvPath = req.file.path;
+
+        await new Promise((resolve, reject) => {
+            fs.createReadStream(csvPath)
+                .pipe(csv())
+                .on('data', (row) => csvData.push(row))
+                .on('end', resolve)
+                .on('error', reject);
+        });
+
+        if (csvData.length === 0) {
+            fs.unlinkSync(csvPath);
+            return res.status(400).json({ error: 'CSV file is empty' });
+        }
+
+        // Create a unique folder for this batch
+        const batchId = crypto.randomUUID();
+        const batchFolder = path.join(__dirname, `../uploads/batch_${batchId}`);
+        fs.mkdirSync(batchFolder, { recursive: true });
+
+        const generatedDocs = [];
+        const errors = [];
+
+        // Generate PDF for each row
+        for (let i = 0; i < csvData.length; i++) {
+            const rowData = csvData[i];
+            const uniqueId = crypto.randomUUID();
+
+            try {
+                // Generate QR Code
+                const verificationUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/verify/${uniqueId}`;
+                const qrCodeBuffer = await QRCode.toBuffer(verificationUrl);
+
+                // Prepare data
+                const finalData = {
+                    certificate_id: uniqueId,
+                    qr_code: "",
+                    ...rowData
+                };
+
+                // Load template
+                const templateBuffer = fs.readFileSync(template.filePath);
+
+                // Fill DOCX
+                const outputBuffer = await createReport({
+                    template: templateBuffer,
+                    data: finalData,
+                    cmdDelimiter: ['{{', '}}']
+                });
+
+                // Save temp DOCX
+                const tempDocxPath = path.join(batchFolder, `${uniqueId}.docx`);
+                fs.writeFileSync(tempDocxPath, outputBuffer);
+
+                // Convert to PDF
+                const pdfPath = path.join(batchFolder, `${uniqueId}.pdf`);
+
+                const possiblePaths = [
+                    'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
+                    'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
+                ];
+                let sofficePath = possiblePaths.find(p => fs.existsSync(p));
+                if (!sofficePath) sofficePath = 'soffice';
+
+                const cmd = `"${sofficePath}" --headless --convert-to pdf --outdir "${batchFolder}" "${tempDocxPath}"`;
+
+                await new Promise((resolve, reject) => {
+                    exec(cmd, (error, stdout, stderr) => {
+                        if (error) reject(new Error(stderr || error.message));
+                        else resolve(stdout);
+                    });
+                });
+
+                if (!fs.existsSync(pdfPath)) {
+                    throw new Error('PDF file was not created');
+                }
+
+                // Delete temp DOCX
+                fs.unlinkSync(tempDocxPath);
+
+                // Add QR Code to PDF
+                const { PDFDocument } = require('pdf-lib');
+                const pdfBytes = fs.readFileSync(pdfPath);
+                const pdfDoc = await PDFDocument.load(pdfBytes);
+                const qrImage = await pdfDoc.embedPng(qrCodeBuffer);
+                const pages = pdfDoc.getPages();
+                const firstPage = pages[0];
+
+                const qrDims = 100;
+                firstPage.drawImage(qrImage, {
+                    x: qrX ? parseInt(qrX) : 50,
+                    y: qrY ? parseInt(qrY) : 50,
+                    width: qrDims,
+                    height: qrDims,
+                });
+
+                const modifiedPdfBytes = await pdfDoc.save();
+                fs.writeFileSync(pdfPath, modifiedPdfBytes);
+
+                // Save to database
+                const newDoc = new Document({
+                    uniqueId,
+                    data: finalData,
+                    filePath: `uploads/batch_${batchId}/${uniqueId}.pdf`,
+                    template: template._id
+                });
+                await newDoc.save();
+
+                generatedDocs.push({
+                    uniqueId,
+                    filename: `${rowData.name || uniqueId}.pdf`,
+                    path: pdfPath
+                });
+
+            } catch (err) {
+                console.error(`Error generating PDF for row ${i + 1}:`, err);
+                errors.push({ row: i + 1, error: err.message, data: rowData });
+            }
+        }
+
+        // Delete CSV file
+        fs.unlinkSync(csvPath);
+
+        if (generatedDocs.length === 0) {
+            // Clean up batch folder
+            fs.rmSync(batchFolder, { recursive: true, force: true });
+            return res.status(500).json({
+                error: 'Failed to generate any PDFs',
+                details: errors
+            });
+        }
+
+        // Create ZIP file
+        const zipPath = path.join(__dirname, `../uploads/batch_${batchId}.zip`);
+        const output = fs.createWriteStream(zipPath);
+        const archive = archiver('zip', { zlib: { level: 9 } });
+
+        output.on('close', () => {
+            // Clean up batch folder after zipping
+            fs.rmSync(batchFolder, { recursive: true, force: true });
+
+            res.json({
+                success: true,
+                totalRows: csvData.length,
+                generated: generatedDocs.length,
+                failed: errors.length,
+                errors: errors,
+                downloadUrl: `/uploads/batch_${batchId}.zip`,
+                batchId: batchId
+            });
+        });
+
+        archive.on('error', (err) => {
+            throw err;
+        });
+
+        archive.pipe(output);
+
+        // Add all PDFs to ZIP
+        generatedDocs.forEach(doc => {
+            archive.file(doc.path, { name: doc.filename });
+        });
+
+        archive.finalize();
+
+    } catch (err) {
+        console.error('❌ Bulk generation error:', err);
         res.status(500).json({ error: err.message });
     }
 });
