@@ -13,9 +13,19 @@ export default function TemplatesPage() {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then(res => res.json())
-            .then(data => setTemplates(data))
-            .catch(console.error);
+            .then(res => res.ok ? res.json() : [])
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setTemplates(data);
+                } else {
+                    console.error('Expected array of templates, got:', data);
+                    setTemplates([]);
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching templates:', err);
+                setTemplates([]);
+            });
     };
 
     useEffect(() => {
@@ -96,7 +106,7 @@ export default function TemplatesPage() {
 
             <h2 className="text-xl font-bold mb-4">Existing Templates</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {templates.map(t => (
+                {Array.isArray(templates) && templates.map(t => (
                     <div key={t._id} className="card">
                         <h3 className="font-bold text-lg mb-2">{t.name}</h3>
                         <p className="text-sm text-gray-400 mb-4">ID: {t._id}</p>

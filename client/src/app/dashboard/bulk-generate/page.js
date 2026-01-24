@@ -17,9 +17,19 @@ export default function BulkGeneratePage() {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then(res => res.json())
-            .then(data => setTemplates(data))
-            .catch(console.error);
+            .then(res => res.ok ? res.json() : [])
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setTemplates(data);
+                } else {
+                    console.error('Expected array of templates, got:', data);
+                    setTemplates([]);
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching templates:', err);
+                setTemplates([]);
+            });
     }, []);
 
     const handleTemplateSelect = (e) => {
@@ -100,7 +110,7 @@ export default function BulkGeneratePage() {
                     <label className="block text-gray-400 mb-2">Select Template</label>
                     <select className="input bg-slate-800" onChange={handleTemplateSelect}>
                         <option value="">-- Choose Template --</option>
-                        {templates.map(t => (
+                        {Array.isArray(templates) && templates.map(t => (
                             <option key={t._id} value={t._id}>{t.name}</option>
                         ))}
                     </select>
