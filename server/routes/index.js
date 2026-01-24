@@ -49,10 +49,21 @@ router.post('/templates', auth, upload.single('file'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
+        const templateName = req.body.name || req.file.originalname;
+        const existingTemplate = await Template.findOne({ name: templateName });
+
+        if (existingTemplate) {
+            // Delete the uploaded file if template name already exists
+            if (fs.existsSync(req.file.path)) {
+                fs.unlinkSync(req.file.path);
+            }
+            return res.status(400).json({ error: `A template with the name "${templateName}" already exists.` });
+        }
+
         const placeholders = await extractPlaceholders(req.file.path);
 
         const template = new Template({
-            name: req.body.name || req.file.originalname,
+            name: templateName,
             filePath: req.file.path,
             placeholders: placeholders
         });
@@ -60,6 +71,10 @@ router.post('/templates', auth, upload.single('file'), async (req, res) => {
         await template.save();
         res.json(template);
     } catch (err) {
+        // If save fails, cleanup the file
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
         res.status(500).json({ error: err.message });
     }
 });

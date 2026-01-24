@@ -66,7 +66,8 @@ export default function TemplatesPage() {
                     fetchTemplates();
                 }, 1000);
             } else {
-                alert('Upload failed');
+                const data = await res.json();
+                alert(data.error || 'Upload failed');
             }
         } catch (err) {
             console.error(err);

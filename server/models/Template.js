@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const TemplateSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     filePath: { type: String, required: true }, // Path to uploaded .docx
     placeholders: [{ type: String }],
     organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' },
