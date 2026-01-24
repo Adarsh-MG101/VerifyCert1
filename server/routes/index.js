@@ -317,8 +317,21 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
         // Generate PDF for each row
         for (let i = 0; i < csvData.length; i++) {
             const rowData = csvData[i];
-            const uniqueId = crypto.randomUUID();
+            const rowNumber = i + 2; // i is 0-indexed, skip header row (+1), so actual row is i+2
 
+            // Validation: Check if all required placeholders have values in this row
+            const missingValues = template.placeholders.filter(p => !rowData[p] || rowData[p].trim() === "");
+
+            if (missingValues.length > 0) {
+                errors.push({
+                    row: rowNumber,
+                    error: `Missing values for required field(s): ${missingValues.join(', ')}`,
+                    data: rowData
+                });
+                continue; // Skip this row and move to the next
+            }
+
+            const uniqueId = crypto.randomUUID();
             try {
                 // Generate QR Code
                 const verificationUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/verify/${uniqueId}`;

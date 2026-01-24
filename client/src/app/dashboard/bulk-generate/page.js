@@ -164,7 +164,7 @@ export default function BulkGeneratePage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider text-xs">File Upload</label>
+                                    <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider">File Upload</label>
                                     <div className="relative group">
                                         <input
                                             type="file"
