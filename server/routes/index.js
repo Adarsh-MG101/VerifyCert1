@@ -62,6 +62,14 @@ router.post('/templates', auth, upload.single('file'), async (req, res) => {
 
         const placeholders = await extractPlaceholders(req.file.path);
 
+        if (placeholders.length === 0) {
+            // Delete the uploaded file if it has no placeholders
+            if (fs.existsSync(req.file.path)) {
+                fs.unlinkSync(req.file.path);
+            }
+            return res.status(400).json({ error: 'Invalid Template: Must contain at least one dynamic placeholder (e.g. {{name}}).' });
+        }
+
         const template = new Template({
             name: templateName,
             filePath: req.file.path,
