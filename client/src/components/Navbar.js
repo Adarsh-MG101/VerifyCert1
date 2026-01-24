@@ -12,11 +12,11 @@ const Navbar = () => {
                     </div>
                 </Link>
 
-                <div className="hidden md:flex items-center space-x-8">
+                {/* <div className="hidden md:flex items-center space-x-8">
                     <Link href="/" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Home</Link>
                     <Link href="/verify" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Verify</Link>
                     <Link href="/about" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">About</Link>
-                </div>
+                </div> */}
 
                 <div className="flex items-center space-x-4">
                     <Link href="/login">

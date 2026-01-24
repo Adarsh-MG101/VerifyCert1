@@ -42,9 +42,7 @@ export default function Home() {
             />
             <Button type="submit">Verify</Button>
           </form>
-          <div className="mt-6 text-xs text-gray-500">
-            For Demo, try generating a document first in the dashboard.
-          </div>
+          
         </Card>
       </main>
 
