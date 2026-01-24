@@ -201,7 +201,11 @@ export default function BulkGeneratePage() {
                                     />
                                 </div>
 
-                                <Button type="submit" className="w-full py-4 text-lg" disabled={generating}>
+                                <Button
+                                    type="submit"
+                                    className="w-full py-4 text-lg"
+                                    disabled={generating || !selectedTemplate || !csvFile}
+                                >
                                     {generating ? (
                                         <span className="flex items-center justify-center">
                                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>

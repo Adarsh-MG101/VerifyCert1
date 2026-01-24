@@ -82,6 +82,12 @@ export default function GeneratePage() {
         setGenerating(false);
     };
 
+    const isFormComplete = () => {
+        if (!selectedTemplate) return false;
+        const requiredFields = selectedTemplate.placeholders.filter(p => p !== 'certificate_id' && p !== 'qr_code');
+        return requiredFields.every(field => formData[field] && formData[field].trim() !== "");
+    };
+
     return (
         <div className="animate-fade-in max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold mb-8">Generate Single Document</h1>
@@ -141,7 +147,11 @@ export default function GeneratePage() {
                                     />
                                 </div>
 
-                                <Button type="submit" className="w-full py-4 text-lg mt-6" disabled={generating}>
+                                <Button
+                                    type="submit"
+                                    className="w-full py-4 text-lg mt-6"
+                                    disabled={generating || !isFormComplete()}
+                                >
                                     {generating ? (
                                         <span className="flex items-center justify-center">
                                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
