@@ -8,6 +8,7 @@ export default function BulkGeneratePage() {
     const [templates, setTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [csvFile, setCsvFile] = useState(null);
+    const [rowCount, setRowCount] = useState(0);
     const [qrX, setQrX] = useState(50);
     const [qrY, setQrY] = useState(50);
     const [generating, setGenerating] = useState(false);
@@ -43,8 +44,24 @@ export default function BulkGeneratePage() {
     };
 
     const handleFileChange = (e) => {
-        setCsvFile(e.target.files[0]);
+        const file = e.target.files[0];
+        setCsvFile(file);
         setResult(null);
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const text = event.target.result;
+                // Count lines, filter out empty ones
+                const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== "");
+                // Subtract 1 for the header
+                const count = Math.max(0, lines.length - 1);
+                setRowCount(count);
+            };
+            reader.readAsText(file);
+        } else {
+            setRowCount(0);
+        }
     };
 
     const handleGenerate = async (e) => {
@@ -159,6 +176,11 @@ export default function BulkGeneratePage() {
                                         <div className={`p-8 border-2 border-dashed rounded-2xl text-center transition-all ${csvFile ? 'border-green-500/50 bg-green-500/5' : 'border-glass-border group-hover:border-primary/50'}`}>
                                             <div className="text-4xl mb-3">{csvFile ? '📊' : '📁'}</div>
                                             <div className="font-medium text-gray-300">{csvFile ? csvFile.name : 'Select or drop CSV file'}</div>
+                                            {csvFile && (
+                                                <div className="mt-2 text-xs font-bold text-green-400 uppercase tracking-widest">
+                                                    ✨ Detected: {rowCount} Certificates
+                                                </div>
+                                            )}
                                             <div className="text-sm text-gray-500 mt-1">{csvFile ? `${(csvFile.size / 1024).toFixed(2)} KB` : 'Max file size 10MB'}</div>
                                         </div>
                                     </div>
