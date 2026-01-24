@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -10,6 +10,13 @@ import Input from '@/components/Input';
 export default function Home() {
   const [docId, setDocId] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    // SECURITY RULE: If user exits dashboard and returns home, clear token
+    // This handles the "Back Button" scenario
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }, []);
 
   const handleVerify = (e) => {
     e.preventDefault();
@@ -42,7 +49,7 @@ export default function Home() {
             />
             <Button type="submit">Verify</Button>
           </form>
-          
+
         </Card>
       </main>
 

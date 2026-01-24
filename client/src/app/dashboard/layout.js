@@ -15,7 +15,7 @@ export default function DashboardLayout({ children }) {
         const storedUser = localStorage.getItem('user');
 
         if (!token) {
-            router.push('/login');
+            router.replace('/login');
         } else {
             setUser(JSON.parse(storedUser));
             setLoading(false);
@@ -59,8 +59,8 @@ export default function DashboardLayout({ children }) {
                             key={item.path}
                             href={item.path}
                             className={`block p-3 rounded-lg transition-all ${isActive(item.path)
-                                    ? 'bg-primary/20 text-white font-medium border border-primary/30'
-                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                ? 'bg-primary/20 text-white font-medium border border-primary/30'
+                                : 'text-gray-400 hover:bg-white/5 hover:text-white'
                                 }`}
                         >
                             {item.name}

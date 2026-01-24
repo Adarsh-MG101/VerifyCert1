@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/Button';
@@ -16,6 +16,13 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        // SECURITY RULE: Clear token if user returns to login page
+        // This effectively logs them out of the dashboard session
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -34,7 +41,7 @@ export default function LoginPage() {
             if (res.ok) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                router.push('/dashboard');
+                router.replace('/dashboard');
             } else {
                 setError(data.error || 'Login failed');
             }
