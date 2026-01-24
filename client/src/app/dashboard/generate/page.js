@@ -1,21 +1,24 @@
 "use client";
 import { useState, useEffect } from 'react';
+import Card from '@/components/Card';
+import Button from '@/components/Button';
+import Input from '@/components/Input';
+import Link from 'next/link';
 
 export default function GeneratePage() {
     const [templates, setTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [formData, setFormData] = useState({});
-    const [certificateTitle, setCertificateTitle] = useState('Certificate of Completion');
     const [generatedDoc, setGeneratedDoc] = useState(null);
     const [generating, setGenerating] = useState(false);
-
-    // New state for QR Code coordinates
     const [qrX, setQrX] = useState(50);
     const [qrY, setQrY] = useState(50);
 
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
     useEffect(() => {
         const token = localStorage.getItem('token');
-        fetch('http://localhost:5000/api/templates', {
+        fetch(`${API_URL}/api/templates`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -54,7 +57,7 @@ export default function GeneratePage() {
         const token = localStorage.getItem('token');
         setGenerating(true);
         try {
-            const res = await fetch('http://localhost:5000/api/generate', {
+            const res = await fetch(`${API_URL}/api/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -63,8 +66,8 @@ export default function GeneratePage() {
                 body: JSON.stringify({
                     templateId: selectedTemplate._id,
                     data: formData,
-                    qrX: qrX, // Send X coordinate
-                    qrY: qrY  // Send Y coordinate
+                    qrX: qrX,
+                    qrY: qrY
                 })
             });
             const result = await res.json();
@@ -80,86 +83,123 @@ export default function GeneratePage() {
     };
 
     return (
-        <div>
-            <h1 className="text-3xl font-bold mb-6">Generate Document</h1>
+        <div className="animate-fade-in max-w-4xl mx-auto">
+            <h1 className="text-3xl font-bold mb-8">Generate Single Document</h1>
 
-            <div className="card max-w-2xl">
-                <div className="mb-6">
-                    <label className="block text-gray-400 mb-2">Select Template</label>
-                    <select className="input bg-slate-800" onChange={handleTemplateSelect}>
-                        <option value="">-- Choose Template --</option>
-                        {Array.isArray(templates) && templates.map(t => (
-                            <option key={t._id} value={t._id}>{t.name}</option>
-                        ))}
-                    </select>
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div className="lg:col-span-3">
+                    <Card title="Document Details" subtitle="Select a template and fill in the required data">
+                        <div className="mb-8">
+                            <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider">Choose Template</label>
+                            <select
+                                className="input bg-white/5 border-glass-border focus:border-primary transition-all cursor-pointer"
+                                onChange={handleTemplateSelect}
+                            >
+                                <option value="" className="bg-slate-900">-- Choose Template --</option>
+                                {Array.isArray(templates) && templates.map(t => (
+                                    <option key={t._id} value={t._id} className="bg-slate-900">{t.name}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                {selectedTemplate && (
-                    <form onSubmit={handleGenerate}>
-                        <h3 className="font-semibold mb-4 border-b border-gray-700 pb-2">Fill Template Variables</h3>
-                        <div className="space-y-4 mb-6">
-                            {selectedTemplate.placeholders && selectedTemplate.placeholders.filter(p => p !== 'certificate_id').length > 0 ? (
-                                selectedTemplate.placeholders
-                                    .filter(p => p !== 'certificate_id')
-                                    .map(key => (
-                                        <div key={key}>
-                                            <label className="block text-sm text-gray-400 mb-1 capitalize">{key.replace(/_/g, ' ')}</label>
-                                            <input
-                                                type="text"
-                                                className="input mb-0"
-                                                placeholder={`Enter ${key}`}
-                                                onChange={(e) => handleChange(key, e.target.value)}
-                                                required
-                                            />
+                        {selectedTemplate && (
+                            <form onSubmit={handleGenerate} className="space-y-6">
+                                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest border-b border-glass-border pb-2">Variables Found</h3>
+
+                                <div className="grid grid-cols-1 gap-5">
+                                    {selectedTemplate.placeholders && selectedTemplate.placeholders.filter(p => p !== 'certificate_id' && p !== 'qr_code').length > 0 ? (
+                                        selectedTemplate.placeholders
+                                            .filter(p => p !== 'certificate_id' && p !== 'qr_code')
+                                            .map(key => (
+                                                <Input
+                                                    key={key}
+                                                    label={key.replace(/_/g, ' ')}
+                                                    placeholder={`Enter ${key.replace(/_/g, ' ')}`}
+                                                    onChange={(e) => handleChange(key, e.target.value)}
+                                                    required
+                                                />
+                                            ))
+                                    ) : (
+                                        <div className="py-4 text-center bg-white/5 rounded-xl border border-white/5 text-gray-500 italic">
+                                            No custom placeholders in this template.
                                         </div>
-                                    ))
-                            ) : (
-                                <p className="text-gray-500 italic pb-4">No placeholders found in this template.</p>
-                            )}
+                                    )}
+                                </div>
 
-                            {/* QR Code Location Inputs */}
-                            <div className="grid grid-cols-2 gap-4 border-t border-gray-700 pt-4 mt-4">
-                                <div>
-                                    <label className="block text-sm text-gray-400 mb-1">QR Code X Position</label>
-                                    <input
+                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-glass-border">
+                                    <Input
+                                        label="QR Code X (px)"
                                         type="number"
-                                        className="input mb-0"
                                         value={qrX}
                                         onChange={(e) => setQrX(parseInt(e.target.value) || 0)}
                                     />
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-400 mb-1">QR Code Y Position</label>
-                                    <input
+                                    <Input
+                                        label="QR Code Y (px)"
                                         type="number"
-                                        className="input mb-0"
                                         value={qrY}
                                         onChange={(e) => setQrY(parseInt(e.target.value) || 0)}
                                     />
                                 </div>
+
+                                <Button type="submit" className="w-full py-4 text-lg mt-6" disabled={generating}>
+                                    {generating ? (
+                                        <span className="flex items-center justify-center">
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
+                                            Generating PDF...
+                                        </span>
+                                    ) : 'Generate Document'}
+                                </Button>
+                            </form>
+                        )}
+                    </Card>
+                </div>
+
+                <div className="lg:col-span-2 space-y-6">
+                    <Card title="Guide" className="bg-white/5">
+                        <p className="text-sm text-gray-400 mb-4 leading-relaxed">
+                            Fill in all the required fields. The data will be automatically inserted into your Word template and converted to PDF.
+                        </p>
+                        <div className="space-y-3">
+                            <div className="flex items-center text-xs text-gray-500">
+                                <span className="bg-primary/20 text-primary w-5 h-5 rounded-full flex items-center justify-center mr-2 font-bold">1</span>
+                                Select your pre-uploaded template.
                             </div>
-
+                            <div className="flex items-center text-xs text-gray-500">
+                                <span className="bg-primary/20 text-primary w-5 h-5 rounded-full flex items-center justify-center mr-2 font-bold">2</span>
+                                Fill in recipient specific details.
+                            </div>
+                            <div className="flex items-center text-xs text-gray-500">
+                                <span className="bg-primary/20 text-primary w-5 h-5 rounded-full flex items-center justify-center mr-2 font-bold">3</span>
+                                Set the exact QR code position.
+                            </div>
                         </div>
-                        <button type="submit" className="btn w-full" disabled={generating}>
-                            {generating ? 'Generating PDF...' : 'Generate PDF'}
-                        </button>
-                    </form>
-                )}
+                    </Card>
+
+                    {generatedDoc && (
+                        <Card className="border-green-500/30 bg-green-500/5 animate-fade-in" title="Success!">
+                            <div className="space-y-5">
+                                <div className="p-4 bg-black/40 rounded-xl border border-white/5">
+                                    <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Document ID</span>
+                                    <span className="font-mono text-sm break-all">{generatedDoc.document.uniqueId}</span>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-3">
+                                    <a href={`${API_URL}${generatedDoc.downloadUrl}`} target="_blank" rel="noopener noreferrer">
+                                        <Button className="w-full bg-green-600 hover:bg-green-700 border-none shadow-lg shadow-green-900/20">
+                                            📥 Download PDF
+                                        </Button>
+                                    </a>
+                                    <Link href={`/verify/${generatedDoc.document.uniqueId}`} target="_blank">
+                                        <Button variant="outline" className="w-full">
+                                            🔍 Public Verification
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+                </div>
             </div>
-
-            {
-                generatedDoc && (
-                    <div className="mt-8 p-6 bg-green-900/20 border border-green-500/50 rounded-xl animate-fade-in">
-                        <h3 className="text-green-400 font-bold text-xl mb-2">Document Generated!</h3>
-                        <p className="mb-4">ID: <span className="font-mono bg-black/30 px-2 py-1 rounded">{generatedDoc.document.uniqueId}</span></p>
-
-                        <div className="flex gap-4">
-                            <a href={`http://localhost:5000${generatedDoc.downloadUrl}`} target="_blank" className="btn bg-green-600">Download PDF</a>
-                            <a href={`/verify/${generatedDoc.document.uniqueId}`} target="_blank" className="btn btn-outline">Verify Link</a>
-                        </div>
-                    </div>
-                )
-            }
-        </div >
+        </div>
     );
 }

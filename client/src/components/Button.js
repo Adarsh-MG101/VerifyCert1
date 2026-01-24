@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Button = ({ children, onClick, type = "button", variant = "primary", className = "", ...props }) => {
+const Button = ({ children, onClick, type = "button", variant = "primary", className = "", disabled, ...props }) => {
     const baseStyles = "btn";
     const variants = {
         primary: "",
@@ -9,11 +9,14 @@ const Button = ({ children, onClick, type = "button", variant = "primary", class
         danger: "bg-red-500 hover:bg-red-600 border-none",
     };
 
+    const disabledStyles = "opacity-50 grayscale cursor-not-allowed pointer-events-none transform-none shadow-none";
+
     return (
         <button
             type={type}
             onClick={onClick}
-            className={`${baseStyles} ${variants[variant]} ${className}`}
+            disabled={disabled}
+            className={`${baseStyles} ${variants[variant]} ${disabled ? disabledStyles : ''} ${className}`}
             {...props}
         >
             {children}
