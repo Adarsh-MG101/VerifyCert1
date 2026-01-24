@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }) {
                 <Link href="/dashboard">
                     <h2 className="text-2xl font-bold gradient-text mb-10 flex items-center">
                         VerifyCert
-                        <span className="text-[10px] text-white bg-primary px-1.5 py-0.5 rounded ml-2 uppercase tracking-wider">Admin</span>
+                        {/* <span className="text-[10px] text-white bg-primary px-1.5 py-0.5 rounded ml-2 uppercase tracking-wider">Admin</span> */}
                     </h2>
                 </Link>
 
@@ -69,7 +69,7 @@ export default function DashboardLayout({ children }) {
                 </nav>
 
                 <div className="mt-auto pt-10">
-                    <Button onClick={handleLogout} variant="outline" className="w-full text-sm">Logout</Button>
+                    <Button onClick={handleLogout} variant="outline" className="w-full text-sm text-white border-white/20 hover:bg-white/5">Logout</Button>
                     <div className="mt-4 text-[10px] text-gray-500 text-center uppercase tracking-widest">
                         Logged in as <br /> <span className="text-gray-300 normal-case tracking-normal">{user?.email}</span>
                     </div>
