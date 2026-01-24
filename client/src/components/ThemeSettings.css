@@ -1,0 +1,25 @@
+/* 
+  THEME CONFIGURATION
+  Change these values to update the entire application's look and feel.
+*/
+
+:root {
+    /* Core Colors */
+    --color-bg: #0f172a;
+    
+    /* Main background */
+    --color-text: #f8fafc;
+    /* Primary text */
+    --color-primary: #3b82f6;
+    /* Brand/Button color */
+    --color-accent: #8b5cf6;
+    /* Secondary/Gradient color */
+
+    /* Glassmorphism Effect */
+    --color-glass: rgba(255, 255, 255, 0.05);
+    --color-glass-border: rgba(255, 255, 255, 0.1);
+    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+    /* Gradients */
+    --grad-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+}
