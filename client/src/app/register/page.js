@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
@@ -8,35 +8,32 @@ import Input from '@/components/Input';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-export default function LoginPage() {
-    const searchParams = useSearchParams();
-    const isRegistered = searchParams.get('registered');
+export default function RegisterPage() {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    const handleLogin = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ name, email, password })
             });
 
             const data = await res.json();
 
             if (res.ok) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
-                router.push('/dashboard');
+                router.push('/login?registered=true');
             } else {
-                setError(data.error || 'Login failed');
+                setError(data.error || 'Registration failed');
             }
         } catch (err) {
             setError('Something went wrong. Please try again.');
@@ -52,15 +49,9 @@ export default function LoginPage() {
             <main className="flex-1 flex items-center justify-center p-4">
                 <Card className="w-full max-w-md p-8 animate-fade-in">
                     <div className="text-center mb-10">
-                        <h1 className="text-3xl font-bold gradient-text mb-2">Welcome Back</h1>
-                        <p className="text-gray-400">Login to manage VerifyCert</p>
+                        <h1 className="text-3xl font-bold gradient-text mb-2">Create Account</h1>
+                        <p className="text-gray-400">Join VerifyCert to start issuing documents</p>
                     </div>
-
-                    {isRegistered && (
-                        <div className="bg-green-500/10 border border-green-500/50 text-green-400 p-3 rounded mb-6 text-sm">
-                            Registration successful! Please login with your credentials.
-                        </div>
-                    )}
 
                     {error && (
                         <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-3 rounded mb-6 text-sm">
@@ -68,7 +59,16 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-6">
+                    <form onSubmit={handleRegister} className="space-y-6">
+                        <Input
+                            label="Full Name"
+                            type="text"
+                            placeholder="John Doe"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                        />
+
                         <Input
                             label="Email Address"
                             type="email"
@@ -92,14 +92,17 @@ export default function LoginPage() {
                             disabled={loading}
                             className="w-full"
                         >
-                            {loading ? 'Authenticating...' : 'Sign In'}
+                            {loading ? 'Creating Account...' : 'Sign Up'}
                         </Button>
                     </form>
 
                     <div className="mt-8 text-center">
-                        <Link href="/" className="text-sm text-gray-500 hover:text-white transition-colors">
-                            ← Back to Homepage
-                        </Link>
+                        <p className="text-sm text-gray-500">
+                            Already have an account?{' '}
+                            <Link href="/login" className="text-primary hover:underline transition-all">
+                                Login here
+                            </Link>
+                        </p>
                     </div>
                 </Card>
             </main>

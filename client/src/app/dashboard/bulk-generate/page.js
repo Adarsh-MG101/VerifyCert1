@@ -1,5 +1,8 @@
 "use client";
 import { useState, useEffect } from 'react';
+import Card from '@/components/Card';
+import Button from '@/components/Button';
+import Input from '@/components/Input';
 
 export default function BulkGeneratePage() {
     const [templates, setTemplates] = useState([]);
@@ -12,7 +15,7 @@ export default function BulkGeneratePage() {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        fetch('http://localhost:5000/api/templates', {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/templates`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -59,7 +62,7 @@ export default function BulkGeneratePage() {
         formData.append('qrY', qrY);
 
         try {
-            const res = await fetch('http://localhost:5000/api/generate-bulk', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/generate-bulk`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -102,124 +105,151 @@ export default function BulkGeneratePage() {
     };
 
     return (
-        <div>
-            <h1 className="text-3xl font-bold mb-6">Bulk Generate Documents</h1>
+        <div className="animate-fade-in max-w-4xl mx-auto">
+            <h1 className="text-3xl font-bold mb-8">Bulk Generation</h1>
 
-            <div className="card max-w-2xl">
-                <div className="mb-6">
-                    <label className="block text-gray-400 mb-2">Select Template</label>
-                    <select className="input bg-slate-800" onChange={handleTemplateSelect}>
-                        <option value="">-- Choose Template --</option>
-                        {Array.isArray(templates) && templates.map(t => (
-                            <option key={t._id} value={t._id}>{t.name}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {selectedTemplate && (
-                    <form onSubmit={handleGenerate}>
-                        <div className="mb-6 p-4 bg-blue-900/20 border border-blue-500/50 rounded-lg">
-                            <h3 className="font-semibold mb-2 text-blue-400">CSV Format Instructions</h3>
-                            <p className="text-sm text-gray-300 mb-3">
-                                Your CSV file should have the following columns as headers:
-                            </p>
-                            <div className="bg-black/30 p-3 rounded font-mono text-sm mb-3">
-                                {selectedTemplate.placeholders
-                                    .filter(p => p !== 'certificate_id' && p !== 'qr_code')
-                                    .join(', ') || 'No placeholders in this template'}
-                            </div>
-                            <button
-                                type="button"
-                                onClick={downloadSampleCSV}
-                                className="btn btn-outline text-sm"
-                            >
-                                Download Sample CSV
-                            </button>
-                        </div>
-
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                    <Card title="Upload Configuration" subtitle="Configure your bulk certificate generation">
                         <div className="mb-6">
-                            <label className="block text-gray-400 mb-2">Upload CSV File</label>
-                            <input
-                                type="file"
-                                accept=".csv"
-                                onChange={handleFileChange}
-                                className="input"
-                                required
-                            />
-                            {csvFile && (
-                                <p className="text-sm text-green-400 mt-2">
-                                    ✓ Selected: {csvFile.name}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <label className="block text-sm text-gray-400 mb-1">QR Code X Position</label>
-                                <input
-                                    type="number"
-                                    className="input mb-0"
-                                    value={qrX}
-                                    onChange={(e) => setQrX(parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm text-gray-400 mb-1">QR Code Y Position</label>
-                                <input
-                                    type="number"
-                                    className="input mb-0"
-                                    value={qrY}
-                                    onChange={(e) => setQrY(parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                        </div>
-
-                        <button type="submit" className="btn w-full" disabled={generating}>
-                            {generating ? 'Generating PDFs...' : 'Generate All PDFs'}
-                        </button>
-                    </form>
-                )}
-            </div>
-
-            {result && (
-                <div className="mt-8 p-6 bg-green-900/20 border border-green-500/50 rounded-xl animate-fade-in">
-                    <h3 className="text-green-400 font-bold text-xl mb-4">Bulk Generation Complete!</h3>
-
-                    <div className="grid grid-cols-3 gap-4 mb-4">
-                        <div className="bg-black/30 p-4 rounded">
-                            <p className="text-gray-400 text-sm">Total Rows</p>
-                            <p className="text-2xl font-bold">{result.totalRows}</p>
-                        </div>
-                        <div className="bg-green-900/30 p-4 rounded">
-                            <p className="text-gray-400 text-sm">Generated</p>
-                            <p className="text-2xl font-bold text-green-400">{result.generated}</p>
-                        </div>
-                        <div className="bg-red-900/30 p-4 rounded">
-                            <p className="text-gray-400 text-sm">Failed</p>
-                            <p className="text-2xl font-bold text-red-400">{result.failed}</p>
-                        </div>
-                    </div>
-
-                    {result.errors && result.errors.length > 0 && (
-                        <div className="mb-4 p-4 bg-red-900/20 border border-red-500/50 rounded">
-                            <h4 className="text-red-400 font-semibold mb-2">Errors:</h4>
-                            <ul className="text-sm space-y-1">
-                                {result.errors.map((err, idx) => (
-                                    <li key={idx}>Row {err.row}: {err.error}</li>
+                            <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider">Select Template</label>
+                            <select
+                                className="input bg-white/5 border-glass-border focus:border-primary transition-all cursor-pointer"
+                                onChange={handleTemplateSelect}
+                            >
+                                <option value="" className="bg-slate-900">-- Choose Template --</option>
+                                {Array.isArray(templates) && templates.map(t => (
+                                    <option key={t._id} value={t._id} className="bg-slate-900">{t.name}</option>
                                 ))}
-                            </ul>
+                            </select>
                         </div>
-                    )}
 
-                    <a
-                        href={`http://localhost:5000${result.downloadUrl}`}
-                        className="btn bg-green-600 w-full"
-                        download
-                    >
-                        Download ZIP ({result.generated} PDFs)
-                    </a>
+                        {selectedTemplate && (
+                            <form onSubmit={handleGenerate} className="space-y-6">
+                                <div className="p-5 bg-primary/5 border border-primary/20 rounded-xl">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="font-bold text-primary flex items-center">
+                                            <span className="mr-2 italic">Format:</span> CSV Required
+                                        </h3>
+                                        <Button
+                                            onClick={downloadSampleCSV}
+                                            variant="ghost"
+                                            className="text-xs py-1.5 px-3 border border-primary/20 hover:bg-primary/10"
+                                        >
+                                            Download Sample
+                                        </Button>
+                                    </div>
+                                    <div className="bg-black/40 p-3 rounded-lg font-mono text-xs text-gray-400 overflow-x-auto whitespace-nowrap border border-white/5">
+                                        {selectedTemplate.placeholders
+                                            .filter(p => p !== 'certificate_id' && p !== 'qr_code')
+                                            .join(', ') || 'No placeholders required'}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider text-xs">File Upload</label>
+                                    <div className="relative group">
+                                        <input
+                                            type="file"
+                                            accept=".csv"
+                                            onChange={handleFileChange}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                            required
+                                        />
+                                        <div className={`p-8 border-2 border-dashed rounded-2xl text-center transition-all ${csvFile ? 'border-green-500/50 bg-green-500/5' : 'border-glass-border group-hover:border-primary/50'}`}>
+                                            <div className="text-4xl mb-3">{csvFile ? '📊' : '📁'}</div>
+                                            <div className="font-medium text-gray-300">{csvFile ? csvFile.name : 'Select or drop CSV file'}</div>
+                                            <div className="text-sm text-gray-500 mt-1">{csvFile ? `${(csvFile.size / 1024).toFixed(2)} KB` : 'Max file size 10MB'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Input
+                                        label="QR Code X (px)"
+                                        type="number"
+                                        value={qrX}
+                                        onChange={(e) => setQrX(parseInt(e.target.value) || 0)}
+                                    />
+                                    <Input
+                                        label="QR Code Y (px)"
+                                        type="number"
+                                        value={qrY}
+                                        onChange={(e) => setQrY(parseInt(e.target.value) || 0)}
+                                    />
+                                </div>
+
+                                <Button type="submit" className="w-full py-4 text-lg" disabled={generating}>
+                                    {generating ? (
+                                        <span className="flex items-center justify-center">
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
+                                            Processing Units...
+                                        </span>
+                                    ) : 'Start Generation'}
+                                </Button>
+                            </form>
+                        )}
+                    </Card>
                 </div>
-            )}
+
+                <div className="space-y-6">
+                    <Card title="Help" className="bg-white/5">
+                        <ul className="text-sm text-gray-400 space-y-4">
+                            <li className="flex items-start">
+                                <span className="bg-primary/20 text-primary p-1 rounded mr-3 text-[10px] mt-1">1</span>
+                                <div>Choose a template you've created earlier.</div>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="bg-primary/20 text-primary p-1 rounded mr-3 text-[10px] mt-1">2</span>
+                                <div>Download the sample to see exact column names needed.</div>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="bg-primary/20 text-primary p-1 rounded mr-3 text-[10px] mt-1">3</span>
+                                <div>Adjust QR code position based on your template design.</div>
+                            </li>
+                        </ul>
+                    </Card>
+
+                    {result && (
+                        <Card className="border-green-500/30 bg-green-500/5 animate-fade-in" title="Results">
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-400 font-medium uppercase tracking-tighter">Status</span>
+                                    <span className="bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-xs font-bold uppercase">Success</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="bg-black/30 p-4 rounded-xl text-center">
+                                        <div className="text-gray-500 text-[10px] uppercase font-bold mb-1">Generated</div>
+                                        <div className="text-2xl font-bold text-green-400">{result.generated}</div>
+                                    </div>
+                                    <div className="bg-black/30 p-4 rounded-xl text-center">
+                                        <div className="text-gray-500 text-[10px] uppercase font-bold mb-1">Failed</div>
+                                        <div className="text-2xl font-bold text-red-400">{result.failed}</div>
+                                    </div>
+                                </div>
+
+                                {result.errors && result.errors.length > 0 && (
+                                    <div className="max-h-32 overflow-y-auto p-3 bg-red-900/10 rounded-lg text-xs font-mono text-red-400/80 border border-red-500/10">
+                                        {result.errors.map((err, idx) => (
+                                            <div key={idx} className="mb-1">Row {err.row}: {err.error}</div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <a
+                                    href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${result.downloadUrl}`}
+                                    className="block"
+                                    download
+                                >
+                                    <Button className="w-full bg-green-600 hover:bg-green-700 hover:shadow-green-500/20 shadow-lg border-none py-3">
+                                        📦 Download ZIP
+                                    </Button>
+                                </a>
+                            </div>
+                        </Card>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

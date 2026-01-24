@@ -1,7 +1,11 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import Button from '@/components/Button';
+import Card from '@/components/Card';
+import Input from '@/components/Input';
 
 export default function Home() {
   const [docId, setDocId] = useState('');
@@ -15,41 +19,36 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col">
-      <nav className="p-6 flex flex-col items-center container mx-auto ">
-        <h1 className="text-5x1  font-bold gradient-text">VerifyCert</h1><br />
-        <div className="space-x-4">
-          <Link href="/login" className="btn text-sm">Generate Certificate</Link>
-        </div>
-      </nav>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
 
-      <div className="flex-1 flex flex-col items-center justify-center text-center p-4 animate-fade-in">
-        <h2 className=" gradient-text text-5xl font-bold mb-7">
-          Secure Document <br />
-          <span className="gradient-text">Issuance & Verification</span>
+      <main className="flex-1 flex flex-col items-center justify-center text-center p-4 animate-fade-in py-20">
+        <h2 className="text-6xl font-bold mb-7 leading-tight">
+          <span className="gradient-text">Secure Document</span> <br />
+          <span className="text-white">Issuance & Verification</span>
         </h2>
-        <p className="text-gray-400 mb-10 max-w-lg">
+        <p className="text-gray-400 mb-10 max-w-lg text-lg">
           Generate tamper-proof certificates and documents with ease.
           Verify authenticity instantly with our public ledger.
         </p>
 
-        <div className="card w-full max-w-md p-6">
-          <h3 className="text-xl font-semibold mb-4">Verify Document</h3>
-          <form onSubmit={handleVerify} className="flex gap-2">
-            <input
-              type="text"
+        <Card className="w-full max-w-md p-8" title="Verify Document">
+          <form onSubmit={handleVerify} className="flex flex-col sm:flex-row gap-3">
+            <Input
               placeholder="Enter Document ID"
-              className="input mb-0 flex-1"
               value={docId}
               onChange={(e) => setDocId(e.target.value)}
+              className="mb-0"
             />
-            <button type="submit" className="btn">Verify</button>
+            <Button type="submit">Verify</Button>
           </form>
-          <div className="mt-4 text-xs text-gray-500">
+          <div className="mt-6 text-xs text-gray-500">
             For Demo, try generating a document first in the dashboard.
           </div>
-        </div>
-      </div>
-    </main>
+        </Card>
+      </main>
+
+      <Footer />
+    </div>
   );
 }
