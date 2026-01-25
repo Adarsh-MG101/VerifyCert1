@@ -13,6 +13,8 @@ export default function BulkGeneratePage() {
     const [qrY, setQrY] = useState(50);
     const [generating, setGenerating] = useState(false);
     const [result, setResult] = useState(null);
+    const [recipientEmail, setRecipientEmail] = useState('');
+    const [sending, setSending] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -41,12 +43,14 @@ export default function BulkGeneratePage() {
         const t = templates.find(x => x._id === tId);
         setSelectedTemplate(t);
         setResult(null);
+        setRecipientEmail('');
     };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setCsvFile(file);
         setResult(null);
+        setRecipientEmail('');
 
         if (file) {
             const reader = new FileReader();
@@ -97,6 +101,37 @@ export default function BulkGeneratePage() {
             alert('Error during bulk generation');
         }
         setGenerating(false);
+    };
+
+    const handleSendEmail = async () => {
+        if (!recipientEmail || !result) return;
+
+        setSending(true);
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/send-email`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    documentId: `zip:${result.downloadUrl}`, // Prefix for backend switch
+                    recipientEmail: recipientEmail
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('Success: Batch ZIP has been emailed!');
+                setRecipientEmail('');
+            } else {
+                alert(data.error || 'Failed to send batch email');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error sending batch email');
+        }
+        setSending(false);
     };
 
     const downloadSampleCSV = () => {
@@ -262,15 +297,35 @@ export default function BulkGeneratePage() {
                                     </div>
                                 )}
 
-                                <a
-                                    href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${result.downloadUrl}`}
-                                    className="block"
-                                    download
-                                >
-                                    <Button className="w-full bg-green-600 hover:bg-green-700 hover:shadow-green-500/20 shadow-lg border-none py-3">
-                                        📦 Download ZIP
+                                <div className="grid grid-cols-1 gap-3">
+                                    <a
+                                        href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${result.downloadUrl}`}
+                                        className="block"
+                                        download
+                                    >
+                                        <Button className="w-full bg-green-600 hover:bg-green-700 hover:shadow-green-500/20 shadow-lg border-none py-3">
+                                            📦 Download ZIP
+                                        </Button>
+                                    </a>
+                                </div>
+
+                                <div className="pt-4 border-t border-white/10 space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400">Email Entire Batch</h4>
+                                    <Input
+                                        type="email"
+                                        placeholder="admin@example.com"
+                                        value={recipientEmail}
+                                        onChange={(e) => setRecipientEmail(e.target.value)}
+                                        className="bg-black/20"
+                                    />
+                                    <Button
+                                        onClick={handleSendEmail}
+                                        className="w-full text-sm"
+                                        disabled={!recipientEmail || sending}
+                                    >
+                                        {sending ? 'Sending Batch...' : '📧 Send ZIP via Email'}
                                     </Button>
-                                </a>
+                                </div>
                             </div>
                         </Card>
                     )}

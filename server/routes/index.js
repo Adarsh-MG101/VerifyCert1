@@ -11,6 +11,7 @@ const mammoth = require('mammoth');
 const { exec } = require('child_process');
 const csv = require('csv-parser');
 const archiver = require('archiver');
+const nodemailer = require('nodemailer');
 
 const Template = require('../models/Template');
 const Document = require('../models/Document');
@@ -550,6 +551,66 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
 
     } catch (err) {
         console.error('❌ Bulk generation error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 6. Send Email with Certificate or ZIP
+router.post('/send-email', auth, async (req, res) => {
+    try {
+        const { documentId, recipientEmail } = req.body;
+        let absolutePath;
+        let filename;
+        let subject;
+
+        if (documentId.startsWith('zip:')) {
+            // Case: Bulk ZIP
+            const relativePath = documentId.replace('zip:', '');
+            absolutePath = path.join(__dirname, '..', relativePath);
+            filename = 'certificates_batch.zip';
+            subject = 'Your Bulk Certificates Batch';
+        } else {
+            // Case: Single Document
+            const doc = await Document.findById(documentId).populate('template');
+            if (!doc) return res.status(404).json({ error: 'Document not found' });
+            absolutePath = path.join(__dirname, '..', doc.filePath);
+            filename = `${doc.template.name}.pdf`;
+            subject = `Your Certificate: ${doc.template.name}`;
+        }
+
+        if (!fs.existsSync(absolutePath)) {
+            return res.status(404).json({ error: 'File not found on server' });
+        }
+
+        // Create Transporter
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            secure: process.env.SMTP_PORT == 465,
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.SMTP_FROM,
+            to: recipientEmail,
+            subject: subject,
+            text: `Hello,\n\nPlease find the requested file(s) attached.\n\nRegards,\nVerifyCert Team`,
+            attachments: [
+                {
+                    filename: filename,
+                    path: absolutePath
+                }
+            ]
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.json({ success: true, message: 'Email sent successfully!' });
+
+    } catch (err) {
+        console.error('❌ Email sending error:', err);
         res.status(500).json({ error: err.message });
     }
 });

@@ -13,6 +13,8 @@ export default function GeneratePage() {
     const [generating, setGenerating] = useState(false);
     const [qrX, setQrX] = useState(50);
     const [qrY, setQrY] = useState(50);
+    const [recipientEmail, setRecipientEmail] = useState('');
+    const [sending, setSending] = useState(false);
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -44,6 +46,7 @@ export default function GeneratePage() {
         setSelectedTemplate(t);
         setFormData({});
         setGeneratedDoc(null);
+        setRecipientEmail('');
     };
 
     const handleChange = (key, value) => {
@@ -80,6 +83,37 @@ export default function GeneratePage() {
             console.error(err);
         }
         setGenerating(false);
+    };
+
+    const handleSendEmail = async () => {
+        if (!recipientEmail || !generatedDoc) return;
+
+        setSending(true);
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_URL}/api/send-email`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    documentId: generatedDoc.document._id,
+                    recipientEmail: recipientEmail
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('Success: Certificate has been emailed!');
+                setRecipientEmail('');
+            } else {
+                alert(data.error || 'Failed to send email');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error sending email');
+        }
+        setSending(false);
     };
 
     const isFormComplete = () => {
@@ -199,9 +233,30 @@ export default function GeneratePage() {
                                             📥 Download PDF
                                         </Button>
                                     </a>
+                                </div>
+
+                                <div className="pt-4 border-t border-white/10 space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400">Email Certificate</h4>
+                                    <Input
+                                        type="email"
+                                        placeholder="recipient@example.com"
+                                        value={recipientEmail}
+                                        onChange={(e) => setRecipientEmail(e.target.value)}
+                                        className="bg-black/20"
+                                    />
+                                    <Button
+                                        onClick={handleSendEmail}
+                                        className="w-full text-sm"
+                                        disabled={!recipientEmail || sending}
+                                    >
+                                        {sending ? 'Sending...' : '📧 Send via Email'}
+                                    </Button>
+                                </div>
+
+                                <div className="pt-2">
                                     <Link href={`/verify/${generatedDoc.document.uniqueId}`} target="_blank">
-                                        <Button variant="outline" className="w-full">
-                                            🔍 Public Verification
+                                        <Button variant="outline" className="w-full text-xs opacity-60 hover:opacity-100">
+                                            🔍 Public Verification Page
                                         </Button>
                                     </Link>
                                 </div>
