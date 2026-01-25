@@ -190,7 +190,6 @@ export default function TemplatesPage() {
                             <span className="text-[10px] text-gray-500 font-mono italic">
                                 {new Date(t.createdAt).toLocaleDateString()}
                             </span>
-                            <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full uppercase font-bold">Live</span>
                         </div>
                     </Card>
                 ))}
