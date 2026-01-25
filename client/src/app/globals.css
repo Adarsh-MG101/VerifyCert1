@@ -20,12 +20,6 @@
 @layer components {
   .btn {
     @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5 active:translate-y-0;
-    background: var(--background-image-primary-gradient);
-    color: white;
-  }
-
-  .btn:hover {
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
   }
 
   .btn-outline {

@@ -156,20 +156,20 @@ export default function TemplatesPage() {
                                     <span className="text-[10px] uppercase font-bold tracking-widest text-gray-500">No Preview</span>
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                            <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                                 <span className="text-[10px] text-white/70 font-medium">Click generate to use this template</span>
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-start mb-3">
+                        <div className="flex justify-between items-center mb-4">
                             <h3 className="font-bold text-lg group-hover:text-primary transition-colors line-clamp-1">{t.name}</h3>
-                            <button
+                            <Button
                                 onClick={() => handleDelete(t._id)}
-                                className="text-gray-500 hover:text-red-500 transition-colors p-1"
-                                title="Delete Template"
+                                variant="danger"
+                                className="text-[10px] py-1 px-3 font-bold uppercase tracking-wider h-auto shadow-lg shadow-red-900/20"
                             >
-                                🗑️
-                            </button>
+                                Delete
+                            </Button>
                         </div>
 
                         <div className="mb-6 flex-1">
@@ -190,7 +190,7 @@ export default function TemplatesPage() {
                             <span className="text-[10px] text-gray-500 font-mono italic">
                                 {new Date(t.createdAt).toLocaleDateString()}
                             </span>
-                            <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full uppercase font-bold text-[9px]">Live</span>
+                            <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full uppercase font-bold">Live</span>
                         </div>
                     </Card>
                 ))}
