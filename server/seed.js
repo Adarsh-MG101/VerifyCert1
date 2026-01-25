@@ -17,14 +17,11 @@ mongoose.connect(process.env.MONGO_URI)
             process.exit(0);
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
-
         // Create admin user
         const admin = new User({
             name: 'Admin',
             email: process.env.ADMIN_EMAIL,
-            password: hashedPassword,
+            password: process.env.ADMIN_PASSWORD,
             role: 'admin'
         });
 

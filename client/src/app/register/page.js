@@ -75,6 +75,7 @@ export default function RegisterPage() {
                             placeholder="admin@verifycert.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            autoComplete="off"
                             required
                         />
 
@@ -84,6 +85,7 @@ export default function RegisterPage() {
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
                             required
                         />
 

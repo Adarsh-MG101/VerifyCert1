@@ -76,12 +76,19 @@ export default function LoginPage() {
                     )}
 
                     <form onSubmit={handleLogin} className="space-y-6">
+                        {/* Honeypot/Bait inputs to trick browser autofill */}
+                        <div style={{ display: 'none' }}>
+                            <input type="text" name="fake-email" />
+                            <input type="password" name="fake-password" />
+                        </div>
+
                         <Input
                             label="Email Address"
                             type="email"
                             placeholder="admin@verifycert.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            autoComplete="new-off"
                             required
                         />
 
@@ -91,6 +98,7 @@ export default function LoginPage() {
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
                             required
                         />
 
