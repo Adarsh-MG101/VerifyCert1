@@ -105,10 +105,12 @@ export default function TemplatesPage() {
                 subtitle="Upload a Word (.docx) file with {{placeholders}} to create a new template"
                 className="mb-10"
             >
-                {showBuffer ? (
-                    <div className="flex flex-col items-center justify-center py-8 animate-pulse">
-                        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                        <p className="text-primary font-medium">Processing template structure...</p>
+                {loading || showBuffer ? (
+                    <div className="flex flex-col items-center justify-center py-8 animate-pulse text-center">
+                        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4 shadow-lg shadow-primary/20"></div>
+                        <p className="text-primary font-medium">
+                            {loading ? 'Uploading & Analyzing Template...' : 'Finalizing structure...'}
+                        </p>
                     </div>
                 ) : (
                     <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-6 items-end mt-4">

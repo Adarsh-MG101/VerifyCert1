@@ -5,6 +5,7 @@
   --color-background: var(--color-bg);
   --color-foreground: var(--color-text);
   --color-primary: var(--color-primary);
+  --color-accent: var(--color-accent);
   --color-glass: var(--color-glass);
   --color-glass-border: var(--color-glass-border);
   --shadow-glass: var(--shadow-glass);
