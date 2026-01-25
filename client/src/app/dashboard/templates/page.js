@@ -141,9 +141,28 @@ export default function TemplatesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Array.isArray(templates) && templates.map(t => (
-                    <Card key={t._id} className="hover:border-primary/30 transition-all group">
-                        <div className="flex justify-between items-start mb-4">
-                            <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{t.name}</h3>
+                    <Card key={t._id} className="hover:border-primary/30 transition-all group overflow-hidden flex flex-col h-full">
+                        {/* Thumbnail Preview */}
+                        <div className="relative aspect-[1.414/1] w-full bg-slate-800/50 mb-4 rounded-lg overflow-hidden border border-glass-border">
+                            {t.thumbnailPath ? (
+                                <img
+                                    src={`${API_URL}/${t.thumbnailPath}`}
+                                    alt={t.name}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center text-gray-600">
+                                    <span className="text-4xl mb-2">📄</span>
+                                    <span className="text-[10px] uppercase font-bold tracking-widest text-gray-500">No Preview</span>
+                                </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                <span className="text-[10px] text-white/70 font-medium">Click generate to use this template</span>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-between items-start mb-3">
+                            <h3 className="font-bold text-lg group-hover:text-primary transition-colors line-clamp-1">{t.name}</h3>
                             <button
                                 onClick={() => handleDelete(t._id)}
                                 className="text-gray-500 hover:text-red-500 transition-colors p-1"
@@ -153,20 +172,25 @@ export default function TemplatesPage() {
                             </button>
                         </div>
 
-                        <div className="mb-6">
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 block">Placeholders Found</span>
+                        <div className="mb-6 flex-1">
+                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 block">Placeholders Detected</span>
                             <div className="flex flex-wrap gap-2">
-                                {t.placeholders.map(p => (
-                                    <span key={p} className="bg-primary/10 text-[10px] px-2 py-1 rounded-md text-primary font-mono border border-primary/10">
+                                {t.placeholders.slice(0, 4).map(p => (
+                                    <span key={p} className="bg-primary/10 text-[9px] px-2 py-0.5 rounded-md text-primary font-mono border border-primary/20">
                                         {p}
                                     </span>
                                 ))}
+                                {t.placeholders.length > 4 && (
+                                    <span className="text-[9px] text-gray-500 self-center">+{t.placeholders.length - 4} more</span>
+                                )}
                             </div>
                         </div>
 
-                        <div className="pt-4 border-t border-glass-border flex items-center justify-between">
-                            <span className="text-[10px] text-gray-500 font-mono">ID: {t._id.substring(0, 8)}...</span>
-                            <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full uppercase font-bold">Active</span>
+                        <div className="pt-4 border-t border-glass-border flex items-center justify-between mt-auto">
+                            <span className="text-[10px] text-gray-500 font-mono italic">
+                                {new Date(t.createdAt).toLocaleDateString()}
+                            </span>
+                            <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full uppercase font-bold text-[9px]">Live</span>
                         </div>
                     </Card>
                 ))}

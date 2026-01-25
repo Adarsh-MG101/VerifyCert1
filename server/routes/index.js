@@ -44,8 +44,77 @@ async function extractPlaceholders(filePath) {
     return Array.from(matches);
 }
 
+// Helper: Generate Template Preview Thumbnail
+async function generateThumbnail(docxPath, outputId) {
+    const tempPdfName = path.basename(docxPath, '.docx') + '.pdf';
+    const tempPdfPath = path.join(path.dirname(docxPath), tempPdfName);
+    const pngPath = path.join(path.dirname(docxPath), `${outputId}.png`);
+
+    // 1. Docx to PDF using LibreOffice
+    const possiblePaths = [
+        'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
+        'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
+    ];
+    let sofficePath = possiblePaths.find(p => fs.existsSync(p)) || 'soffice';
+    const outputDir = path.dirname(docxPath);
+    const cmd = `"${sofficePath}" --headless --convert-to pdf --outdir "${outputDir}" "${docxPath}"`;
+
+    await new Promise((resolve, reject) => {
+        exec(cmd, (error, stdout, stderr) => {
+            if (error) resolve(stdout); // LibreOffice often sends "info" to stderr
+            else resolve(stdout);
+        });
+    });
+
+    if (!fs.existsSync(tempPdfPath)) {
+        throw new Error('PDF conversion failed, cannot generate thumbnail.');
+    }
+
+    // 2. PDF to PNG using Puppeteer
+    const browser = await puppeteer.launch({
+        headless: "new",
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--hide-scrollbars',
+            '--force-device-scale-factor=2' // Higher quality
+        ]
+    });
+
+    try {
+        const page = await browser.newPage();
+
+        // Certificates are usually Landscape A4 (297x210mm)
+        // We set a high-res landscape viewport
+        await page.setViewport({ width: 1280, height: 905 });
+
+        const absolutePdfPath = path.resolve(tempPdfPath);
+        // toolbar=0, navpanes=0, scrollbar=0 and view=Fit to clean up the Chrome PDF viewer
+        const pdfUrl = `file:///${absolutePdfPath.replace(/\\/g, '/')}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`;
+
+        await page.goto(pdfUrl, { waitUntil: 'networkidle0' });
+
+        // Stabilization delay for the PDF viewer to center and scale the content
+        await new Promise(r => setTimeout(r, 1500));
+
+        await page.screenshot({
+            path: pngPath,
+            omitBackground: true
+        });
+    } finally {
+        await browser.close();
+        // Cleanup temp PDF
+        if (fs.existsSync(tempPdfPath)) {
+            fs.unlinkSync(tempPdfPath);
+        }
+    }
+
+    return `uploads/${outputId}.png`;
+}
+
 // 1. Upload Template (Protected)
 router.post('/templates', auth, upload.single('file'), async (req, res) => {
+    let thumbnailPath = null;
     try {
         if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
@@ -53,35 +122,37 @@ router.post('/templates', auth, upload.single('file'), async (req, res) => {
         const existingTemplate = await Template.findOne({ name: templateName });
 
         if (existingTemplate) {
-            // Delete the uploaded file if template name already exists
-            if (fs.existsSync(req.file.path)) {
-                fs.unlinkSync(req.file.path);
-            }
+            if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
             return res.status(400).json({ error: `A template with the name "${templateName}" already exists.` });
         }
 
         const placeholders = await extractPlaceholders(req.file.path);
 
         if (placeholders.length === 0) {
-            // Delete the uploaded file if it has no placeholders
-            if (fs.existsSync(req.file.path)) {
-                fs.unlinkSync(req.file.path);
-            }
+            if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
             return res.status(400).json({ error: 'Invalid Template: Must contain at least one dynamic placeholder (e.g. {{name}}).' });
         }
+
+        // Generate Thumbnail
+        const outputId = Date.now() + '-preview';
+        thumbnailPath = await generateThumbnail(req.file.path, outputId);
 
         const template = new Template({
             name: templateName,
             filePath: req.file.path,
+            thumbnailPath: thumbnailPath,
             placeholders: placeholders
         });
 
         await template.save();
         res.json(template);
     } catch (err) {
-        // If save fails, cleanup the file
-        if (req.file && fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
+        console.error('Template Upload Error:', err);
+        // Cleanup if something failed
+        if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+        if (thumbnailPath) {
+            const absoluteThumbnailPath = path.join(__dirname, '..', thumbnailPath);
+            if (fs.existsSync(absoluteThumbnailPath)) fs.unlinkSync(absoluteThumbnailPath);
         }
         res.status(500).json({ error: err.message });
     }
@@ -106,6 +177,14 @@ router.delete('/templates/:id', auth, async (req, res) => {
         // Delete the file
         if (fs.existsSync(template.filePath)) {
             fs.unlinkSync(template.filePath);
+        }
+
+        // Delete the thumbnail
+        if (template.thumbnailPath) {
+            const absThumbnailPath = path.join(__dirname, '..', template.thumbnailPath);
+            if (fs.existsSync(absThumbnailPath)) {
+                fs.unlinkSync(absThumbnailPath);
+            }
         }
 
         // Delete from database
