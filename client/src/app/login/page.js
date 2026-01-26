@@ -85,7 +85,7 @@ export default function LoginPage() {
                         <Input
                             label="Email Address"
                             type="email"
-                            placeholder="admin@verifycert.com"
+                            placeholder="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             autoComplete="new-off"
@@ -95,7 +95,7 @@ export default function LoginPage() {
                         <Input
                             label="Password"
                             type="password"
-                            placeholder="••••••••"
+                            placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             autoComplete="new-password"

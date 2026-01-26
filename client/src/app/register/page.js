@@ -63,7 +63,7 @@ export default function RegisterPage() {
                         <Input
                             label="Full Name"
                             type="text"
-                            placeholder="John Doe"
+                            placeholder="Name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
@@ -72,7 +72,7 @@ export default function RegisterPage() {
                         <Input
                             label="Email Address"
                             type="email"
-                            placeholder="admin@verifycert.com"
+                            placeholder="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             autoComplete="off"
@@ -82,7 +82,7 @@ export default function RegisterPage() {
                         <Input
                             label="Password"
                             type="password"
-                            placeholder="••••••••"
+                            placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             autoComplete="new-password"
