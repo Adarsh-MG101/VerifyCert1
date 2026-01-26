@@ -39,16 +39,15 @@ export default function DashboardLayout({ children }) {
     }
 
     return (
-        <div className="flex min-h-screen">
-            <aside className="w-64 border-r border-glass-border p-6 flex flex-col bg-slate-900/50 backdrop-blur-md">
+        <div className="flex min-h-screen relative overflow-hidden">
+            <aside className="w-64 border-r border-glass-border p-6 flex flex-col bg-slate-900/50 backdrop-blur-md z-30 h-screen sticky top-0">
                 <Link href="/dashboard">
                     <h2 className="text-2xl font-bold gradient-text mb-10 flex items-center">
                         VerifyCert
-                        {/* <span className="text-[10px] text-white bg-primary px-1.5 py-0.5 rounded ml-2 uppercase tracking-wider">Admin</span> */}
                     </h2>
                 </Link>
 
-                <nav className="flex-1 space-y-2">
+                <nav className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
                     {[
                         { name: 'Overview', path: '/dashboard' },
                         { name: 'Templates', path: '/dashboard/templates' },
@@ -68,15 +67,15 @@ export default function DashboardLayout({ children }) {
                     ))}
                 </nav>
 
-                <div className="mt-auto pt-10">
-                    <Button onClick={handleLogout} variant="outline" className="w-full text-sm text-white border-white/20 hover:bg-white/5">Logout</Button>
+                <div className="mt-auto pt-10 border-t border-glass-border">
+                    <Button onClick={handleLogout} variant="danger" className="w-full text-sm font-bold shadow-red-600/10">Logout</Button>
                     <div className="mt-4 text-[10px] text-gray-500 text-center uppercase tracking-widest">
                         Logged in as <br /> <span className="text-gray-300 normal-case tracking-normal">{user?.email}</span>
                     </div>
                 </div>
             </aside>
 
-            <main className="flex-1 p-8 overflow-y-auto bg-slate-900/20">
+            <main className="flex-1 p-8 overflow-y-auto bg-slate-900/20 relative z-10">
                 {children}
             </main>
         </div>
