@@ -71,7 +71,7 @@ export default function DashboardPage() {
                     </div>
                 </Card>
 
-                <Card className="bg-primary/5 border-primary/20 relative overflow-hidden">
+                <Card>
                     <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
                     <div className="relative z-10">
                         <h3 className="text-xl font-bold mb-4 flex items-center">
