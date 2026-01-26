@@ -17,6 +17,7 @@ const Template = require('../models/Template');
 const Document = require('../models/Document');
 const Organization = require('../models/Organization');
 const auth = require('../middleware/auth');
+const PizZip = require('pizzip');
 
 // Multer Setup
 const storage = multer.diskStorage({
@@ -38,7 +39,7 @@ async function extractPlaceholders(filePath) {
     let match;
     while ((match = regex.exec(text)) !== null) {
         const placeholder = match[1].trim();
-        if (placeholder !== 'certificate_id' && placeholder !== 'qr_code') {
+        if (placeholder !== 'certificate_id' && placeholder !== 'qr_code' && placeholder !== 'qr') {
             matches.add(placeholder);
         }
     }
@@ -212,33 +213,68 @@ router.get('/stats', auth, async (req, res) => {
     }
 });
 
-// 3. Generate Document (Protected)
-// 3. Generate Document (Protected)
-// 3. Generate Document (Protected)
 router.post('/generate', auth, async (req, res) => {
     try {
-        const { templateId, data, qrX, qrY } = req.body; // Extract user coordinates
+        const { templateId, data } = req.body;
         const template = await Template.findById(templateId);
         if (!template) return res.status(404).json({ error: 'Template not found' });
 
         const uniqueId = crypto.randomUUID();
 
-        // Generate QR Code
+        // Generate QR Code Buffer
         const verificationUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/verify/${uniqueId}`;
         const qrCodeBuffer = await QRCode.toBuffer(verificationUrl);
 
-        // Prepare Data
-        // We set qr_code to empty string so the {{qr_code}} tag is removed from the DOCX text
-        const finalData = {
-            certificate_id: uniqueId,
-            qr_code: "",
-            ...data
+        // Prepare Data with maximum redundancy
+        console.error(`Attempting to generate certificate: ${uniqueId}`);
+        // Prepare Data with maximum redundancy
+        console.log(`--- Starting Generation for: ${uniqueId} ---`);
+        // Prepare the QR Image Object directly (Avoids width: undefined errors)
+        const qrImage = {
+            width: 4,
+            height: 4,
+            data: qrCodeBuffer,
+            extension: '.png'
         };
 
-        // Load template file
-        const templateBuffer = fs.readFileSync(template.filePath);
+        const finalData = {
+            ...data,
+            certificate_id: uniqueId,
+            qr: qrImage,
+            qrCode: qrImage
+        };
 
-        // 1. Fill the DOCX Template (Text only)
+        // 1. NUCLEAR PRE-PROCESSOR: Bridge any and all XML fragmentation
+        let templateBuffer = fs.readFileSync(template.filePath);
+        try {
+            const zip = new PizZip(templateBuffer);
+            const xmlFiles = zip.file(/\.xml$/);
+
+            // This regex matches {{qr}} even if every single character is in its own XML node/tag
+            // e.g. <w:t>{</w:t><w:t>{</w:t><w:t>q</w:t><w:t>r</w:t>...
+            const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*q(<[^>]+>)*r(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+            const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*q(<[^>]+>)*r(<[^>]+>)*C(<[^>]+>)*o(<[^>]+>)*d(<[^>]+>)*e(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+
+            let transformed = false;
+            xmlFiles.forEach(file => {
+                let content = file.asText();
+                if (nuclearQrRegex.test(content) || nuclearQrCodeRegex.test(content)) {
+                    console.log(`📦 Nuclear scan found fragmented QR tag in ${file.name}, fixing...`);
+                    content = content.replace(nuclearQrRegex, '{{IMAGE qr}}');
+                    content = content.replace(nuclearQrCodeRegex, '{{IMAGE qr}}');
+                    zip.file(file.name, content);
+                    transformed = true;
+                }
+            });
+
+            if (transformed) {
+                templateBuffer = zip.generate({ type: 'nodebuffer' });
+            }
+        } catch (e) {
+            console.error('Nuclear pre-processing failed:', e);
+        }
+
+        // 2. Fill the DOCX Template with Image Support
         let outputBuffer;
         try {
             outputBuffer = await createReport({
@@ -254,22 +290,20 @@ router.post('/generate', auth, async (req, res) => {
             });
         }
 
-        // 2. Save Filled Data to Temp DOCX path
-        const tempDocxPath = path.join(__dirname, `../uploads/${uniqueId}.docx`);
-        fs.writeFileSync(tempDocxPath, outputBuffer);
-
-        // 3. Convert DOCX to PDF using LibreOffice
+        // Convert Filled DOCX to PDF using LibreOffice
         const pdfFilename = `uploads/${uniqueId}.pdf`;
         const absolutePdfPath = path.join(__dirname, `../${pdfFilename}`);
+        const tempDocxPath = path.join(__dirname, `../uploads/${uniqueId}.docx`);
+
+        // Save the generated DOCX first to convert it
+        fs.writeFileSync(tempDocxPath, outputBuffer);
 
         try {
-            // Path to LibreOffice
             const possiblePaths = [
                 'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
                 'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
             ];
-            let sofficePath = possiblePaths.find(p => fs.existsSync(p));
-            if (!sofficePath) sofficePath = 'soffice';
+            let sofficePath = possiblePaths.find(p => fs.existsSync(p)) || 'soffice';
 
             const outputDir = path.dirname(absolutePdfPath);
             const cmd = `"${sofficePath}" --headless --convert-to pdf --outdir "${outputDir}" "${tempDocxPath}"`;
@@ -288,40 +322,10 @@ router.post('/generate', auth, async (req, res) => {
             // Cleanup temp docx
             fs.unlinkSync(tempDocxPath);
 
-            // ---------------------------------------------------------
-            // 4. Post-Process: Add QR Code to the PDF
-            // ---------------------------------------------------------
-            const { PDFDocument } = require('pdf-lib');
-
-            // Read the generated PDF
-            const pdfBytes = fs.readFileSync(absolutePdfPath);
-            const pdfDoc = await PDFDocument.load(pdfBytes);
-
-            // Embed the QR Code image
-            const qrImage = await pdfDoc.embedPng(qrCodeBuffer);
-
-            // Get the first page
-            const pages = pdfDoc.getPages();
-            const firstPage = pages[0];
-            const { width, height } = firstPage.getSize();
-
-            // Draw the QR Code using user coordinates or default to bottom-left (50, 50)
-            const qrDims = 100; // 100x100 pixels
-            firstPage.drawImage(qrImage, {
-                x: qrX ? parseInt(qrX) : 50,
-                y: qrY ? parseInt(qrY) : 50,
-                width: qrDims,
-                height: qrDims,
-            });
-
-            // Save the modified PDF back to the file
-            const modifiedPdfBytes = await pdfDoc.save();
-            fs.writeFileSync(absolutePdfPath, modifiedPdfBytes);
-
         } catch (pdfErr) {
             console.error('❌ PDF Processing Error:', pdfErr);
             return res.status(500).json({
-                error: 'PDF conversion or QR embedding failed.',
+                error: 'PDF conversion failed.',
                 details: pdfErr.message
             });
         }
@@ -365,7 +369,7 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
     try {
         if (!req.file) return res.status(400).json({ error: 'No CSV file uploaded' });
 
-        const { templateId, qrX, qrY } = req.body;
+        const { templateId } = req.body;
         const template = await Template.findById(templateId);
         if (!template) return res.status(404).json({ error: 'Template not found' });
 
@@ -418,18 +422,48 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                 const qrCodeBuffer = await QRCode.toBuffer(verificationUrl);
 
                 // Prepare data
-                const finalData = {
-                    certificate_id: uniqueId,
-                    qr_code: "",
-                    ...rowData
+                // Prepare data
+                const qrImage = {
+                    width: 4,
+                    height: 4,
+                    data: qrCodeBuffer,
+                    extension: '.png'
                 };
 
-                // Load template
-                const templateBuffer = fs.readFileSync(template.filePath);
+                const finalData = {
+                    ...rowData,
+                    certificate_id: uniqueId,
+                    qr: qrImage,
+                    qrCode: qrImage
+                };
 
-                // Fill DOCX
+                // 1. NUCLEAR PRE-PROCESSOR FOR BULK
+                let rowTemplateBuffer = fs.readFileSync(template.filePath);
+                try {
+                    const zip = new PizZip(rowTemplateBuffer);
+                    const xmlFiles = zip.file(/\.xml$/);
+                    const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*q(<[^>]+>)*r(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+                    const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*q(<[^>]+>)*r(<[^>]+>)*C(<[^>]+>)*o(<[^>]+>)*d(<[^>]+>)*e(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+
+                    let transformed = false;
+                    xmlFiles.forEach(file => {
+                        let content = file.asText();
+                        if (nuclearQrRegex.test(content) || nuclearQrCodeRegex.test(content)) {
+                            content = content.replace(nuclearQrRegex, '{{IMAGE qr}}');
+                            content = content.replace(nuclearQrCodeRegex, '{{IMAGE qr}}');
+                            zip.file(file.name, content);
+                            transformed = true;
+                        }
+                    });
+                    if (transformed) {
+                        rowTemplateBuffer = zip.generate({ type: 'nodebuffer' });
+                    }
+                } catch (e) {
+                    console.error('Row pre-processing failed:', e);
+                }
+
                 const outputBuffer = await createReport({
-                    template: templateBuffer,
+                    template: rowTemplateBuffer,
                     data: finalData,
                     cmdDelimiter: ['{{', '}}']
                 });
@@ -445,8 +479,7 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                     'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
                     'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
                 ];
-                let sofficePath = possiblePaths.find(p => fs.existsSync(p));
-                if (!sofficePath) sofficePath = 'soffice';
+                let sofficePath = possiblePaths.find(p => fs.existsSync(p)) || 'soffice';
 
                 const cmd = `"${sofficePath}" --headless --convert-to pdf --outdir "${batchFolder}" "${tempDocxPath}"`;
 
@@ -463,25 +496,6 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
 
                 // Delete temp DOCX
                 fs.unlinkSync(tempDocxPath);
-
-                // Add QR Code to PDF
-                const { PDFDocument } = require('pdf-lib');
-                const pdfBytes = fs.readFileSync(pdfPath);
-                const pdfDoc = await PDFDocument.load(pdfBytes);
-                const qrImage = await pdfDoc.embedPng(qrCodeBuffer);
-                const pages = pdfDoc.getPages();
-                const firstPage = pages[0];
-
-                const qrDims = 100;
-                firstPage.drawImage(qrImage, {
-                    x: qrX ? parseInt(qrX) : 50,
-                    y: qrY ? parseInt(qrY) : 50,
-                    width: qrDims,
-                    height: qrDims,
-                });
-
-                const modifiedPdfBytes = await pdfDoc.save();
-                fs.writeFileSync(pdfPath, modifiedPdfBytes);
 
                 // Save to database
                 const newDoc = new Document({

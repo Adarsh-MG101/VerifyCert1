@@ -11,8 +11,6 @@ export default function GeneratePage() {
     const [formData, setFormData] = useState({});
     const [generatedDoc, setGeneratedDoc] = useState(null);
     const [generating, setGenerating] = useState(false);
-    const [qrX, setQrX] = useState(50);
-    const [qrY, setQrY] = useState(50);
     const [recipientEmail, setRecipientEmail] = useState('');
     const [sending, setSending] = useState(false);
 
@@ -78,9 +76,7 @@ export default function GeneratePage() {
                 },
                 body: JSON.stringify({
                     templateId: selectedTemplate._id,
-                    data: formData,
-                    qrX: qrX,
-                    qrY: qrY
+                    data: formData
                 })
             });
             const result = await res.json();
@@ -176,20 +172,6 @@ export default function GeneratePage() {
                                     )}
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-glass-border">
-                                    <Input
-                                        label="QR Code X (px)"
-                                        type="number"
-                                        value={qrX}
-                                        onChange={(e) => setQrX(parseInt(e.target.value) || 0)}
-                                    />
-                                    <Input
-                                        label="QR Code Y (px)"
-                                        type="number"
-                                        value={qrY}
-                                        onChange={(e) => setQrY(parseInt(e.target.value) || 0)}
-                                    />
-                                </div>
 
                                 <Button
                                     type="submit"
@@ -224,7 +206,7 @@ export default function GeneratePage() {
                             </div>
                             <div className="flex items-center text-xs text-gray-500">
                                 <span className="bg-primary/20 text-primary w-5 h-5 rounded-full flex items-center justify-center mr-2 font-bold">3</span>
-                                Set the exact QR code position.
+                                Add any image to your doc and set its Alt Text to {"{{qr}}"} for exact positioning.
                             </div>
                         </div>
                     </Card>

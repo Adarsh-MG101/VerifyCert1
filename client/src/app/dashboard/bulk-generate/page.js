@@ -9,8 +9,6 @@ export default function BulkGeneratePage() {
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [csvFile, setCsvFile] = useState(null);
     const [rowCount, setRowCount] = useState(0);
-    const [qrX, setQrX] = useState(50);
-    const [qrY, setQrY] = useState(50);
     const [generating, setGenerating] = useState(false);
     const [result, setResult] = useState(null);
     const [recipientEmail, setRecipientEmail] = useState('');
@@ -89,8 +87,6 @@ export default function BulkGeneratePage() {
         const formData = new FormData();
         formData.append('csvFile', csvFile);
         formData.append('templateId', selectedTemplate._id);
-        formData.append('qrX', qrX);
-        formData.append('qrY', qrY);
 
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/generate-bulk`, {
@@ -231,20 +227,6 @@ export default function BulkGeneratePage() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Input
-                                        label="QR Code X (px)"
-                                        type="number"
-                                        value={qrX}
-                                        onChange={(e) => setQrX(parseInt(e.target.value) || 0)}
-                                    />
-                                    <Input
-                                        label="QR Code Y (px)"
-                                        type="number"
-                                        value={qrY}
-                                        onChange={(e) => setQrY(parseInt(e.target.value) || 0)}
-                                    />
-                                </div>
 
                                 <Button
                                     type="submit"
@@ -276,7 +258,7 @@ export default function BulkGeneratePage() {
                             </li>
                             <li className="flex items-start">
                                 <span className="bg-primary/20 text-primary p-1 rounded mr-3 text-[10px] mt-1">3</span>
-                                <div>Adjust QR code position based on your template design.</div>
+                                <div>Add an image to your doc and set its Alt Text to {"{{qr}}"} for precision placement.</div>
                             </li>
                         </ul>
                     </Card>
