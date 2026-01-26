@@ -18,10 +18,8 @@ export default function LoginPage() {
     const router = useRouter();
 
     useEffect(() => {
-        // SECURITY RULE: Clear token if user returns to login page
-        // This effectively logs them out of the dashboard session
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        // Just clear errors on mount
+        setError('');
     }, []);
 
     const handleLogin = async (e) => {

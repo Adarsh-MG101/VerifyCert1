@@ -1,4 +1,4 @@
-            "use client";
+"use client";
 import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
@@ -18,16 +18,26 @@ export default function BulkGeneratePage() {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
+        if (!token) return;
+
         fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/templates`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then(res => res.ok ? res.json() : [])
+            .then(res => {
+                if (res.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+                return res.ok ? res.json() : [];
+            })
             .then(data => {
                 if (Array.isArray(data)) {
                     setTemplates(data);
-                } else {
+                } else if (data) {
                     console.error('Expected array of templates, got:', data);
                     setTemplates([]);
                 }

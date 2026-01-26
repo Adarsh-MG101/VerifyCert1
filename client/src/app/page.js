@@ -12,10 +12,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // SECURITY RULE: If user exits dashboard and returns home, clear token
-    // This handles the "Back Button" scenario
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    // Keep user logged in even if they visit the home page
   }, []);
 
   const handleVerify = (e) => {

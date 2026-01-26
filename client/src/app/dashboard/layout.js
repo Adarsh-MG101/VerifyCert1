@@ -17,10 +17,30 @@ export default function DashboardLayout({ children }) {
 
         if (!token) {
             router.replace('/login');
-        } else {
-            setUser(JSON.parse(storedUser));
-            setLoading(false);
+            return;
         }
+
+        // Verify token with server to ensure it's still valid
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        fetch(`${API_URL}/api/auth/verify`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                if (res.ok) return res.json();
+                throw new Error('Session expired');
+            })
+            .then(data => {
+                setUser(data.user);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Session validation failed:', err);
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                router.replace('/login');
+            });
     }, [router]);
 
     const handleLogout = () => {

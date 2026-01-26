@@ -13,15 +13,27 @@ export default function DashboardPage() {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
+        if (!token) return;
+
         fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/stats`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+                return res.json();
+            })
             .then(data => {
-                setStats(data);
-                setLoading(false);
+                if (data) {
+                    setStats(data);
+                    setLoading(false);
+                }
             })
             .catch(err => {
                 console.error(err);

@@ -13,16 +13,26 @@ export default function TemplatesPage() {
 
     const fetchTemplates = () => {
         const token = localStorage.getItem('token');
+        if (!token) return;
+
         fetch(`${API_URL}/api/templates`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then(res => res.ok ? res.json() : [])
+            .then(res => {
+                if (res.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return;
+                }
+                return res.ok ? res.json() : [];
+            })
             .then(data => {
                 if (Array.isArray(data)) {
                     setTemplates(data);
-                } else {
+                } else if (data) {
                     console.error('Expected array of templates, got:', data);
                     setTemplates([]);
                 }
