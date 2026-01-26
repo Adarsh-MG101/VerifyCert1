@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/Button';
+import Footer from '@/components/Footer';
 
 export default function DashboardLayout({ children }) {
     const router = useRouter();
@@ -75,8 +76,13 @@ export default function DashboardLayout({ children }) {
                 </div>
             </aside>
 
-            <main className="flex-1 p-8 overflow-y-auto bg-slate-900/20 relative z-10">
-                {children}
+            <main className="flex-1 overflow-y-auto bg-slate-900/20 relative z-10">
+                <div className="min-h-full flex flex-col">
+                    <div className="flex-1 p-8">
+                        {children}
+                    </div>
+                    <Footer />
+                </div>
             </main>
         </div>
     );
