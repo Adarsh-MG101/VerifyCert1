@@ -41,7 +41,7 @@ export default function DashboardLayout({ children }) {
 
     return (
         <div className="flex min-h-screen relative overflow-hidden">
-            <aside className="w-64 border-r border-glass-border p-6 flex flex-col bg-slate-900/50 backdrop-blur-md z-30 h-screen sticky top-0">
+            <aside className="w-64 border-r border-glass-border p-6 flex flex-col bg-black z-30 h-screen sticky top-0">
                 <Link href="/dashboard">
                     <h2 className="text-2xl font-bold gradient-text mb-10 flex items-center">
                         VerifyCert
@@ -76,7 +76,7 @@ export default function DashboardLayout({ children }) {
                 </div>
             </aside>
 
-            <main className="flex-1 overflow-y-auto bg-slate-900/20 relative z-10">
+            <main className="flex-1 overflow-y-auto bg-black relative z-10">
                 <div className="min-h-full flex flex-col">
                     <div className="flex-1 p-8">
                         {children}

@@ -1,25 +1,26 @@
 /* 
-  THEME CONFIGURATION
-  Change these values to update the entire application's look and feel.
+  60/30/10 THEME CONFIGURATION
+  60% - Background (Black)
+  30% - Primary/Logo (Blue/Violet)
+  10% - Text (White)
 */
 
 :root {
-    /* Core Colors */
-    --color-bg: #0f172a;
-    
-    /* Main background */
-    --color-text: #f8fafc;
-    /* Primary text */
-    --color-primary: #3b82f6;
-    /* Brand/Button color */
-    --color-accent: #8b5cf6;
-    /* Secondary/Gradient color */
+  /* 60% - Core Background */
+  --color-bg: #000000;
 
-    /* Glassmorphism Effect */
-    --color-glass: rgba(255, 255, 255, 0.05);
-    --color-glass-border: rgba(255, 255, 255, 0.1);
-    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  /* 30% - Primary Brand Colors (Logo) */
+  --color-primary: #3b82f6;
+  --color-accent: #8b5cf6;
 
-    /* Gradients */
-    --grad-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  /* 10% - Text and High Contrast Highlights */
+  --color-text: #ffffff;
+
+  /* Glassmorphism Effect - Refined for Pure Black */
+  --color-glass: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.12);
+  --shadow-glass: 0 10px 40px 0 rgba(0, 0, 0, 0.9);
+
+  /* Gradients */
+  --grad-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
 }
