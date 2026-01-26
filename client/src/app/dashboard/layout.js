@@ -33,6 +33,13 @@ export default function DashboardLayout({ children }) {
             })
             .then(data => {
                 setUser(data.user);
+
+                // If non-admin tries to access Overview, redirect to Templates
+                if (data.user.role === 'user' && pathname === '/dashboard') {
+                    router.replace('/dashboard/templates');
+                    return; // Stay in loading state while redirecting
+                }
+
                 setLoading(false);
             })
             .catch(err => {
@@ -41,7 +48,7 @@ export default function DashboardLayout({ children }) {
                 localStorage.removeItem('user');
                 router.replace('/login');
             });
-    }, [router]);
+    }, [router, pathname]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -50,6 +57,13 @@ export default function DashboardLayout({ children }) {
     };
 
     const isActive = (path) => pathname === path;
+
+    const navItems = [
+        { name: 'Overview', path: '/dashboard', adminOnly: true },
+        { name: 'Templates', path: '/dashboard/templates' },
+        { name: 'Generate Single', path: '/dashboard/generate' },
+        { name: 'Bulk Generate', path: '/dashboard/bulk-generate' },
+    ];
 
     if (loading) {
         return (
@@ -62,30 +76,27 @@ export default function DashboardLayout({ children }) {
     return (
         <div className="flex min-h-screen relative overflow-hidden">
             <aside className="w-64 border-r border-glass-border p-6 flex flex-col bg-black z-30 h-screen sticky top-0">
-                <Link href="/dashboard">
+                <Link href={user?.role === 'admin' ? "/dashboard" : "/dashboard/templates"}>
                     <h2 className="text-2xl font-bold gradient-text mb-10 flex items-center">
                         VerifyCert
                     </h2>
                 </Link>
 
                 <nav className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
-                    {[
-                        { name: 'Overview', path: '/dashboard' },
-                        { name: 'Templates', path: '/dashboard/templates' },
-                        { name: 'Generate Single', path: '/dashboard/generate' },
-                        { name: 'Bulk Generate', path: '/dashboard/bulk-generate' },
-                    ].map((item) => (
-                        <Link
-                            key={item.path}
-                            href={item.path}
-                            className={`block p-3 rounded-lg transition-all ${isActive(item.path)
-                                ? 'bg-primary/20 text-white font-medium border border-primary/30'
-                                : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                                }`}
-                        >
-                            {item.name}
-                        </Link>
-                    ))}
+                    {navItems
+                        .filter(item => !item.adminOnly || user?.role === 'admin')
+                        .map((item) => (
+                            <Link
+                                key={item.path}
+                                href={item.path}
+                                className={`block p-3 rounded-lg transition-all ${isActive(item.path)
+                                    ? 'bg-primary/20 text-white font-medium border border-primary/30'
+                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                    }`}
+                            >
+                                {item.name}
+                            </Link>
+                        ))}
                 </nav>
 
                 <div className="mt-auto pt-10 border-t border-glass-border">
