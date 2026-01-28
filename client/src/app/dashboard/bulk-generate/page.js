@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
+import TemplateSelector from '@/components/TemplateSelector';
+
 
 export default function BulkGeneratePage() {
     const [templates, setTemplates] = useState([]);
@@ -169,18 +171,13 @@ export default function BulkGeneratePage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                     <Card title="Upload Configuration" subtitle="Configure your bulk certificate generation">
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider">Select Template</label>
-                            <select
-                                className="input bg-white/5 border-glass-border focus:border-primary transition-all cursor-pointer"
-                                onChange={handleTemplateSelect}
-                            >
-                                <option value="" className="bg-slate-900">-- Choose Template --</option>
-                                {Array.isArray(templates) && templates.map(t => (
-                                    <option key={t._id} value={t._id} className="bg-slate-900">{t.name}</option>
-                                ))}
-                            </select>
-                        </div>
+                        <TemplateSelector
+                            templates={templates}
+                            selectedTemplate={selectedTemplate}
+                            onTemplateSelect={handleTemplateSelect}
+                            label="Select Template"
+                        />
+
 
                         {selectedTemplate && (
                             <form onSubmit={handleGenerate} className="space-y-6">

@@ -4,6 +4,8 @@ import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Link from 'next/link';
+import TemplateSelector from '@/components/TemplateSelector';
+
 
 export default function GeneratePage() {
     const [templates, setTemplates] = useState([]);
@@ -135,18 +137,12 @@ export default function GeneratePage() {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className="lg:col-span-3">
                     <Card title="Document Details" subtitle="Select a template and fill in the required data">
-                        <div className="mb-8">
-                            <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider">Choose Template</label>
-                            <select
-                                className="input bg-white/5 border-glass-border focus:border-primary transition-all cursor-pointer"
-                                onChange={handleTemplateSelect}
-                            >
-                                <option value="" className="bg-slate-900">-- Choose Template --</option>
-                                {Array.isArray(templates) && templates.map(t => (
-                                    <option key={t._id} value={t._id} className="bg-slate-900">{t.name}</option>
-                                ))}
-                            </select>
-                        </div>
+                        <TemplateSelector
+                            templates={templates}
+                            selectedTemplate={selectedTemplate}
+                            onTemplateSelect={handleTemplateSelect}
+                        />
+
 
                         {selectedTemplate && (
                             <form onSubmit={handleGenerate} className="space-y-6">
