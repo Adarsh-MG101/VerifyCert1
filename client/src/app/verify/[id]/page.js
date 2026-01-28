@@ -75,14 +75,20 @@ export default function VerifyPage() {
                                 <div className="mt-8 pt-4 border-t border-dashed border-glass-border">
                                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Document Details</h3>
                                     <div className="space-y-4">
-                                        {data.data && Object.entries(data.data).map(([key, value]) => (
-                                            key !== 'document_id' && key !== 'qr_code' && (
+                                        {data.data && Object.entries(data.data).map(([key, value]) => {
+                                            // Skip QR codes, metadata IDs, and complex objects that React can't render
+                                            const isMetadata = ['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) || key.includes(' ');
+                                            const isObject = typeof value === 'object' && value !== null;
+
+                                            if (isMetadata || isObject) return null;
+
+                                            return (
                                                 <div key={key} className="flex flex-col sm:flex-row sm:justify-between border-b border-glass-border/50 pb-3 gap-1">
                                                     <span className="text-gray-500 capitalize text-sm">{key.replace(/_/g, ' ')}</span>
-                                                    <span className="font-semibold">{value}</span>
+                                                    <span className="font-semibold">{value.toString()}</span>
                                                 </div>
-                                            )
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>

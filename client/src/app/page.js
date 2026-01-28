@@ -39,10 +39,10 @@ export default function Home() {
         <Card className="w-full max-w-md p-8" title="Verify Document">
           <form onSubmit={handleVerify} className="flex flex-col sm:flex-row gap-3">
             <Input
-              placeholder="Enter Document ID"
+              placeholder="Paste Document ID here"
               value={docId}
               onChange={(e) => setDocId(e.target.value)}
-              className="mb-0"
+              className="mb-0 normal-case!"
             />
             <Button type="submit">Verify</Button>
           </form>

@@ -250,7 +250,11 @@ router.post('/generate', auth, async (req, res) => {
 
         const finalData = {
             ...normalizedData,
-            CERTIFICATE_ID: uniqueId,
+            CERTIFICATE_ID: uniqueId, // Main ID (keeps its casing)
+            certificate_id: uniqueId,
+            "Certificate ID": uniqueId,
+            CERTIFICATEID: uniqueId,
+            ID: uniqueId,
             QR: qrImage,
             QRCODE: qrImage
         };
@@ -274,7 +278,11 @@ router.post('/generate', auth, async (req, res) => {
                 }
 
                 // If template has e.g. {{certificate_id}} and we have it in finalData as CERTIFICATE_ID, clone it
-                if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
+                // BUT: We skip CERTIFICATE_ID if we want to preserve its original casing from the database
+                const idTags = ['CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID'];
+                if (idTags.includes(capsTag)) {
+                    finalData[rawTag] = uniqueId;
+                } else if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
                     finalData[rawTag] = finalData[capsTag];
                 }
             }
@@ -407,7 +415,11 @@ router.post('/generate', auth, async (req, res) => {
 // 4. Verify Document
 router.get('/verify/:id', async (req, res) => {
     try {
-        const doc = await Document.findOne({ uniqueId: req.params.id }).populate('template');
+        // Case-insensitive search for the uniqueId
+        const doc = await Document.findOne({
+            uniqueId: { $regex: `^${req.params.id}$`, $options: 'i' }
+        }).populate('template');
+
         if (!doc) return res.status(404).json({ valid: false, message: 'Document not found' });
 
         res.json({
@@ -500,6 +512,10 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                 const finalData = {
                     ...normalizedRowData,
                     CERTIFICATE_ID: uniqueId,
+                    certificate_id: uniqueId,
+                    "Certificate ID": uniqueId,
+                    CERTIFICATEID: uniqueId,
+                    ID: uniqueId,
                     QR: qrImage,
                     QRCODE: qrImage
                 };
@@ -522,7 +538,10 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                             }
                         }
 
-                        if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
+                        const idTags = ['CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID'];
+                        if (idTags.includes(capsTag)) {
+                            finalData[rawTag] = uniqueId;
+                        } else if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
                             finalData[rawTag] = finalData[capsTag];
                         }
                     }
