@@ -197,7 +197,7 @@ export default function TemplatesPage() {
             <h1 className="text-3xl font-bold mb-8">Upload Template</h1>
 
             <Card
-                title="Upload New Template"
+                // title="Upload New Template"
                 // subtitle="Upload a Word (.docx) file with {{PLACEHOLDER}} to create a new template"
                 className="mb-10"
             >
