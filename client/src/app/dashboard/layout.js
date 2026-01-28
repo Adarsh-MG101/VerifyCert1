@@ -62,6 +62,7 @@ export default function DashboardLayout({ children }) {
     const navItems = [
         { name: 'Overview', path: '/dashboard', adminOnly: true },
         { name: 'Upload Template', path: '/dashboard/templates' },
+        { name: 'Template Library', path: '/dashboard/existing-templates' },
         { name: 'Generate Certificate', path: '/dashboard/generate' },
         { name: 'Generate Multiple', path: '/dashboard/bulk-generate' },
         { name: 'Generated PDFs', path: '/dashboard/documents' },
