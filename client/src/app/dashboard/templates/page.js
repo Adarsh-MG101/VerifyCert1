@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import FileUpload from '@/components/FileUpload';
+import mammoth from 'mammoth';
+
 
 
 export default function TemplatesPage() {
@@ -10,6 +12,9 @@ export default function TemplatesPage() {
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showBuffer, setShowBuffer] = useState(false);
+    const [detectedPlaceholders, setDetectedPlaceholders] = useState([]);
+    const [duplicatePlaceholders, setDuplicatePlaceholders] = useState([]);
+
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -49,15 +54,64 @@ export default function TemplatesPage() {
         fetchTemplates();
     }, []);
 
+    const handleFileChange = async (e) => {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
+        setDetectedPlaceholders([]);
+        setDuplicatePlaceholders([]);
+
+        if (selectedFile) {
+            try {
+                const arrayBuffer = await selectedFile.arrayBuffer();
+                const result = await mammoth.extractRawText({ arrayBuffer });
+                const text = result.value;
+
+                // Match all placeholders {{...}}
+                const allMatches = [];
+                const regex = /\{\{(.*?)\}\}/g;
+                let match;
+                while ((match = regex.exec(text)) !== null) {
+                    allMatches.push(match[1].trim());
+                }
+
+                // Filter for strictly uppercase only (our system requirement)
+                const uppercasePlaceholders = allMatches.filter(p => p !== "" && /^[A-Z0-9_]+$/.test(p));
+
+                // Find duplicates
+                const seen = new Set();
+                const duplicates = new Set();
+                uppercasePlaceholders.forEach(p => {
+                    if (seen.has(p)) {
+                        duplicates.add(p);
+                    }
+                    seen.add(p);
+                });
+
+                // Unique list for display (excluding system tags)
+                const uniqueDisplay = Array.from(new Set(uppercasePlaceholders))
+                    .filter(p => p !== 'QR' && p !== 'QRCODE' && p !== 'CERTIFICATE_ID');
+
+                setDetectedPlaceholders(uniqueDisplay);
+                setDuplicatePlaceholders(Array.from(duplicates));
+
+            } catch (err) {
+                console.error("Error analyzing file:", err);
+            }
+        }
+    };
+
     const handleUpload = async (e) => {
         e.preventDefault();
         if (!file) return;
 
+        // Final check before upload
+        const token = localStorage.getItem('token');
+        setLoading(true);
+
         const formData = new FormData();
         formData.append('file', file);
 
-        const token = localStorage.getItem('token');
-        setLoading(true);
+
         try {
             const res = await fetch(`${API_URL}/api/templates`, {
                 method: 'POST',
@@ -68,8 +122,11 @@ export default function TemplatesPage() {
             });
             if (res.ok) {
                 setFile(null);
+                setDetectedPlaceholders([]);
+                setDuplicatePlaceholders([]);
                 // Clear the form visually
                 e.target.reset();
+
 
                 // Show buffer for 1 second as requested
                 setShowBuffer(true);
@@ -144,17 +201,55 @@ export default function TemplatesPage() {
                             <div className="flex-1 w-full">
                                 <FileUpload
                                     file={file}
-                                    onFileChange={(e) => setFile(e.target.files[0])}
+                                    onFileChange={handleFileChange}
                                     accept=".docx"
                                     placeholder="Click or drag .docx template"
                                     helperText="Word document with {{placeholders}}"
                                 />
                             </div>
 
+                            {file && (
+                                <div className="space-y-4 animate-fade-in">
+                                    {detectedPlaceholders.length > 0 ? (
+                                        <div className="bg-white/5 border border-white/5 p-4 rounded-xl">
+                                            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">Detected Placeholders</div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {detectedPlaceholders.map(p => (
+                                                    <span key={p} className="bg-primary/10 text-[10px] px-2.5 py-1 rounded-md text-primary font-mono border border-primary/20">
+                                                        {p}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="bg-red-500/5 border border-red-500/20 p-4 rounded-xl">
+                                            <p className="text-xs text-red-400 font-bold uppercase tracking-wider text-center">⚠️ Make sure all placeholders are capital</p>
+                                        </div>
+
+                                    )}
+
+                                    {duplicatePlaceholders.length > 0 && (
+                                        <div className="bg-yellow-500/5 border border-yellow-500/20 p-4 rounded-xl">
+                                            <p className="text-xs text-yellow-400 font-bold mb-1 italic">⚠️ Warning: Duplicate tags detected</p>
+                                            <p className="text-[10px] text-yellow-400/80">
+                                                The following placeholders appear multiple times: {duplicatePlaceholders.join(', ')}.
+                                                This is fine, all instances will be filled with the same value.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+
                             <div className="flex justify-end">
-                                <Button type="submit" disabled={!file || loading} className="w-full md:w-auto px-10 py-4">
+                                <Button
+                                    type="submit"
+                                    disabled={!file || loading || detectedPlaceholders.length === 0}
+                                    className="w-full md:w-auto px-10 py-4"
+                                >
                                     {loading ? 'Uploading...' : 'Upload Template'}
                                 </Button>
+
                             </div>
 
                         </form>
