@@ -121,7 +121,7 @@ export default function DocumentsPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-[10px] text-gray-400 leading-tight max-w-[180px] break-words line-clamp-2">
+                                            <div className="text-[10px] text-gray-400 leading-tight max-w-[180px] wrap-break-word line-clamp-2">
                                                 {Object.entries(doc.data || {})
                                                     .filter(([key]) => key !== 'QR' && key !== 'QRCODE' && key !== 'CERTIFICATE_ID')
                                                     .map(([key, val]) => `${key}: ${val}`)
