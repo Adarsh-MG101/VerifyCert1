@@ -85,4 +85,33 @@ router.get('/verify', async (req, res) => {
     }
 });
 
+const auth = require('../middleware/auth');
+
+// Change Password
+router.post('/change-password', auth, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        // Find user
+        const user = await User.findById(req.user.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Check current password
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Incorrect current password' });
+        }
+
+        // Update password (middleware in User model handles hashing)
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ success: true, message: 'Password updated successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

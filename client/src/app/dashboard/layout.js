@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/Button';
 import Footer from '@/components/Footer';
+import DashboardHeader from '@/components/DashboardHeader';
 
 export default function DashboardLayout({ children }) {
     const router = useRouter();
@@ -102,16 +103,16 @@ export default function DashboardLayout({ children }) {
                         ))}
                 </nav>
 
-                <div className="mt-auto pt-10 border-t border-glass-border">
-                    <Button onClick={handleLogout} variant="danger" className="w-full text-sm font-bold shadow-red-600/10">Logout</Button>
-                    <div className="mt-4 text-[10px] text-gray-500 text-center uppercase tracking-widest">
-                        Logged in as <br /> <span className="text-gray-300 normal-case tracking-normal">{user?.email}</span>
+                <div className="mt-auto pt-6 opacity-30">
+                    <div className="text-[8px] text-gray-400 text-center uppercase tracking-[0.2em]">
+                        v1.0.0 &copy; VerifyCert
                     </div>
                 </div>
             </aside>
 
             <main className="flex-1 overflow-y-auto relative z-10 custom-scrollbar">
                 <div className="min-h-full flex flex-col">
+                    <DashboardHeader user={user} />
                     <div className="flex-1 p-8">
                         {children}
                     </div>
