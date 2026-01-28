@@ -34,12 +34,13 @@ const upload = multer({ storage: storage });
 async function extractPlaceholders(filePath) {
     const result = await mammoth.extractRawText({ path: filePath });
     const text = result.value;
+    // Match any placeholder, but normalize to uppercase for storage and UI
     const regex = /\{\{(.*?)\}\}/g;
     const matches = new Set();
     let match;
     while ((match = regex.exec(text)) !== null) {
-        const placeholder = match[1].trim();
-        if (placeholder !== 'certificate_id' && placeholder !== 'qr_code' && placeholder !== 'qr') {
+        const placeholder = match[1].trim().toUpperCase();
+        if (placeholder !== 'CERTIFICATE_ID' && placeholder !== 'QR_CODE' && placeholder !== 'QR') {
             matches.add(placeholder);
         }
     }
@@ -237,12 +238,24 @@ router.post('/generate', auth, async (req, res) => {
             extension: '.png'
         };
 
+        // Normalize all user data to uppercase
+        const normalizedData = {};
+        Object.keys(data).forEach(key => {
+            if (typeof data[key] === 'string') {
+                normalizedData[key] = data[key].toUpperCase();
+            } else {
+                normalizedData[key] = data[key];
+            }
+        });
+
         const finalData = {
-            ...data,
-            certificate_id: uniqueId,
-            qr: qrImage,
-            qrCode: qrImage
+            ...normalizedData,
+            CERTIFICATE_ID: uniqueId,
+            QR: qrImage,
+            QRCODE: qrImage
         };
+
+
 
         // 1. NUCLEAR PRE-PROCESSOR: Bridge any and all XML fragmentation
         let templateBuffer = fs.readFileSync(template.filePath);
@@ -250,22 +263,36 @@ router.post('/generate', auth, async (req, res) => {
             const zip = new PizZip(templateBuffer);
             const xmlFiles = zip.file(/\.xml$/);
 
-            // This regex matches {{qr}} even if every single character is in its own XML node/tag
-            // e.g. <w:t>{</w:t><w:t>{</w:t><w:t>q</w:t><w:t>r</w:t>...
-            const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*q(<[^>]+>)*r(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
-            const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*q(<[^>]+>)*r(<[^>]+>)*C(<[^>]+>)*o(<[^>]+>)*d(<[^>]+>)*e(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+            // This regex matches {{QR}} even if every single character is in its own XML node/tag
+            const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*Q(<[^>]+>)*R(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+            const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*Q(<[^>]+>)*R(<[^>]+>)*C(<[^>]+>)*O(<[^>]+>)*D(<[^>]+>)*E(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+
 
             let transformed = false;
             xmlFiles.forEach(file => {
                 let content = file.asText();
+                let docTransformed = false;
+
                 if (nuclearQrRegex.test(content) || nuclearQrCodeRegex.test(content)) {
                     console.log(`📦 Nuclear scan found fragmented QR tag in ${file.name}, fixing...`);
-                    content = content.replace(nuclearQrRegex, '{{IMAGE qr}}');
-                    content = content.replace(nuclearQrCodeRegex, '{{IMAGE qr}}');
+                    content = content.replace(nuclearQrRegex, '{{IMAGE QR}}');
+                    content = content.replace(nuclearQrCodeRegex, '{{IMAGE QR}}');
+                    docTransformed = true;
+                }
+
+                // Normalizing any other tags found to uppercase
+                const genericRegex = /\{\{(.*?)\}\}/g;
+                if (genericRegex.test(content)) {
+                    content = content.replace(genericRegex, (match, p1) => `{{${p1.toUpperCase().trim()}}}`);
+                    docTransformed = true;
+                }
+
+                if (docTransformed) {
                     zip.file(file.name, content);
                     transformed = true;
                 }
             });
+
 
             if (transformed) {
                 templateBuffer = zip.generate({ type: 'nodebuffer' });
@@ -430,31 +457,58 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                     extension: '.png'
                 };
 
+                // Normalize all row data to uppercase
+                const normalizedRowData = {};
+                Object.keys(rowData).forEach(key => {
+                    if (typeof rowData[key] === 'string') {
+                        normalizedRowData[key] = rowData[key].toUpperCase();
+                    } else {
+                        normalizedRowData[key] = rowData[key];
+                    }
+                });
+
                 const finalData = {
-                    ...rowData,
-                    certificate_id: uniqueId,
-                    qr: qrImage,
-                    qrCode: qrImage
+                    ...normalizedRowData,
+                    CERTIFICATE_ID: uniqueId,
+                    QR: qrImage,
+                    QRCODE: qrImage
                 };
+
+
 
                 // 1. NUCLEAR PRE-PROCESSOR FOR BULK
                 let rowTemplateBuffer = fs.readFileSync(template.filePath);
                 try {
                     const zip = new PizZip(rowTemplateBuffer);
                     const xmlFiles = zip.file(/\.xml$/);
-                    const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*q(<[^>]+>)*r(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
-                    const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*q(<[^>]+>)*r(<[^>]+>)*C(<[^>]+>)*o(<[^>]+>)*d(<[^>]+>)*e(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+                    const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*Q(<[^>]+>)*R(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+                    const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*Q(<[^>]+>)*R(<[^>]+>)*C(<[^>]+>)*O(<[^>]+>)*D(<[^>]+>)*E(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+
 
                     let transformed = false;
                     xmlFiles.forEach(file => {
                         let content = file.asText();
+                        let docTransformed = false;
+
                         if (nuclearQrRegex.test(content) || nuclearQrCodeRegex.test(content)) {
-                            content = content.replace(nuclearQrRegex, '{{IMAGE qr}}');
-                            content = content.replace(nuclearQrCodeRegex, '{{IMAGE qr}}');
+                            content = content.replace(nuclearQrRegex, '{{IMAGE QR}}');
+                            content = content.replace(nuclearQrCodeRegex, '{{IMAGE QR}}');
+                            docTransformed = true;
+                        }
+
+                        // Normalizing any other tags found to uppercase
+                        const genericRegex = /\{\{(.*?)\}\}/g;
+                        if (genericRegex.test(content)) {
+                            content = content.replace(genericRegex, (match, p1) => `{{${p1.toUpperCase().trim()}}}`);
+                            docTransformed = true;
+                        }
+
+                        if (docTransformed) {
                             zip.file(file.name, content);
                             transformed = true;
                         }
                     });
+
                     if (transformed) {
                         rowTemplateBuffer = zip.generate({ type: 'nodebuffer' });
                     }

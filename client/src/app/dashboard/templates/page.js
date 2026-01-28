@@ -125,26 +125,42 @@ export default function TemplatesPage() {
                         </p>
                     </div>
                 ) : (
-                    <form onSubmit={handleUpload} className="space-y-6 mt-4">
-
-                        <div className="flex-1 w-full">
-                            <FileUpload
-                                file={file}
-                                onFileChange={(e) => setFile(e.target.files[0])}
-                                accept=".docx"
-                                placeholder="Click or drag .docx template"
-                                helperText="Word document with {{placeholders}}"
-                            />
+                    <div className="space-y-6 mt-4">
+                        <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-2">
+                            <h4 className="text-sm font-bold text-primary flex items-center">
+                                <span className="mr-2">📝</span> Template Guidelines
+                            </h4>
+                            <ul className="text-xs text-gray-400 space-y-1 ml-6 list-disc">
+                                <li>All placeholders must be <span className="text-white font-bold">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-bold">{"{{NAME}}"}</code>, <code className="text-primary font-mono font-bold">{"{{DATE}}"}</code>).</li>
+                                <li>Use <code className="text-primary font-mono font-bold">{"{{QR}}"}</code> or <code className="text-primary font-mono font-bold">{"{{QRCODE}}"}</code> to position the verification QR code.</li>
+                                <li>Use <code className="text-primary font-mono font-bold">{"{{CERTIFICATE_ID}}"}</code> to display the unique document identifier.</li>
+                                <li>Lowercase or mixed-case tags like <code className="opacity-60 italic">{"{{Name}}"}</code> will <span className="text-red-400/80 font-bold uppercase">not</span> be detected.</li>
+                            </ul>
                         </div>
 
-                        <div className="flex justify-end">
-                            <Button type="submit" disabled={!file || loading} className="w-full md:w-auto px-10 py-4">
-                                {loading ? 'Uploading...' : 'Upload Template'}
-                            </Button>
-                        </div>
+                        <form onSubmit={handleUpload} className="space-y-6">
 
-                    </form>
+
+                            <div className="flex-1 w-full">
+                                <FileUpload
+                                    file={file}
+                                    onFileChange={(e) => setFile(e.target.files[0])}
+                                    accept=".docx"
+                                    placeholder="Click or drag .docx template"
+                                    helperText="Word document with {{placeholders}}"
+                                />
+                            </div>
+
+                            <div className="flex justify-end">
+                                <Button type="submit" disabled={!file || loading} className="w-full md:w-auto px-10 py-4">
+                                    {loading ? 'Uploading...' : 'Upload Template'}
+                                </Button>
+                            </div>
+
+                        </form>
+                    </div>
                 )}
+
             </Card>
 
             <h2 className="text-xl font-bold mb-6 flex items-center">

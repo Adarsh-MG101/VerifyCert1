@@ -6,9 +6,10 @@ const Input = ({ label, type = "text", className = "", ...props }) => {
             {label && <label className="block text-sm font-medium text-gray-400 mb-2">{label}</label>}
             <input
                 type={type}
-                className="input"
+                className={`input uppercase ${props.className || ""}`}
                 {...props}
             />
+
         </div>
     );
 };
