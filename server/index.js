@@ -13,10 +13,38 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+const User = require('./models/User');
+
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB connected'))
+    .then(async () => {
+        console.log('MongoDB connected');
+        await seedAdmin();
+    })
     .catch(err => console.error('MongoDB connection error:', err));
+
+// Admin Seeding Function
+const seedAdmin = async () => {
+    try {
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@verifycert.com';
+        const existingAdmin = await User.findOne({ email: adminEmail });
+
+        if (!existingAdmin) {
+            const admin = new User({
+                name: 'Admin',
+                email: adminEmail,
+                password: process.env.ADMIN_PASSWORD || 'Admin@123',
+                role: 'admin'
+            });
+            await admin.save();
+            console.log('✅ Admin user created automatically');
+        } else {
+            console.log('ℹ️ Admin user already exists');
+        }
+    } catch (error) {
+        console.error('❌ Error seeding admin:', error);
+    }
+};
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
