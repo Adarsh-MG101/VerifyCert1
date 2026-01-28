@@ -1,6 +1,6 @@
 # VerifyCert
 
-A blockchain-style document verification system.
+A document generation and verification system.
 
 ## Setup
 
