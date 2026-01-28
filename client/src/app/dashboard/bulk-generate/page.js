@@ -5,6 +5,7 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import FileUpload from '@/components/FileUpload';
 import TemplateSelector from '@/components/TemplateSelector';
+import TemplatePreview from '@/components/TemplatePreview';
 
 
 
@@ -178,6 +179,13 @@ export default function BulkGeneratePage() {
                             selectedTemplate={selectedTemplate}
                             onTemplateSelect={handleTemplateSelect}
                             label="Select Template"
+                        />
+
+                        <TemplatePreview
+                            template={selectedTemplate}
+                            maxWidth="240px"
+                            className="mb-8"
+                            overlayText="Batch processing ready"
                         />
 
 

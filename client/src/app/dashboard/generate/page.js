@@ -5,6 +5,7 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Link from 'next/link';
 import TemplateSelector from '@/components/TemplateSelector';
+import TemplatePreview from '@/components/TemplatePreview';
 
 
 export default function GeneratePage() {
@@ -141,6 +142,13 @@ export default function GeneratePage() {
                             templates={templates}
                             selectedTemplate={selectedTemplate}
                             onTemplateSelect={handleTemplateSelect}
+                        />
+
+                        <TemplatePreview
+                            template={selectedTemplate}
+                            maxWidth="300px"
+                            className="mb-8"
+                            overlayText="Ready to generate"
                         />
 
 

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Link from 'next/link';
+import TemplatePreview from '@/components/TemplatePreview';
 
 export default function ExistingTemplatesPage() {
     const [templates, setTemplates] = useState([]);
@@ -116,24 +117,13 @@ export default function ExistingTemplatesPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {templates.map(t => (
                         <Card key={t._id} className="hover:border-primary/30 transition-all group overflow-hidden flex flex-col h-full bg-slate-900/40">
-                            {/* Thumbnail Preview */}
-                            <div className="relative aspect-[1.414/1] w-full bg-slate-800/50 mb-4 rounded-lg overflow-hidden border border-glass-border">
-                                {t.thumbnailPath ? (
-                                    <img
-                                        src={`${API_URL}/${t.thumbnailPath}`}
-                                        alt={t.name}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-600">
-                                        <span className="text-4xl mb-2">📄</span>
-                                        <span className="text-[10px] uppercase font-bold tracking-widest text-gray-500">No Preview</span>
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                                    <span className="text-[10px] text-white/70 font-medium">Click buttons below to manage</span>
-                                </div>
-                            </div>
+                            <TemplatePreview
+                                template={t}
+                                showLabel={false}
+                                maxWidth="100%"
+                                className="mb-4"
+                                overlayText="Click buttons to manage"
+                            />
 
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-bold text-lg group-hover:text-primary transition-colors line-clamp-1">{t.name}</h3>
