@@ -144,7 +144,34 @@ export default function TemplatesPage() {
         setLoading(false);
     };
 
+    const handleEditName = async (id, currentName) => {
+        const newName = prompt('Enter new template name:', currentName);
+        if (!newName || newName === currentName) return;
+
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_URL}/api/templates/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ name: newName })
+            });
+
+            if (res.ok) {
+                fetchTemplates();
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Update failed');
+            }
+        } catch (err) {
+            console.error('Error updating template name:', err);
+        }
+    };
+
     const handleDelete = async (id) => {
+
         if (!confirm('Delete this template?')) return;
 
         const token = localStorage.getItem('token');
@@ -171,7 +198,7 @@ export default function TemplatesPage() {
 
             <Card
                 title="Upload New Template"
-                subtitle="Upload a Word (.docx) file with {{placeholders}} to create a new template"
+                // subtitle="Upload a Word (.docx) file with {{PLACEHOLDER}} to create a new template"
                 className="mb-10"
             >
                 {loading || showBuffer ? (
@@ -287,19 +314,32 @@ export default function TemplatesPage() {
 
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="font-bold text-lg group-hover:text-primary transition-colors line-clamp-1">{t.name}</h3>
-                            <button
-                                onClick={() => handleDelete(t._id)}
-                                className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all cursor-pointer"
-                                title="Delete Template"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M3 6h18"></path>
-                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                                </svg>
-                            </button>
+                            <div className="flex gap-1">
+                                <button
+                                    onClick={() => handleEditName(t._id, t.name)}
+                                    className="p-2 text-gray-500 hover:text-primary hover:bg-primary/10 rounded-lg transition-all cursor-pointer"
+                                    title="Edit Name"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M12 20h9"></path>
+                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                    </svg>
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(t._id)}
+                                    className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all cursor-pointer"
+                                    title="Delete Template"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M3 6h18"></path>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                    </svg>
+                                </button>
+                            </div>
+
 
                         </div>
 

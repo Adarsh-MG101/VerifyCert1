@@ -683,4 +683,28 @@ router.post('/send-email', auth, async (req, res) => {
     }
 });
 
+// 2.7 Update Template Name (Protected)
+router.put('/templates/:id', auth, async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name) return res.status(400).json({ error: 'Name is required' });
+
+        const template = await Template.findById(req.params.id);
+        if (!template) return res.status(404).json({ error: 'Template not found' });
+
+        // Check if another template already has this name
+        const existingTemplate = await Template.findOne({ name, _id: { $ne: req.params.id } });
+        if (existingTemplate) {
+            return res.status(400).json({ error: 'A template with this name already exists' });
+        }
+
+        template.name = name;
+        await template.save();
+        res.json(template);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
+
