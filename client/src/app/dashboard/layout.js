@@ -63,6 +63,8 @@ export default function DashboardLayout({ children }) {
         { name: 'Upload Template', path: '/dashboard/templates' },
         { name: 'Generate Certificate', path: '/dashboard/generate' },
         { name: 'Generate Multiple', path: '/dashboard/bulk-generate' },
+        { name: 'Generated PDFs', path: '/dashboard/documents' },
+
 
     ];
 

@@ -255,6 +255,36 @@ router.post('/generate', auth, async (req, res) => {
             QRCODE: qrImage
         };
 
+        // --- SAFE CASING MAPPER: Map source template tags to uppercase data ---
+        try {
+            const docTextObj = await mammoth.extractRawText({ path: template.filePath });
+            const docText = docTextObj.value;
+            const tagRegex = /\{\{(.*?)\}\}/g;
+            let m;
+            while ((m = tagRegex.exec(docText)) !== null) {
+                const rawTag = m[1].trim();
+                const capsTag = rawTag.toUpperCase();
+
+                // If it's an image command like {{IMAGE qr}}, map the data from finalData['QR']
+                if (capsTag.startsWith('IMAGE ') && rawTag !== capsTag) {
+                    const dataKey = capsTag.replace('IMAGE ', '');
+                    if (finalData[dataKey]) {
+                        finalData[rawTag] = finalData[dataKey];
+                    }
+                }
+
+                // If template has e.g. {{certificate_id}} and we have it in finalData as CERTIFICATE_ID, clone it
+                if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
+                    finalData[rawTag] = finalData[capsTag];
+                }
+            }
+
+
+        } catch (e) {
+            console.error('Casing mapper failed:', e);
+        }
+
+
 
 
         // 1. NUCLEAR PRE-PROCESSOR: Bridge any and all XML fragmentation
@@ -264,8 +294,9 @@ router.post('/generate', auth, async (req, res) => {
             const xmlFiles = zip.file(/\.xml$/);
 
             // This regex matches {{QR}} even if every single character is in its own XML node/tag
-            const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*Q(<[^>]+>)*R(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
-            const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*Q(<[^>]+>)*R(<[^>]+>)*C(<[^>]+>)*O(<[^>]+>)*D(<[^>]+>)*E(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+            const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+            const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*[cC](<[^>]+>)*[oO](<[^>]+>)*[dD](<[^>]+>)*[eE](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+
 
 
             let transformed = false;
@@ -280,14 +311,9 @@ router.post('/generate', auth, async (req, res) => {
                     docTransformed = true;
                 }
 
-                // Normalizing any other tags found to uppercase
-                const genericRegex = /\{\{(.*?)\}\}/g;
-                if (genericRegex.test(content)) {
-                    content = content.replace(genericRegex, (match, p1) => `{{${p1.toUpperCase().trim()}}}`);
-                    docTransformed = true;
-                }
 
                 if (docTransformed) {
+
                     zip.file(file.name, content);
                     transformed = true;
                 }
@@ -307,9 +333,13 @@ router.post('/generate', auth, async (req, res) => {
             outputBuffer = await createReport({
                 template: templateBuffer,
                 data: finalData,
-                cmdDelimiter: ['{{', '}}']
+                cmdDelimiter: ['{{', '}}'],
+                additionalJsContext: {
+                    IMAGE: (data) => data
+                }
             });
         } catch (error) {
+
             console.error('❌ Template filling error:', error.message);
             return res.status(400).json({
                 error: 'Template formatting issue',
@@ -474,6 +504,35 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                     QRCODE: qrImage
                 };
 
+                // --- SAFE CASING MAPPER FOR BULK ---
+                try {
+                    // Extract tags from raw text to avoid XML breakage
+                    const docTextObj = await mammoth.extractRawText({ path: template.filePath });
+                    const docText = docTextObj.value;
+                    const tagRegex = /\{\{(.*?)\}\}/g;
+                    let m;
+                    while ((m = tagRegex.exec(docText)) !== null) {
+                        const rawTag = m[1].trim();
+                        const capsTag = rawTag.toUpperCase();
+
+                        if (capsTag.startsWith('IMAGE ') && rawTag !== capsTag) {
+                            const dataKey = capsTag.replace('IMAGE ', '');
+                            if (finalData[dataKey]) {
+                                finalData[rawTag] = finalData[dataKey];
+                            }
+                        }
+
+                        if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
+                            finalData[rawTag] = finalData[capsTag];
+                        }
+                    }
+
+
+                } catch (e) {
+                    console.error('Bulk casing mapper failed:', e);
+                }
+
+
 
 
                 // 1. NUCLEAR PRE-PROCESSOR FOR BULK
@@ -481,8 +540,9 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                 try {
                     const zip = new PizZip(rowTemplateBuffer);
                     const xmlFiles = zip.file(/\.xml$/);
-                    const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*Q(<[^>]+>)*R(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
-                    const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*Q(<[^>]+>)*R(<[^>]+>)*C(<[^>]+>)*O(<[^>]+>)*D(<[^>]+>)*E(<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+                    const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+                    const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*[cC](<[^>]+>)*[oO](<[^>]+>)*[dD](<[^>]+>)*[eE](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+
 
 
                     let transformed = false;
@@ -496,14 +556,9 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                             docTransformed = true;
                         }
 
-                        // Normalizing any other tags found to uppercase
-                        const genericRegex = /\{\{(.*?)\}\}/g;
-                        if (genericRegex.test(content)) {
-                            content = content.replace(genericRegex, (match, p1) => `{{${p1.toUpperCase().trim()}}}`);
-                            docTransformed = true;
-                        }
 
                         if (docTransformed) {
+
                             zip.file(file.name, content);
                             transformed = true;
                         }
@@ -519,8 +574,12 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                 const outputBuffer = await createReport({
                     template: rowTemplateBuffer,
                     data: finalData,
-                    cmdDelimiter: ['{{', '}}']
+                    cmdDelimiter: ['{{', '}}'],
+                    additionalJsContext: {
+                        IMAGE: (data) => data
+                    }
                 });
+
 
                 // Save temp DOCX
                 const tempDocxPath = path.join(batchFolder, `${uniqueId}.docx`);
@@ -706,5 +765,47 @@ router.put('/templates/:id', auth, async (req, res) => {
     }
 });
 
+// 7. List All Generated Documents (Protected)
+router.get('/documents', auth, async (req, res) => {
+    try {
+        const { search, startDate, endDate } = req.query;
+        let query = {};
+
+        if (search) {
+            // Search in uniqueId or common data fields
+            // We convert the map to an array of objects for easier searching if it were an aggregation, 
+            // but for now we search uniqueId and a few common fields
+            query.$or = [
+                { uniqueId: { $regex: search, $options: 'i' } },
+                { 'data.NAME': { $regex: search, $options: 'i' } },
+                { 'data.EMAIL': { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        if (startDate || endDate) {
+            query.createdAt = {};
+            if (startDate) {
+                const start = new Date(startDate);
+                start.setHours(0, 0, 0, 0);
+                query.createdAt.$gte = start;
+            }
+            if (endDate) {
+                const end = new Date(endDate);
+                end.setHours(23, 59, 59, 999);
+                query.createdAt.$lte = end;
+            }
+        }
+
+        const documents = await Document.find(query)
+            .populate('template', 'name')
+            .sort({ createdAt: -1 });
+
+        res.json(documents);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
+
 
