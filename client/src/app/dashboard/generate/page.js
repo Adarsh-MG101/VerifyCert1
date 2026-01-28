@@ -157,6 +157,7 @@ export default function GeneratePage() {
                                                     key={key}
                                                     label={key.replace(/_/g, ' ')}
                                                     placeholder={`Enter ${key.replace(/_/g, ' ')}`}
+                                                    value={formData[key] || ''}
                                                     onChange={(e) => handleChange(key, e.target.value)}
                                                     required
                                                 />
