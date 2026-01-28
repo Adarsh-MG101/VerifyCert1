@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
+import FileUpload from '@/components/FileUpload';
+
 
 export default function TemplatesPage() {
     const [file, setFile] = useState(null);
@@ -123,25 +125,24 @@ export default function TemplatesPage() {
                         </p>
                     </div>
                 ) : (
-                    <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-6 items-end mt-4">
+                    <form onSubmit={handleUpload} className="space-y-6 mt-4">
+
                         <div className="flex-1 w-full">
-                            <div className="relative group">
-                                <input
-                                    type="file"
-                                    accept=".docx"
-                                    onChange={(e) => setFile(e.target.files[0])}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                />
-                                <div className={`p-4 border-2 border-dashed rounded-xl text-center transition-all ${file ? 'border-primary bg-primary/5' : 'border-glass-border group-hover:border-primary/50'}`}>
-                                    <span className="text-sm text-gray-400">
-                                        {file ? `📄 ${file.name}` : 'Click to select .docx file'}
-                                    </span>
-                                </div>
-                            </div>
+                            <FileUpload
+                                file={file}
+                                onFileChange={(e) => setFile(e.target.files[0])}
+                                accept=".docx"
+                                placeholder="Click or drag .docx template"
+                                helperText="Word document with {{placeholders}}"
+                            />
                         </div>
-                        <Button type="submit" disabled={!file || loading} className="w-full md:w-auto px-10 py-4">
-                            {loading ? 'Uploading...' : 'Upload Template'}
-                        </Button>
+
+                        <div className="flex justify-end">
+                            <Button type="submit" disabled={!file || loading} className="w-full md:w-auto px-10 py-4">
+                                {loading ? 'Uploading...' : 'Upload Template'}
+                            </Button>
+                        </div>
+
                     </form>
                 )}
             </Card>

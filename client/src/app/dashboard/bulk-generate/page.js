@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
+import FileUpload from '@/components/FileUpload';
 import TemplateSelector from '@/components/TemplateSelector';
+
 
 
 export default function BulkGeneratePage() {
@@ -203,26 +205,17 @@ export default function BulkGeneratePage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider">File Upload</label>
-                                    <div className="relative group">
-                                        <input
-                                            type="file"
-                                            accept=".csv"
-                                            onChange={handleFileChange}
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                            required
-                                        />
-                                        <div className={`p-8 border-2 border-dashed rounded-2xl text-center transition-all ${csvFile ? 'border-green-500/50 bg-green-500/5' : 'border-glass-border group-hover:border-primary/50'}`}>
-                                            <div className="text-4xl mb-3">{csvFile ? '📊' : '📁'}</div>
-                                            <div className="font-medium text-gray-300">{csvFile ? csvFile.name : 'Select or drop CSV file'}</div>
-                                            {csvFile && (
-                                                <div className="mt-2 text-xs font-bold text-green-400 uppercase tracking-widest">
-                                                    ✨ Detected: {rowCount} Certificates
-                                                </div>
-                                            )}
-                                            <div className="text-sm text-gray-500 mt-1">{csvFile ? `${(csvFile.size / 1024).toFixed(2)} KB` : 'Max file size 10MB'}</div>
-                                        </div>
-                                    </div>
+                                    <FileUpload
+                                        file={csvFile}
+                                        onFileChange={handleFileChange}
+                                        accept=".csv"
+                                        placeholder="Select or drop CSV file"
+                                        icon="📊"
+                                        selectedIcon="📈"
+                                        rowCountText={csvFile ? `✨ Detected: ${rowCount} Certificates` : ""}
+                                    />
                                 </div>
+
 
 
                                 <Button
