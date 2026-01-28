@@ -60,9 +60,10 @@ export default function DashboardLayout({ children }) {
 
     const navItems = [
         { name: 'Overview', path: '/dashboard', adminOnly: true },
-        { name: 'Templates', path: '/dashboard/templates' },
-        { name: 'Generate Single', path: '/dashboard/generate' },
-        { name: 'Bulk Generate', path: '/dashboard/bulk-generate' },
+        { name: 'Upload Template', path: '/dashboard/templates' },
+        { name: 'Generate Certificate', path: '/dashboard/generate' },
+        { name: 'Generate Multiple', path: '/dashboard/bulk-generate' },
+
     ];
 
     if (loading) {

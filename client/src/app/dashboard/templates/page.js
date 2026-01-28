@@ -110,7 +110,7 @@ export default function TemplatesPage() {
 
     return (
         <div className="animate-fade-in max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8">Certificate Templates</h1>
+            <h1 className="text-3xl font-bold mb-8">Upload Template</h1>
 
             <Card
                 title="Upload New Template"
@@ -176,13 +176,20 @@ export default function TemplatesPage() {
 
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="font-bold text-lg group-hover:text-primary transition-colors line-clamp-1">{t.name}</h3>
-                            <Button
+                            <button
                                 onClick={() => handleDelete(t._id)}
-                                variant="danger"
-                                className="text-[10px] py-1 px-3 font-bold uppercase tracking-wider h-auto shadow-lg shadow-red-900/20"
+                                className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all cursor-pointer"
+                                title="Delete Template"
                             >
-                                Delete
-                            </Button>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 6h18"></path>
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+
                         </div>
 
                         <div className="mb-6 flex-1">

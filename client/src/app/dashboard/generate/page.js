@@ -132,7 +132,7 @@ export default function GeneratePage() {
 
     return (
         <div className="animate-fade-in max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8">Generate Single Document</h1>
+            <h1 className="text-3xl font-bold mb-8">Generate Certificate</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className="lg:col-span-3">
