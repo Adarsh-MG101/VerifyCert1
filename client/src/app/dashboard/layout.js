@@ -60,14 +60,37 @@ export default function DashboardLayout({ children }) {
     const isActive = (path) => pathname === path;
 
     const navItems = [
-        { name: 'Overview', path: '/dashboard', adminOnly: true },
-        { name: 'Upload Template', path: '/dashboard/templates' },
-        { name: 'Template Library', path: '/dashboard/existing-templates' },
-        { name: 'Generate Certificate', path: '/dashboard/generate' },
-        { name: 'Generate Multiple', path: '/dashboard/bulk-generate' },
-        { name: 'Generated PDFs', path: '/dashboard/documents' },
-
-
+        {
+            name: 'Overview',
+            path: '/dashboard',
+            adminOnly: true,
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        },
+        {
+            name: 'Upload Template',
+            path: '/dashboard/templates',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        },
+        {
+            name: 'Template Library',
+            path: '/dashboard/existing-templates',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        },
+        {
+            name: 'Generate Certificate',
+            path: '/dashboard/generate',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        },
+        {
+            name: 'Generate Multiple',
+            path: '/dashboard/bulk-generate',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+        },
+        {
+            name: 'Generated PDFs',
+            path: '/dashboard/documents',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M16 13H8"></path><path d="M16 17H8"></path><path d="M10 9H9H8"></path></svg>
+        },
     ];
 
     if (loading) {
@@ -94,12 +117,15 @@ export default function DashboardLayout({ children }) {
                             <Link
                                 key={item.path}
                                 href={item.path}
-                                className={`block p-3 rounded-lg transition-all ${isActive(item.path)
-                                    ? 'bg-primary/20 text-white font-medium border border-primary/30'
+                                className={`flex items-center gap-3 p-3 rounded-xl transition-all group ${isActive(item.path)
+                                    ? 'bg-primary/20 text-white font-bold border border-primary/30 shadow-lg shadow-primary/5'
                                     : 'text-gray-400 hover:bg-white/5 hover:text-white'
                                     }`}
                             >
-                                {item.name}
+                                <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive(item.path) ? 'text-primary' : 'text-gray-500'}`}>
+                                    {item.icon}
+                                </span>
+                                <span className="text-sm tracking-tight">{item.name}</span>
                             </Link>
                         ))}
                 </nav>
