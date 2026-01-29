@@ -40,6 +40,8 @@ export default function GeneratePage() {
             .then(data => {
                 if (Array.isArray(data)) {
                     setTemplates(data);
+                } else if (data && Array.isArray(data.templates)) {
+                    setTemplates(data.templates);
                 } else if (data) {
                     console.error('Expected array of templates, got:', data);
                     setTemplates([]);

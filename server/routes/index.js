@@ -164,8 +164,48 @@ router.post('/templates', auth, upload.single('file'), async (req, res) => {
 // 2. List Templates (Protected)
 router.get('/templates', auth, async (req, res) => {
     try {
-        const templates = await Template.find();
-        res.json(templates);
+        const { search } = req.query;
+        let query = {};
+        if (search) {
+            query.name = { $regex: search, $options: 'i' };
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const total = await Template.countDocuments(query);
+        const templatesWithCount = await Template.aggregate([
+            { $match: query },
+            {
+                $lookup: {
+                    from: 'documents',
+                    localField: '_id',
+                    foreignField: 'template',
+                    as: 'documents'
+                }
+            },
+            {
+                $project: {
+                    name: 1,
+                    filePath: 1,
+                    thumbnailPath: 1,
+                    placeholders: 1,
+                    createdAt: 1,
+                    documentCount: { $size: '$documents' }
+                }
+            },
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: limit }
+        ]);
+
+        res.json({
+            templates: templatesWithCount,
+            total,
+            pages: Math.ceil(total / limit),
+            currentPage: page
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
