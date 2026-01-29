@@ -4,6 +4,7 @@ import Card from '@/components/Card';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import TemplateSelector from '@/components/TemplateSelector';
+import Modal from '@/components/Modal';
 
 export default function DocumentsPage() {
     const [documents, setDocuments] = useState([]);
@@ -16,6 +17,9 @@ export default function DocumentsPage() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalDocs, setTotalDocs] = useState(0);
+    const [selectedDocForEmail, setSelectedDocForEmail] = useState(null);
+    const [recipientEmail, setRecipientEmail] = useState('');
+    const [sendingEmail, setSendingEmail] = useState(false);
     const limit = 5;
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -53,6 +57,39 @@ export default function DocumentsPage() {
         setLoading(false);
     };
 
+    const handleSendEmail = async (e) => {
+        e.preventDefault();
+        if (!selectedDocForEmail || !recipientEmail) return;
+
+        setSendingEmail(true);
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_URL}/api/send-email`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    documentId: selectedDocForEmail._id,
+                    recipientEmail: recipientEmail
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('Success: Certificate has been emailed!');
+                setSelectedDocForEmail(null);
+                setRecipientEmail('');
+            } else {
+                alert(data.error || 'Failed to send email');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error sending email');
+        }
+        setSendingEmail(false);
+    };
+
     useEffect(() => {
         const fetchTemplates = async () => {
             const token = localStorage.getItem('token');
@@ -82,7 +119,25 @@ export default function DocumentsPage() {
 
     return (
         <div className="animate-fade-in max-w-6xl mx-auto pb-10">
-            <h1 className="text-3xl font-bold mb-8">Generated PDFs</h1>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <h1 className="text-3xl font-bold">Generated PDFs</h1>
+
+                <div className="flex items-center gap-6 bg-slate-900/40 backdrop-blur-xl border border-glass-border px-5 py-3 rounded-2xl shadow-xl">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-bold text-gray-500 tracking-[0.2em] leading-none mb-1.5">Search Results</span>
+                        <div className="flex items-center gap-2.5">
+                            <div className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </div>
+                            <span className="text-xl font-black text-white tracking-tighter">
+                                {loading && documents.length === 0 ? '...' : totalDocs}
+                                <span className="text-xs font-bold text-gray-400 ml-1.5 uppercase tracking-normal">Certificates Found</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Filter Section */}
             <Card className="mb-8 overflow-visible">
@@ -178,14 +233,24 @@ export default function DocumentsPage() {
                                                 {new Date(doc.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4 text-right flex justify-end gap-2">
+                                            <button
+                                                onClick={() => setSelectedDocForEmail(doc)}
+                                                className="inline-flex items-center justify-center w-9 h-9 text-primary hover:bg-primary/10 transition-all rounded-lg border border-primary/20"
+                                                title="Send via Email"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                                </svg>
+                                            </button>
                                             <a
                                                 href={`${API_URL}/${doc.filePath}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="inline-flex items-center gap-2 text-[10px] uppercase font-bold text-primary hover:bg-primary hover:text-black transition-all px-4 py-2 rounded-lg border border-primary/30 group-hover:border-primary shadow-lg shadow-primary/5"
                                             >
-                                                <span>Preview PDF</span>
+                                                <span>Preview</span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                                                     <polyline points="15 3 21 3 21 9"></polyline>
@@ -248,6 +313,43 @@ export default function DocumentsPage() {
                     )}
                 </div>
             )}
+            {/* Email Modal */}
+            <Modal
+                isOpen={!!selectedDocForEmail}
+                onClose={() => setSelectedDocForEmail(null)}
+                title="Send Certificate"
+                subtitle={`Sending: ${selectedDocForEmail?.template?.name || 'Document'}`}
+            >
+                <form onSubmit={handleSendEmail} className="space-y-6">
+                    <Input
+                        label="Recipient Email"
+                        type="email"
+                        placeholder="recipient@example.com"
+                        required
+                        value={recipientEmail}
+                        onChange={(e) => setRecipientEmail(e.target.value)}
+                        className="bg-black/20"
+                    />
+                    <div className="flex gap-3 pt-2">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            className="flex-1 border border-white/10"
+                            onClick={() => setSelectedDocForEmail(null)}
+                            disabled={sendingEmail}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            className="flex-2"
+                            disabled={sendingEmail || !recipientEmail}
+                        >
+                            {sendingEmail ? 'Sending...' : '📧 Send Email'}
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 }
