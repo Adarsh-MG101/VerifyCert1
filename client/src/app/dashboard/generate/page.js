@@ -154,6 +154,18 @@ export default function GeneratePage() {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className="lg:col-span-3">
                     <Card title="Document Details" subtitle="Select a template and fill in the required data">
+                        <div className="mb-8 p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-2">
+                            <h4 className="text-sm font-bold text-primary flex items-center uppercase tracking-wider">
+                                <span className="mr-2">✨</span> Generation Guidelines
+                            </h4>
+                            <ul className="text-xs text-gray-400 space-y-1 ml-6 list-disc leading-relaxed">
+                                <li>Select a <span className="text-white font-bold">Template</span> to automatically load its required variables.</li>
+                                <li>Ensure all <span className="text-white font-bold">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
+                                <li>The <span className="text-white font-bold">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
+                                <li>Click <span className="italic">"Generate Document"</span> to process the PDF conversion in real-time.</li>
+                            </ul>
+                        </div>
+
                         <TemplateSelector
                             templates={templates}
                             selectedTemplate={selectedTemplate}
@@ -212,25 +224,7 @@ export default function GeneratePage() {
                 </div>
 
                 <div className="lg:col-span-2 space-y-6">
-                    <Card title="Guide" className="bg-white/5">
-                        <p className="text-sm text-gray-400 mb-4 leading-relaxed">
-                            Fill in all the required fields. The data will be automatically inserted into your Word template and converted to PDF.
-                        </p>
-                        <div className="space-y-3">
-                            <div className="flex items-center text-xs text-gray-500">
-                                <span className="bg-primary/20 text-primary w-5 h-5 rounded-full flex items-center justify-center mr-2 font-bold">1</span>
-                                Select your pre-uploaded template.
-                            </div>
-                            <div className="flex items-center text-xs text-gray-500">
-                                <span className="bg-primary/20 text-primary w-5 h-5 rounded-full flex items-center justify-center mr-2 font-bold">2</span>
-                                Fill in recipient specific details.
-                            </div>
-                            <div className="flex items-center text-xs text-gray-500">
-                                <span className="bg-primary/20 text-primary w-5 h-5 rounded-full flex items-center justify-center mr-2 font-bold">3</span>
-                                Add any image to your doc and set its Alt Text to {"{{qr}}"} for exact positioning.
-                            </div>
-                        </div>
-                    </Card>
+                    {/* Dynamic Status / Actions could go here */}
 
                     {generatedDoc && (
                         <Card className="border-green-500/30 bg-green-500/5 animate-fade-in" title="Success!">

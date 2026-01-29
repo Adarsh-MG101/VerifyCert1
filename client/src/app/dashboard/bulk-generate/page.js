@@ -178,6 +178,18 @@ export default function BulkGeneratePage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                     <Card title="Upload Configuration" subtitle="Configure your bulk certificate generation">
+                        <div className="mb-8 p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-2">
+                            <h4 className="text-sm font-bold text-primary flex items-center uppercase tracking-wider">
+                                <span className="mr-2">🚀</span> Bulk Processing Guidelines
+                            </h4>
+                            <ul className="text-xs text-gray-400 space-y-1 ml-6 list-disc leading-relaxed">
+                                <li>Upload a <span className="text-white font-bold">CSV File</span> where the headers match exactly with your template's placeholders.</li>
+                                <li>Download the <span className="italic">"Sample CSV"</span> (available after template selection) for the correct column structure.</li>
+                                <li>The system will generate a <span className="text-white font-bold">ZIP Archive</span> containing all successfully generated PDFs.</li>
+                                <li>Any row with <span className="text-red-400 font-bold">Incomplete Data</span> will be skipped and reported in the failure log.</li>
+                            </ul>
+                        </div>
+
                         <TemplateSelector
                             templates={templates}
                             selectedTemplate={selectedTemplate}
@@ -248,22 +260,7 @@ export default function BulkGeneratePage() {
                 </div>
 
                 <div className="space-y-6">
-                    <Card title="Help" className="bg-white/5">
-                        <ul className="text-sm text-gray-400 space-y-4">
-                            <li className="flex items-start">
-                                <span className="bg-primary/20 text-primary p-1 rounded mr-3 text-[10px] mt-1">1</span>
-                                <div>Choose a template you've created earlier.</div>
-                            </li>
-                            <li className="flex items-start">
-                                <span className="bg-primary/20 text-primary p-1 rounded mr-3 text-[10px] mt-1">2</span>
-                                <div>Download the sample to see exact column names needed.</div>
-                            </li>
-                            <li className="flex items-start">
-                                <span className="bg-primary/20 text-primary p-1 rounded mr-3 text-[10px] mt-1">3</span>
-                                <div>Add an image to your doc and set its Alt Text to {"{{qr}}"} for precision placement.</div>
-                            </li>
-                        </ul>
-                    </Card>
+                    {/* Active results and stats */}
 
                     {result && (
                         <Card className="border-green-500/30 bg-green-500/5 animate-fade-in" title="Results">
