@@ -29,7 +29,7 @@ export default function GeneratePage() {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        fetch(`${API_URL}/api/templates`, {
+        fetch(`${API_URL}/api/templates?onlyEnabled=true`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

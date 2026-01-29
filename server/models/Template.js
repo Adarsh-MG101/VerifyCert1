@@ -6,6 +6,7 @@ const TemplateSchema = new mongoose.Schema({
     thumbnailPath: { type: String }, // Path to preview PNG
     placeholders: [{ type: String }],
     organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' },
+    enabled: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }
 });
 

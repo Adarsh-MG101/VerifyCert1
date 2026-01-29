@@ -161,13 +161,28 @@ router.post('/templates', auth, upload.single('file'), async (req, res) => {
     }
 });
 
-// 2. List Templates (Protected)
+// 2.3 Toggle Template Status (Protected)
+router.patch('/templates/:id/toggle', auth, async (req, res) => {
+    try {
+        const template = await Template.findById(req.params.id);
+        if (!template) return res.status(404).json({ error: 'Template not found' });
+
+        template.enabled = !template.enabled;
+        await template.save();
+        res.json({ success: true, enabled: template.enabled });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 router.get('/templates', auth, async (req, res) => {
     try {
-        const { search } = req.query;
+        const { search, onlyEnabled } = req.query;
         let query = {};
         if (search) {
             query.name = { $regex: search, $options: 'i' };
+        }
+        if (onlyEnabled === 'true') {
+            query.enabled = true;
         }
 
         const page = parseInt(req.query.page) || 1;
@@ -191,6 +206,7 @@ router.get('/templates', auth, async (req, res) => {
                     filePath: 1,
                     thumbnailPath: 1,
                     placeholders: 1,
+                    enabled: 1,
                     createdAt: 1,
                     documentCount: { $size: '$documents' }
                 }

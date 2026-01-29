@@ -25,7 +25,7 @@ export default function BulkGeneratePage() {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/templates`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/templates?onlyEnabled=true`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

@@ -108,6 +108,26 @@ export default function ExistingTemplatesPage() {
         setSaving(false);
     };
 
+    const handleToggleStatus = async (id) => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_URL}/api/templates/${id}/toggle`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (res.ok) {
+                fetchTemplates();
+            } else {
+                showAlert('Error', 'Failed to update status', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showAlert('Error', 'An error occurred while updating status', 'error');
+        }
+    };
+
     const handleDelete = async (id) => {
         showConfirm(
             'Delete Template',
@@ -194,26 +214,28 @@ export default function ExistingTemplatesPage() {
                                     <th className="px-6 py-5">Template Name</th>
                                     <th className="px-6 py-5">Preview</th>
                                     <th className="px-6 py-5">Certs Issued</th>
+                                    <th className="px-6 py-5 text-center">Status</th>
                                     <th className="px-6 py-5">Placeholders</th>
                                     <th className="px-6 py-5 text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-glass-border/50">
                                 {templates.length > 0 ? templates.map((t, index) => (
-                                    <tr key={t._id} className="hover:bg-white/5 transition-all group">
+                                    <tr key={t._id} className={`hover:bg-white/5 transition-all group ${t.enabled === false ? 'opacity-50 grayscale-[0.5]' : ''}`}>
                                         <td className="px-6 py-4 text-xs text-gray-600 font-mono">
                                             {((page - 1) * limit) + index + 1}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm font-bold text-white uppercase tracking-tight group-hover:text-primary transition-colors">
+                                            <div className={`text-sm font-bold uppercase tracking-tight transition-colors ${t.enabled !== false ? 'text-white group-hover:text-primary' : 'text-gray-500'}`}>
                                                 {t.name}
+                                                {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-white/5 rounded text-gray-400 border border-white/5">DISABLED</span>}
                                             </div>
                                             <div className="text-[10px] text-gray-600 font-mono mt-0.5">
                                                 ID: {t._id.slice(-8)}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="w-20 h-14 rounded-lg overflow-hidden border border-white/10 bg-black/40 cursor-pointer hover:border-primary/50 transition-all shadow-md" onClick={() => setPreviewTemplate(t)}>
+                                            <div className={`w-20 h-14 rounded-lg overflow-hidden border bg-black/40 cursor-pointer transition-all shadow-md ${t.enabled !== false ? 'border-white/10 hover:border-primary/50' : 'border-white/5 opacity-50'}`} onClick={() => setPreviewTemplate(t)}>
                                                 {t.thumbnailPath ? (
                                                     <img src={`${API_URL}/${t.thumbnailPath}`} alt="" className="w-full h-full object-cover" />
                                                 ) : (
@@ -224,13 +246,23 @@ export default function ExistingTemplatesPage() {
                                         <td className="px-6 py-4">
                                             <Link
                                                 href={`/dashboard/documents?templateId=${t._id}`}
-                                                className="flex items-center gap-2 group/stat cursor-pointer w-fit"
+                                                className={`flex items-center gap-2 group/stat cursor-pointer w-fit ${t.enabled === false ? 'pointer-events-none' : ''}`}
                                             >
-                                                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                                                <span className="text-sm font-black text-white group-hover/stat:text-primary transition-colors underline-offset-4 group-hover/stat:underline">
+                                                <span className={`w-2 h-2 rounded-full ${t.enabled !== false ? 'bg-primary animate-pulse' : 'bg-gray-600'}`}></span>
+                                                <span className={`text-sm font-black group-hover/stat:text-primary transition-colors underline-offset-4 group-hover/stat:underline ${t.enabled !== false ? 'text-white' : 'text-gray-500'}`}>
                                                     {t.documentCount || 0}
                                                 </span>
                                             </Link>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <div className="flex justify-center">
+                                                <button
+                                                    onClick={() => handleToggleStatus(t._id)}
+                                                    className={`relative w-10 h-5 rounded-full transition-all duration-300 ${t.enabled !== false ? 'bg-primary/40 p-1' : 'bg-white/10 p-1'}`}
+                                                >
+                                                    <div className={`w-3 h-3 rounded-full transition-all duration-300 shadow-sm ${t.enabled !== false ? 'bg-primary translate-x-5' : 'bg-gray-500'}`}></div>
+                                                </button>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-wrap gap-1 max-w-[200px]">
@@ -269,7 +301,9 @@ export default function ExistingTemplatesPage() {
                                                 </button>
                                                 <Link
                                                     href={`/dashboard/generate?templateId=${t._id}`}
-                                                    className="h-8 px-4 flex items-center justify-center bg-primary/20 text-primary border border-primary/30 text-[10px] font-black uppercase rounded-lg hover:bg-primary hover:text-black transition-all"
+                                                    className={`h-8 px-4 flex items-center justify-center border text-[10px] font-black uppercase rounded-lg transition-all ${t.enabled !== false
+                                                        ? 'bg-primary/20 text-primary border-primary/30 hover:bg-primary hover:text-black shadow-lg shadow-primary/10'
+                                                        : 'bg-white/5 text-gray-600 border-white/5 cursor-not-allowed pointer-events-none'}`}
                                                 >
                                                     Use Template
                                                 </Link>
