@@ -1,16 +1,16 @@
 "use client";
 
-const TemplateSelector = ({ templates, selectedTemplate, onTemplateSelect, label = "Choose Template", className = "mb-8" }) => {
+const TemplateSelector = ({ templates, selectedTemplate, onTemplateSelect, label = "Choose Template", className = "mb-8", compact = false }) => {
     // Handle both object and ID string formats for the selection
     const selectedId = typeof selectedTemplate === 'object' ? selectedTemplate?._id : selectedTemplate;
 
     return (
         <div className={className}>
-            <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider">
+            <label className={`block font-bold text-gray-500 uppercase tracking-widest ${compact ? 'text-[9px] mb-1' : 'text-sm mb-2'}`}>
                 {label}
             </label>
             <select
-                className="input bg-white/5 border-glass-border focus:border-primary transition-all cursor-pointer h-[46px]"
+                className={`input bg-white/5 border-glass-border focus:border-primary transition-all cursor-pointer ${compact ? 'p-2! text-sm h-[38px]' : 'h-[46px]'}`}
                 onChange={onTemplateSelect}
                 value={selectedId || ""}
             >

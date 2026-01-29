@@ -1,15 +1,18 @@
 import React from 'react';
 
-const Input = ({ label, type = "text", className = "", ...props }) => {
+const Input = ({ label, type = "text", className = "", compact = false, ...props }) => {
     return (
         <div className={`w-full ${className}`}>
-            {label && <label className="block text-sm font-medium text-gray-400 mb-2">{label}</label>}
+            {label && (
+                <label className={`block font-bold text-gray-500 uppercase tracking-widest ${compact ? 'text-[9px] mb-1' : 'text-sm mb-2'}`}>
+                    {label}
+                </label>
+            )}
             <input
                 type={type}
-                className={`input ${props.className || ""}`}
+                className={`input ${compact ? 'p-2! text-sm h-[38px]' : ''} ${props.className || ""}`}
                 {...props}
             />
-
         </div>
     );
 };

@@ -150,42 +150,46 @@ export default function DocumentsPage() {
             </div>
 
             {/* Filter Section */}
-            <Card className="mb-8 overflow-visible">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-2">
+            <Card className="mb-4 overflow-visible !p-3 bg-slate-900/20">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Input
                         label="Search ID or Name"
-                        placeholder="Ex: 1234 or John Doe"
+                        placeholder="Search..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="!uppercase-none" // We don't want to enforce uppercase for IDs if they are UUIDs
+                        className="!uppercase-none"
+                        compact={true}
                     />
                     <TemplateSelector
-                        label="Filter by Template"
+                        label="Template"
                         templates={templates}
                         selectedTemplate={selectedTemplate}
                         onTemplateSelect={(e) => setSelectedTemplate(e.target.value)}
-                        className="w-full"
+                        className="mb-0"
+                        compact={true}
                     />
                     <Input
                         label="From Date"
                         type="date"
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
+                        compact={true}
                     />
                     <Input
                         label="To Date"
                         type="date"
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
+                        compact={true}
                     />
                 </div>
                 {(search || startDate || endDate || selectedTemplate) && (
-                    <div className="px-2 pb-2 flex justify-end">
+                    <div className="flex justify-end mt-2">
                         <button
                             onClick={() => { setSearch(''); setStartDate(''); setEndDate(''); setSelectedTemplate(''); }}
-                            className="text-[10px] uppercase font-bold text-primary hover:underline"
+                            className="text-[9px] uppercase font-bold text-primary/60 hover:text-primary transition-colors"
                         >
-                            Clear Filters
+                            Reset Filters
                         </button>
                     </div>
                 )}
