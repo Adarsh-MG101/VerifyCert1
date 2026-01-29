@@ -7,11 +7,14 @@ import Card from '@/components/Card';
 import Input from '@/components/Input';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ValidationError from '@/components/ValidationError';
+import { validateEmail, validatePassword, validateUsername } from '@/utils/validators';
 
 export default function RegisterPage() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -19,6 +22,22 @@ export default function RegisterPage() {
     const handleRegister = async (e) => {
         e.preventDefault();
         setError('');
+        setFieldErrors({});
+
+        // Validate Fields
+        const nameError = validateUsername(name, 30); // Using 30 for Full Name
+        const emailError = validateEmail(email);
+        const passwordError = validatePassword(password);
+
+        if (nameError || emailError || passwordError) {
+            setFieldErrors({
+                name: nameError,
+                email: emailError,
+                password: passwordError
+            });
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -60,34 +79,43 @@ export default function RegisterPage() {
                     )}
 
                     <form onSubmit={handleRegister} className="space-y-6">
-                        <Input
-                            label="Full Name"
-                            type="text"
-                            placeholder="Name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                        />
+                        <div>
+                            <Input
+                                label="Full Name"
+                                type="text"
+                                placeholder="Name"
+                                value={name}
+                                onChange={(e) => { setName(e.target.value); if (fieldErrors.name) setFieldErrors(prev => ({ ...prev, name: null })); }}
+                                required
+                            />
+                            <ValidationError message={fieldErrors.name} />
+                        </div>
 
-                        <Input
-                            label="Email Address"
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            autoComplete="off"
-                            required
-                        />
+                        <div>
+                            <Input
+                                label="Email Address"
+                                type="email"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => { setEmail(e.target.value); if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: null })); }}
+                                autoComplete="off"
+                                required
+                            />
+                            <ValidationError message={fieldErrors.email} />
+                        </div>
 
-                        <Input
-                            label="Password"
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            autoComplete="new-password"
-                            required
-                        />
+                        <div>
+                            <Input
+                                label="Password"
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => { setPassword(e.target.value); if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: null })); }}
+                                autoComplete="new-password"
+                                required
+                            />
+                            <ValidationError message={fieldErrors.password} />
+                        </div>
 
                         <Button
                             type="submit"

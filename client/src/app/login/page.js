@@ -7,12 +7,15 @@ import Card from '@/components/Card';
 import Input from '@/components/Input';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ValidationError from '@/components/ValidationError';
+import { validateEmail } from '@/utils/validators';
 
 export default function LoginPage() {
     const searchParams = useSearchParams();
     const isRegistered = searchParams.get('registered');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -25,6 +28,14 @@ export default function LoginPage() {
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
+        setFieldErrors({});
+
+        const emailError = validateEmail(email);
+        if (emailError) {
+            setFieldErrors({ email: emailError });
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -80,15 +91,18 @@ export default function LoginPage() {
                             <input type="password" name="fake-password" />
                         </div>
 
-                        <Input
-                            label="Email Address"
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            autoComplete="new-off"
-                            required
-                        />
+                        <div>
+                            <Input
+                                label="Email Address"
+                                type="email"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => { setEmail(e.target.value); if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: null })); }}
+                                autoComplete="new-off"
+                                required
+                            />
+                            <ValidationError message={fieldErrors.email} />
+                        </div>
 
                         <Input
                             label="Password"
