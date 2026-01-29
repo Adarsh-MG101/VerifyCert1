@@ -787,8 +787,12 @@ router.put('/templates/:id', auth, async (req, res) => {
 // 7. List All Generated Documents (Protected)
 router.get('/documents', auth, async (req, res) => {
     try {
-        const { search, startDate, endDate } = req.query;
+        const { search, startDate, endDate, templateId } = req.query;
         let query = {};
+
+        if (templateId) {
+            query.template = templateId;
+        }
 
         if (search) {
             // Search in uniqueId or common data fields

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
+import TemplateSelector from '@/components/TemplateSelector';
 
 export default function DocumentsPage() {
     const [documents, setDocuments] = useState([]);
@@ -10,6 +11,8 @@ export default function DocumentsPage() {
     const [search, setSearch] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [templates, setTemplates] = useState([]);
+    const [selectedTemplate, setSelectedTemplate] = useState('');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalDocs, setTotalDocs] = useState(0);
@@ -25,6 +28,7 @@ export default function DocumentsPage() {
             if (search) params.append('search', search);
             if (startDate) params.append('startDate', startDate);
             if (endDate) params.append('endDate', endDate);
+            if (selectedTemplate) params.append('templateId', selectedTemplate);
             params.append('page', page);
             params.append('limit', limit);
 
@@ -50,15 +54,31 @@ export default function DocumentsPage() {
     };
 
     useEffect(() => {
+        const fetchTemplates = async () => {
+            const token = localStorage.getItem('token');
+            try {
+                const res = await fetch(`${API_URL}/api/templates`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (Array.isArray(data)) setTemplates(data);
+            } catch (err) {
+                console.error('Error fetching templates:', err);
+            }
+        };
+        fetchTemplates();
+    }, []);
+
+    useEffect(() => {
         setPage(1); // Reset to first page on filter change
-    }, [search, startDate, endDate]);
+    }, [search, startDate, endDate, selectedTemplate]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             fetchDocuments();
         }, 300); // Small debounce for search
         return () => clearTimeout(timeoutId);
-    }, [search, startDate, endDate, page]);
+    }, [search, startDate, endDate, selectedTemplate, page]);
 
     return (
         <div className="animate-fade-in max-w-6xl mx-auto pb-10">
@@ -66,13 +86,20 @@ export default function DocumentsPage() {
 
             {/* Filter Section */}
             <Card className="mb-8 overflow-visible">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-2">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-2">
                     <Input
                         label="Search ID or Name"
                         placeholder="Ex: 1234 or John Doe"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="!uppercase-none" // We don't want to enforce uppercase for IDs if they are UUIDs
+                    />
+                    <TemplateSelector
+                        label="Filter by Template"
+                        templates={templates}
+                        selectedTemplate={selectedTemplate}
+                        onTemplateSelect={(e) => setSelectedTemplate(e.target.value)}
+                        className="w-full"
                     />
                     <Input
                         label="From Date"
@@ -87,10 +114,10 @@ export default function DocumentsPage() {
                         onChange={(e) => setEndDate(e.target.value)}
                     />
                 </div>
-                {(search || startDate || endDate) && (
+                {(search || startDate || endDate || selectedTemplate) && (
                     <div className="px-2 pb-2 flex justify-end">
                         <button
-                            onClick={() => { setSearch(''); setStartDate(''); setEndDate(''); }}
+                            onClick={() => { setSearch(''); setStartDate(''); setEndDate(''); setSelectedTemplate(''); }}
                             className="text-[10px] uppercase font-bold text-primary hover:underline"
                         >
                             Clear Filters
