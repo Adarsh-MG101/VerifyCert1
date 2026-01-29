@@ -256,7 +256,7 @@ export default function ExistingTemplatesPage() {
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                                                 </button>
                                                 <Link
-                                                    href="/dashboard/generate"
+                                                    href={`/dashboard/generate?templateId=${t._id}`}
                                                     className="h-8 px-4 flex items-center justify-center bg-primary/20 text-primary border border-primary/30 text-[10px] font-black uppercase rounded-lg hover:bg-primary hover:text-black transition-all"
                                                 >
                                                     Use Template
@@ -335,7 +335,7 @@ export default function ExistingTemplatesPage() {
                 </div>
                 <div className="mt-8 flex gap-4">
                     <Button className="flex-1" onClick={() => {
-                        window.location.href = '/dashboard/generate';
+                        window.location.href = `/dashboard/generate?templateId=${previewTemplate._id}`;
                     }}>Use Template</Button>
                 </div>
             </Modal>
