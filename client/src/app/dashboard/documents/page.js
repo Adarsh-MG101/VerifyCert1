@@ -10,6 +10,10 @@ export default function DocumentsPage() {
     const [search, setSearch] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalDocs, setTotalDocs] = useState(0);
+    const limit = 5;
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -21,6 +25,8 @@ export default function DocumentsPage() {
             if (search) params.append('search', search);
             if (startDate) params.append('startDate', startDate);
             if (endDate) params.append('endDate', endDate);
+            params.append('page', page);
+            params.append('limit', limit);
 
             const res = await fetch(`${API_URL}/api/documents?${params.toString()}`, {
                 headers: {
@@ -28,10 +34,13 @@ export default function DocumentsPage() {
                 }
             });
             const data = await res.json();
-            if (Array.isArray(data)) {
-                setDocuments(data);
+            if (data && Array.isArray(data.documents)) {
+                setDocuments(data.documents);
+                setTotalPages(data.pages);
+                setTotalDocs(data.total);
             } else {
                 setDocuments([]);
+                setTotalPages(1);
             }
         } catch (err) {
             console.error('Error fetching documents:', err);
@@ -41,11 +50,15 @@ export default function DocumentsPage() {
     };
 
     useEffect(() => {
+        setPage(1); // Reset to first page on filter change
+    }, [search, startDate, endDate]);
+
+    useEffect(() => {
         const timeoutId = setTimeout(() => {
             fetchDocuments();
         }, 300); // Small debounce for search
         return () => clearTimeout(timeoutId);
-    }, [search, startDate, endDate]);
+    }, [search, startDate, endDate, page]);
 
     return (
         <div className="animate-fade-in max-w-6xl mx-auto pb-10">
@@ -109,7 +122,9 @@ export default function DocumentsPage() {
                             <tbody className="divide-y divide-glass-border/50">
                                 {documents.length > 0 ? documents.map((doc, index) => (
                                     <tr key={doc._id} className="hover:bg-white/5 transition-all group">
-                                        <td className="px-6 py-4 text-xs text-gray-600 font-mono">{index + 1}</td>
+                                        <td className="px-6 py-4 text-xs text-gray-600 font-mono">
+                                            {((page - 1) * limit) + index + 1}
+                                        </td>
                                         <td className="px-6 py-4">
                                             <div className="text-xs font-mono text-gray-400 bg-white/5 py-1 px-2 rounded-md w-fit border border-white/5">
                                                 {doc.uniqueId.slice(0, 8)}...
@@ -165,6 +180,45 @@ export default function DocumentsPage() {
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="bg-white/5 px-6 py-4 flex items-center justify-between border-t border-glass-border">
+                            <div className="text-xs text-gray-400">
+                                Showing <span className="text-white font-bold">{((page - 1) * limit) + 1}</span> to <span className="text-white font-bold">{Math.min(page * limit, totalDocs)}</span> of <span className="text-white font-bold">{totalDocs}</span> documents
+                            </div>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="ghost"
+                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-white/10 disabled:opacity-30"
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                >
+                                    Previous
+                                </Button>
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <button
+                                        key={i + 1}
+                                        onClick={() => setPage(i + 1)}
+                                        className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${page === i + 1
+                                            ? 'bg-primary text-black shadow-lg shadow-primary/20'
+                                            : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/5'
+                                            }`}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                ))}
+                                <Button
+                                    variant="ghost"
+                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-white/10 disabled:opacity-30"
+                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={page === totalPages}
+                                >
+                                    Next
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
