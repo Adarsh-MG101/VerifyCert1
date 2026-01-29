@@ -130,9 +130,21 @@ export default function DashboardLayout({ children }) {
                         ))}
                 </nav>
 
-                <div className="mt-auto pt-6 opacity-30">
-                    <div className="text-[8px] text-gray-400 text-center uppercase tracking-[0.2em]">
-                        v1.0.0 &copy; VerifyCert
+                <div className="mt-auto space-y-4 pt-4 border-t border-glass-border/20">
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 w-full p-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-all group"
+                    >
+                        <span className="transition-transform group-hover:scale-110">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        </span>
+                        <span className="text-sm font-bold tracking-tight">Sign Out</span>
+                    </button>
+
+                    <div className="opacity-30">
+                        <div className="text-[8px] text-gray-400 text-center uppercase tracking-[0.2em]">
+                            v1.0.0 &copy; VerifyCert
+                        </div>
                     </div>
                 </div>
             </aside>
