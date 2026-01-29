@@ -133,12 +133,12 @@ export default function DashboardLayout({ children }) {
                 <div className="mt-auto space-y-4 pt-4 border-t border-glass-border/20">
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 w-full p-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-all group"
+                        className="flex items-center justify-center gap-3 w-full p-3 rounded-xl bg-red-600/90 text-white hover:bg-red-600 transition-all group shadow-lg shadow-red-900/20 active:scale-[0.98]"
                     >
                         <span className="transition-transform group-hover:scale-110">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                         </span>
-                        <span className="text-sm font-bold tracking-tight">Sign Out</span>
+                        <span className="text-sm font-black tracking-tight uppercase">Sign Out</span>
                     </button>
 
                     <div className="opacity-30">
