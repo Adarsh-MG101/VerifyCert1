@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useUI } from '@/context/UIContext';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Link from 'next/link';
@@ -8,6 +9,7 @@ import Modal from '@/components/Modal';
 import Input from '@/components/Input';
 
 export default function ExistingTemplatesPage() {
+    const { showAlert, showConfirm } = useUI();
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -98,7 +100,7 @@ export default function ExistingTemplatesPage() {
                 fetchTemplates();
             } else {
                 const data = await res.json();
-                alert(data.error || 'Update failed');
+                showAlert('Failed', data.error || 'Update failed', 'error');
             }
         } catch (err) {
             console.error('Error updating template name:', err);
@@ -107,24 +109,29 @@ export default function ExistingTemplatesPage() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Are you sure you want to delete this template? This cannot be undone.')) return;
-
-        const token = localStorage.getItem('token');
-        try {
-            const res = await fetch(`${API_URL}/api/templates/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
+        showConfirm(
+            'Delete Template',
+            'Are you sure you want to delete this template? This cannot be undone.',
+            async () => {
+                const token = localStorage.getItem('token');
+                try {
+                    const res = await fetch(`${API_URL}/api/templates/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (res.ok) {
+                        fetchTemplates();
+                    } else {
+                        showAlert('Error', 'Delete failed', 'error');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showAlert('Error', 'An error occurred while deleting', 'error');
                 }
-            });
-            if (res.ok) {
-                fetchTemplates();
-            } else {
-                alert('Delete failed');
             }
-        } catch (err) {
-            console.error(err);
-        }
+        );
     };
 
     return (

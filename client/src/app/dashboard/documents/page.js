@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useUI } from '@/context/UIContext';
 import Card from '@/components/Card';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
@@ -7,6 +8,7 @@ import TemplateSelector from '@/components/TemplateSelector';
 import Modal from '@/components/Modal';
 
 export default function DocumentsPage() {
+    const { showAlert } = useUI();
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -77,15 +79,15 @@ export default function DocumentsPage() {
             });
             const data = await res.json();
             if (res.ok) {
-                alert('Success: Certificate has been emailed!');
+                showAlert('Success', 'Certificate has been emailed successfully!', 'info');
                 setSelectedDocForEmail(null);
                 setRecipientEmail('');
             } else {
-                alert(data.error || 'Failed to send email');
+                showAlert('Email Failed', data.error || 'Failed to send email', 'error');
             }
         } catch (err) {
             console.error(err);
-            alert('Error sending email');
+            showAlert('Error', 'An unexpected error occurred', 'error');
         }
         setSendingEmail(false);
     };

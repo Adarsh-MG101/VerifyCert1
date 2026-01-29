@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { useUI } from '@/context/UIContext';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import FileUpload from '@/components/FileUpload';
@@ -7,6 +8,7 @@ import mammoth from 'mammoth';
 import Link from 'next/link';
 
 export default function TemplatesPage() {
+    const { showAlert } = useUI();
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showBuffer, setShowBuffer] = useState(false);
@@ -91,7 +93,7 @@ export default function TemplatesPage() {
                 }, 1500);
             } else {
                 const data = await res.json();
-                alert(data.error || 'Upload failed');
+                showAlert('Upload Failed', data.error || 'Check your template format', 'error');
             }
         } catch (err) {
             console.error(err);

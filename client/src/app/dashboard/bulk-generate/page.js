@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useUI } from '@/context/UIContext';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
@@ -10,6 +11,7 @@ import TemplatePreview from '@/components/TemplatePreview';
 
 
 export default function BulkGeneratePage() {
+    const { showAlert } = useUI();
     const [templates, setTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [csvFile, setCsvFile] = useState(null);
@@ -107,11 +109,11 @@ export default function BulkGeneratePage() {
             if (res.ok) {
                 setResult(data);
             } else {
-                alert(data.error || 'Bulk generation failed');
+                showAlert('Batch Failed', data.error || 'Bulk generation failed', 'error');
             }
         } catch (err) {
             console.error(err);
-            alert('Error during bulk generation');
+            showAlert('Error', 'Error during bulk generation', 'error');
         }
         setGenerating(false);
     };
@@ -135,14 +137,14 @@ export default function BulkGeneratePage() {
             });
             const data = await res.json();
             if (res.ok) {
-                alert('Success: Batch ZIP has been emailed!');
+                showAlert('Success', 'Batch ZIP has been emailed successfully!', 'info');
                 setRecipientEmail('');
             } else {
-                alert(data.error || 'Failed to send batch email');
+                showAlert('Email Failed', data.error || 'Failed to send batch email', 'error');
             }
         } catch (err) {
             console.error(err);
-            alert('Error sending batch email');
+            showAlert('Error', 'Error sending batch email', 'error');
         }
         setSending(false);
     };

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useUI } from '@/context/UIContext';
 import { useSearchParams } from 'next/navigation';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
@@ -10,6 +11,7 @@ import TemplatePreview from '@/components/TemplatePreview';
 
 
 export default function GeneratePage() {
+    const { showAlert } = useUI();
     const [templates, setTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [formData, setFormData] = useState({});
@@ -100,7 +102,7 @@ export default function GeneratePage() {
             if (res.ok) {
                 setGeneratedDoc(result);
             } else {
-                alert(result.error || 'Generation Failed');
+                showAlert('Generation Failed', result.error || 'Check your template or data', 'error');
             }
         } catch (err) {
             console.error(err);
@@ -127,14 +129,14 @@ export default function GeneratePage() {
             });
             const data = await res.json();
             if (res.ok) {
-                alert('Success: Certificate has been emailed!');
+                showAlert('Success', 'Certificate has been emailed successfully!', 'info');
                 setRecipientEmail('');
             } else {
-                alert(data.error || 'Failed to send email');
+                showAlert('Email Failed', data.error || 'Failed to send email', 'error');
             }
         } catch (err) {
             console.error(err);
-            alert('Error sending email');
+            showAlert('Error', 'An unexpected error occurred', 'error');
         }
         setSending(false);
     };
