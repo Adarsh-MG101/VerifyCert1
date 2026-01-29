@@ -222,10 +222,15 @@ export default function ExistingTemplatesPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
+                                            <Link
+                                                href={`/dashboard/documents?templateId=${t._id}`}
+                                                className="flex items-center gap-2 group/stat cursor-pointer w-fit"
+                                            >
                                                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                                                <span className="text-sm font-black text-white">{t.documentCount || 0}</span>
-                                            </div>
+                                                <span className="text-sm font-black text-white group-hover/stat:text-primary transition-colors underline-offset-4 group-hover/stat:underline">
+                                                    {t.documentCount || 0}
+                                                </span>
+                                            </Link>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-wrap gap-1 max-w-[200px]">

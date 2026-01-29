@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useUI } from '@/context/UIContext';
 import Card from '@/components/Card';
 import Input from '@/components/Input';
@@ -9,13 +10,16 @@ import Modal from '@/components/Modal';
 
 export default function DocumentsPage() {
     const { showAlert } = useUI();
+    const searchParams = useSearchParams();
+    const templateIdParam = searchParams.get('templateId');
+
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [templates, setTemplates] = useState([]);
-    const [selectedTemplate, setSelectedTemplate] = useState('');
+    const [selectedTemplate, setSelectedTemplate] = useState(templateIdParam || '');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalDocs, setTotalDocs] = useState(0);
@@ -100,7 +104,11 @@ export default function DocumentsPage() {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
-                if (Array.isArray(data)) setTemplates(data);
+                if (Array.isArray(data)) {
+                    setTemplates(data);
+                } else if (data && Array.isArray(data.templates)) {
+                    setTemplates(data.templates);
+                }
             } catch (err) {
                 console.error('Error fetching templates:', err);
             }
