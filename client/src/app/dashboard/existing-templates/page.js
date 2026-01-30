@@ -181,7 +181,7 @@ export default function ExistingTemplatesPage() {
             </div>
 
             {/* Action Bar */}
-            <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-slate-900/40 backdrop-blur-xl p-4 rounded-2xl border border-glass-border shadow-lg gap-4">
+            <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-slate-900/40 backdrop-blur-xl p-4 rounded-2xl border border-glass-border shadow-lg gap-4 overflow-hidden">
                 <div className="w-full md:w-96 group relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors">🔍</span>
                     <input
@@ -192,7 +192,7 @@ export default function ExistingTemplatesPage() {
                     />
                 </div>
                 <Link href="/dashboard/templates">
-                    <Button variant="primary" className="w-full md:w-auto px-6 py-2.5 rounded-xl text-xs uppercase font-bold tracking-widest shadow-lg shadow-primary/10">
+                    <Button variant="primary" className="w-full md:w-auto px-6 py-2.5 rounded-xl text-xs uppercase font-bold tracking-widest">
                         + Upload Template
                     </Button>
                 </Link>

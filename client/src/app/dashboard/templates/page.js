@@ -125,9 +125,9 @@ export default function TemplatesPage() {
                                 <span className="mr-3 text-2xl">📝</span> Template Guidelines
                             </h4>
                             <ul className="text-base text-gray-300 space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>All placeholders must be <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{NAME}}"}</code>).</li>
+                                <li>All placeholders must be <span className="text-white font-bold">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{NAME}}"}</code>).</li>
                                 <li>Use <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{QR}}"}</code> to position the verification QR code.</li>
-                                <li>Lowercase tags like <code className="opacity-60 italic">{"{{Name}}"}</code> will <span className="text-red-400/80 font-bold uppercase underline underline-offset-4 decoration-red-500/50">not</span> be detected.</li>
+                                <li>Lowercase tags like <code className="opacity-60 italic">{"{{Name}}"}</code> will <span className="text-red-400/80 font-bold uppercase">not</span> be detected.</li>
                             </ul>
                         </div>
 
@@ -173,7 +173,7 @@ export default function TemplatesPage() {
                                 <Button
                                     type="submit"
                                     disabled={!file || loading || detectedPlaceholders.length === 0}
-                                    className="w-full md:w-auto px-10 py-4 shadow-xl shadow-primary/10"
+                                    className="w-full md:w-auto px-10 py-4"
                                 >
                                     {loading ? 'Uploading...' : 'Confirm & Upload Template'}
                                 </Button>

@@ -183,9 +183,9 @@ export default function BulkGeneratePage() {
                                 <span className="mr-3 text-2xl">🚀</span> Bulk Processing Guidelines
                             </h4>
                             <ul className="text-base text-gray-300 space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>Upload a <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">CSV File</span> where the headers match exactly with your template's placeholders.</li>
+                                <li>Upload a <span className="text-white font-bold">CSV File</span> where the headers match exactly with your template's placeholders.</li>
                                 <li>Download the <span className="italic">"Sample CSV"</span> (available after template selection) for the correct column structure.</li>
-                                <li>The system will generate a <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">ZIP Archive</span> containing all successfully generated PDFs.</li>
+                                <li>The system will generate a <span className="text-white font-bold">ZIP Archive</span> containing all successfully generated PDFs.</li>
                                 <li>Any row with <span className="text-red-400 font-bold">Incomplete Data</span> will be skipped and reported in the failure log.</li>
                             </ul>
                         </div>

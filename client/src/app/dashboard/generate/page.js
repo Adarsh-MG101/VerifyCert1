@@ -159,9 +159,9 @@ export default function GeneratePage() {
                                 <span className="mr-3 text-2xl">✨</span> Generation Guidelines
                             </h4>
                             <ul className="text-base text-gray-300 space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>Select a <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">Template</span> to automatically load its required variables.</li>
-                                <li>Ensure all <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
-                                <li>The <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
+                                <li>Select a <span className="text-white font-bold">Template</span> to automatically load its required variables.</li>
+                                <li>Ensure all <span className="text-white font-bold">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
+                                <li>The <span className="text-white font-bold">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
                                 <li>Click <span className="italic">"Generate Document"</span> to process the PDF conversion in real-time.</li>
                             </ul>
                         </div>
