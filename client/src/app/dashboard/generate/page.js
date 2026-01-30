@@ -148,12 +148,12 @@ export default function GeneratePage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto py-10 animate-fade-in text-white">
+        <div className="animate-fade-in max-w-7xl mx-auto pb-10">
             {/* <h1 className="text-4xl font-bold mb-10">Generate Certificate</h1> */}
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className={`${generatedDoc ? 'lg:col-span-3' : 'lg:col-span-5'}`}>
-                    <Card title="Document Details" subtitle="Select a template and fill in the required data" className="p-8">
+                    <Card className="p-8">
                         <div className="mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
                             <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
                                 <span className="mr-3 text-2xl">✨</span> Generation Guidelines
