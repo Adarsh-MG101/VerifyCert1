@@ -103,9 +103,9 @@ export default function DashboardLayout({ children }) {
 
     return (
         <div className="flex h-screen overflow-hidden bg-black text-white">
-            <aside className="w-64 border-r border-glass-border p-6 flex flex-col bg-black z-30 shrink-0 h-full">
+            <aside className="w-72 border-r border-glass-border p-8 flex flex-col bg-black z-30 shrink-0 h-full">
                 <Link href={user?.role === 'admin' ? "/dashboard" : "/dashboard/templates"}>
-                    <h2 className="text-2xl font-bold gradient-text mb-10 flex items-center">
+                    <h2 className="text-3xl font-bold gradient-text mb-12 flex items-center">
                         VerifyCert
                     </h2>
                 </Link>
@@ -125,7 +125,7 @@ export default function DashboardLayout({ children }) {
                                 <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive(item.path) ? 'text-primary' : 'text-gray-500'}`}>
                                     {item.icon}
                                 </span>
-                                <span className="text-sm tracking-tight">{item.name}</span>
+                                <span className="text-base font-semibold tracking-tight">{item.name}</span>
                             </Link>
                         ))}
                 </nav>

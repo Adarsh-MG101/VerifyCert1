@@ -172,20 +172,20 @@ export default function BulkGeneratePage() {
     };
 
     return (
-        <div className="animate-fade-in max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8">Generate Multiple Certificates</h1>
+        <div className="animate-fade-in max-w-6xl mx-auto">
+            <h1 className="text-4xl font-bold mb-10">Generate Multiple Certificates</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                    <Card title="Upload Configuration" subtitle="Configure your bulk certificate generation">
-                        <div className="mb-8 p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-2">
-                            <h4 className="text-sm font-bold text-primary flex items-center uppercase tracking-wider">
-                                <span className="mr-2">🚀</span> Bulk Processing Guidelines
+                <div className={`${result ? 'lg:col-span-2' : 'lg:col-span-3 max-w-4xl'}`}>
+                    <Card title="Upload Configuration" subtitle="Configure your bulk certificate generation" className="p-8">
+                        <div className="mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
+                            <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
+                                <span className="mr-3 text-2xl">🚀</span> Bulk Processing Guidelines
                             </h4>
-                            <ul className="text-xs text-gray-400 space-y-1 ml-6 list-disc leading-relaxed">
-                                <li>Upload a <span className="text-white font-bold">CSV File</span> where the headers match exactly with your template's placeholders.</li>
+                            <ul className="text-base text-gray-300 space-y-3 ml-10 list-disc leading-relaxed font-medium">
+                                <li>Upload a <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">CSV File</span> where the headers match exactly with your template's placeholders.</li>
                                 <li>Download the <span className="italic">"Sample CSV"</span> (available after template selection) for the correct column structure.</li>
-                                <li>The system will generate a <span className="text-white font-bold">ZIP Archive</span> containing all successfully generated PDFs.</li>
+                                <li>The system will generate a <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">ZIP Archive</span> containing all successfully generated PDFs.</li>
                                 <li>Any row with <span className="text-red-400 font-bold">Incomplete Data</span> will be skipped and reported in the failure log.</li>
                             </ul>
                         </div>
@@ -199,7 +199,7 @@ export default function BulkGeneratePage() {
 
                         <TemplatePreview
                             template={selectedTemplate}
-                            maxWidth="240px"
+                            maxWidth="300px"
                             className="mb-8"
                             overlayText="Batch processing ready"
                         />

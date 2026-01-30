@@ -4,7 +4,7 @@ const Input = ({ label, type = "text", className = "", compact = false, ...props
     return (
         <div className={`w-full ${className}`}>
             {label && (
-                <label className={`block font-bold text-gray-500 uppercase tracking-widest ${compact ? 'text-[9px] mb-1' : 'text-sm mb-2'}`}>
+                <label className={`block font-bold text-gray-400 uppercase tracking-widest ${compact ? 'text-[10px] mb-1.5' : 'text-xs mb-2.5'}`}>
                     {label}
                 </label>
             )}

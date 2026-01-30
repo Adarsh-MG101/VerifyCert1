@@ -148,20 +148,20 @@ export default function GeneratePage() {
     };
 
     return (
-        <div className="animate-fade-in max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8">Generate Certificate</h1>
+        <div className="animate-fade-in max-w-6xl mx-auto">
+            <h1 className="text-4xl font-bold mb-10">Generate Certificate</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                <div className="lg:col-span-3">
-                    <Card title="Document Details" subtitle="Select a template and fill in the required data">
-                        <div className="mb-8 p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-2">
-                            <h4 className="text-sm font-bold text-primary flex items-center uppercase tracking-wider">
-                                <span className="mr-2">✨</span> Generation Guidelines
+                <div className={`${generatedDoc ? 'lg:col-span-3' : 'lg:col-span-5 max-w-4xl'}`}>
+                    <Card title="Document Details" subtitle="Select a template and fill in the required data" className="p-8">
+                        <div className="mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
+                            <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
+                                <span className="mr-3 text-2xl">✨</span> Generation Guidelines
                             </h4>
-                            <ul className="text-xs text-gray-400 space-y-1 ml-6 list-disc leading-relaxed">
-                                <li>Select a <span className="text-white font-bold">Template</span> to automatically load its required variables.</li>
-                                <li>Ensure all <span className="text-white font-bold">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
-                                <li>The <span className="text-white font-bold">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
+                            <ul className="text-base text-gray-300 space-y-3 ml-10 list-disc leading-relaxed font-medium">
+                                <li>Select a <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">Template</span> to automatically load its required variables.</li>
+                                <li>Ensure all <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
+                                <li>The <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
                                 <li>Click <span className="italic">"Generate Document"</span> to process the PDF conversion in real-time.</li>
                             </ul>
                         </div>
@@ -174,7 +174,7 @@ export default function GeneratePage() {
 
                         <TemplatePreview
                             template={selectedTemplate}
-                            maxWidth="300px"
+                            maxWidth="400px"
                             className="mb-8"
                             overlayText="Ready to generate"
                         />
@@ -182,7 +182,7 @@ export default function GeneratePage() {
 
                         {selectedTemplate && (
                             <form onSubmit={handleGenerate} className="space-y-6">
-                                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest border-b border-glass-border pb-2">Variables Found</h3>
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-glass-border pb-3">Variables Found</h3>
 
                                 <div className="grid grid-cols-1 gap-5">
                                     {selectedTemplate.placeholders && selectedTemplate.placeholders.filter(p => p !== 'certificate_id' && p !== 'qr_code').length > 0 ? (

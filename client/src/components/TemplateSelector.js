@@ -6,7 +6,7 @@ const TemplateSelector = ({ templates, selectedTemplate, onTemplateSelect, label
 
     return (
         <div className={className}>
-            <label className={`block font-bold text-gray-500 uppercase tracking-widest ${compact ? 'text-[9px] mb-1' : 'text-sm mb-2'}`}>
+            <label className={`block font-bold text-gray-400 uppercase tracking-widest ${compact ? 'text-[10px] mb-1.5' : 'text-xs mb-3'}`}>
                 {label}
             </label>
             <select

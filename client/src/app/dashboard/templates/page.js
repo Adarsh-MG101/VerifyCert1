@@ -120,14 +120,14 @@ export default function TemplatesPage() {
                     </div>
                 ) : (
                     <div className="space-y-6 mt-4">
-                        <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl space-y-2">
-                            <h4 className="text-sm font-bold text-primary flex items-center">
-                                <span className="mr-2">📝</span> Template Guidelines
+                        <div className="mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
+                            <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
+                                <span className="mr-3 text-2xl">📝</span> Template Guidelines
                             </h4>
-                            <ul className="text-xs text-gray-400 space-y-1 ml-6 list-disc">
-                                <li>All placeholders must be <span className="text-white font-bold">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-bold">{"{{NAME}}"}</code>).</li>
-                                <li>Use <code className="text-primary font-mono font-bold">{"{{QR}}"}</code> to position the verification QR code.</li>
-                                <li>Lowercase tags like <code className="opacity-60 italic">{"{{Name}}"}</code> will <span className="text-red-400/80 font-bold uppercase">not</span> be detected.</li>
+                            <ul className="text-base text-gray-300 space-y-3 ml-10 list-disc leading-relaxed font-medium">
+                                <li>All placeholders must be <span className="text-white font-bold underline underline-offset-4 decoration-primary/50">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{NAME}}"}</code>).</li>
+                                <li>Use <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{QR}}"}</code> to position the verification QR code.</li>
+                                <li>Lowercase tags like <code className="opacity-60 italic">{"{{Name}}"}</code> will <span className="text-red-400/80 font-bold uppercase underline underline-offset-4 decoration-red-500/50">not</span> be detected.</li>
                             </ul>
                         </div>
 
