@@ -112,7 +112,7 @@ const DashboardHeader = ({ user }) => {
 
                     {/* Dropdown Menu */}
                     {isProfileOpen && (
-                        <div className="absolute right-0 mt-4 w-64 bg-[#0F172A] border border-glass-border rounded-2xl shadow-2xl backdrop-blur-2xl z-50 animate-fade-in py-2 overflow-hidden">
+                        <div className="absolute right-0 mt-4 w-64 bg-[#070708] border border-glass-border rounded-2xl shadow-2xl backdrop-blur-2xl z-50 animate-fade-in py-2 overflow-hidden">
                             <div className="px-5 py-3 border-b border-glass-border">
                                 <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Signed in as</p>
                                 <p className="text-sm font-bold text-white truncate">{user?.name || 'Administrator'}</p>
