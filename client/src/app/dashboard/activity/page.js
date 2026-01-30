@@ -41,6 +41,18 @@ export default function ActivityPage() {
         });
     };
 
+    const calculateDuration = (start, end) => {
+        if (!end) return null;
+        const diff = new Date(end) - new Date(start);
+        const hours = Math.floor(diff / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+
+        if (hours > 0) return `${hours}h ${minutes}m`;
+        if (minutes > 0) return `${minutes}m ${seconds}s`;
+        return `${seconds}s`;
+    };
+
     return (
         <div className="animate-fade-in max-w-7xl mx-auto pb-10 text-white">
             <h1 className="text-3xl font-bold mb-8 uppercase tracking-tighter">Security & Activity Log</h1>
@@ -74,8 +86,9 @@ export default function ActivityPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-white/5">
-                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Event Type</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Date & Time</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Login Time</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Session End</th>
+                                    <th className="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Duration</th>
                                     <th className="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">IP Address</th>
                                     <th className="px-6 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest text-center">Status</th>
                                 </tr>
@@ -83,38 +96,34 @@ export default function ActivityPage() {
                             <tbody>
                                 {loading ? (
                                     <tr>
-                                        <td colSpan="4" className="px-6 py-20 text-center text-gray-500 font-medium animate-pulse">
+                                        <td colSpan="5" className="px-6 py-20 text-center text-gray-500 font-medium animate-pulse">
                                             Retrieving log history...
                                         </td>
                                     </tr>
                                 ) : activities.length === 0 ? (
                                     <tr>
-                                        <td colSpan="4" className="px-6 py-20 text-center text-gray-500 font-medium">
+                                        <td colSpan="5" className="px-6 py-20 text-center text-gray-500 font-medium">
                                             No activity logs found.
                                         </td>
                                     </tr>
                                 ) : (
                                     activities.map((log, index) => (
                                         <tr key={log._id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <span className={`w-2 h-2 rounded-full ${index === 0 ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-gray-600'}`}></span>
-                                                    <span className="text-sm font-bold text-white capitalize">{log.type}</span>
-                                                </div>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-300">
+                                                {formatDate(log.timestamp)}
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm font-medium text-gray-300">
-                                                    {formatDate(log.timestamp)}
-                                                </div>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-300">
+                                                {log.endedAt ? formatDate(log.endedAt) : (index === 0 ? 'Ongoing' : '-')}
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm font-mono text-gray-400">
-                                                    {log.ipAddress}
-                                                </div>
+                                            <td className="px-6 py-4 text-sm font-bold text-primary">
+                                                {calculateDuration(log.timestamp, log.endedAt) || '-'}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm font-mono text-gray-400">
+                                                {log.ipAddress}
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-tighter ${index === 0 ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/10 text-gray-500'}`}>
-                                                    {index === 0 ? 'Active Now' : 'Expired'}
+                                                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-tighter ${index === 0 && !log.endedAt ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/10 text-gray-500'}`}>
+                                                    {index === 0 && !log.endedAt ? 'Ongoing' : 'Expired'}
                                                 </span>
                                             </td>
                                         </tr>

@@ -139,4 +139,24 @@ router.get('/activity', auth, async (req, res) => {
     }
 });
 
+// Logout
+router.post('/logout', auth, async (req, res) => {
+    try {
+        const lastSession = await Activity.findOne({
+            userId: req.user.userId,
+            type: 'login',
+            endedAt: { $exists: false }
+        }).sort({ timestamp: -1 });
+
+        if (lastSession) {
+            lastSession.endedAt = Date.now();
+            await lastSession.save();
+        }
+
+        res.json({ success: true, message: 'Logged out successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

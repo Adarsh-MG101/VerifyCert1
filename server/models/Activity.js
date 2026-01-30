@@ -5,7 +5,8 @@ const ActivitySchema = new mongoose.Schema({
     ipAddress: { type: String, required: true },
     userAgent: { type: String },
     type: { type: String, enum: ['login', 'logout'], default: 'login' },
-    timestamp: { type: Date, default: Date.now }
+    timestamp: { type: Date, default: Date.now },
+    endedAt: { type: Date }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Activity', ActivitySchema);

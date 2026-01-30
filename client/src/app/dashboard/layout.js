@@ -51,7 +51,17 @@ export default function DashboardLayout({ children }) {
             });
     }, [router, pathname]);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+            await fetch(`${API_URL}/api/auth/logout`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+        } catch (err) {
+            console.error('Logout error:', err);
+        }
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         router.push('/');
