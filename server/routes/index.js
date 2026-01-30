@@ -121,7 +121,7 @@ router.post('/templates', auth, upload.single('file'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-        const templateName = req.body.name || req.file.originalname;
+        const templateName = (req.body.name || req.file.originalname).replace(/\.docx$/i, '');
         const existingTemplate = await Template.findOne({ name: templateName });
 
         if (existingTemplate) {
@@ -832,7 +832,7 @@ router.put('/templates/:id', auth, async (req, res) => {
             return res.status(400).json({ error: 'A template with this name already exists' });
         }
 
-        template.name = name;
+        template.name = name.replace(/\.docx$/i, '');
         await template.save();
         res.json(template);
     } catch (err) {
