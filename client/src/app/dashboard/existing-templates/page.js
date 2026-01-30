@@ -159,8 +159,8 @@ export default function ExistingTemplatesPage() {
             {/* Header with Stats */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold">Template Library</h1>
-                    <p className="text-gray-400 mt-1">Manage your certificate designs</p>
+                    {/* <h1 className="text-3xl font-bold">Template Library</h1> */}
+                    {/* <p className="text-gray-400 mt-1">Manage your certificate designs</p> */}
                 </div>
 
                 <div className="flex items-center gap-6 bg-slate-900/40 backdrop-blur-xl border border-glass-border px-5 py-3 rounded-2xl shadow-xl">

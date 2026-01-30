@@ -173,7 +173,7 @@ export default function BulkGeneratePage() {
 
     return (
         <div className="animate-fade-in max-w-6xl mx-auto">
-            <h1 className="text-4xl font-bold mb-10">Generate Multiple Certificates</h1>
+            {/* <h1 className="text-4xl font-bold mb-10">Generate Multiple Certificates</h1> */}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className={`${result ? 'lg:col-span-2' : 'lg:col-span-3 max-w-4xl'}`}>

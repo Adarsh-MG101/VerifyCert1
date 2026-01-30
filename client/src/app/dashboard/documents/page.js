@@ -130,7 +130,7 @@ export default function DocumentsPage() {
     return (
         <div className="animate-fade-in max-w-6xl mx-auto pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <h1 className="text-3xl font-bold">Generated PDFs</h1>
+                {/* <h1 className="text-3xl font-bold">Generated PDFs</h1> */}
 
                 <div className="flex items-center gap-6 bg-slate-900/40 backdrop-blur-xl border border-glass-border px-5 py-3 rounded-2xl shadow-xl">
                     <div className="flex flex-col">
