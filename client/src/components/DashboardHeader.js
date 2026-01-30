@@ -1,10 +1,36 @@
 "use client";
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const DashboardHeader = ({ user }) => {
+    const pathname = usePathname();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const dropdownRef = useRef(null);
+
+    // Dynamic breadcrumb logic
+    const getPageDetails = () => {
+        const path = pathname.split('/').filter(Boolean);
+        const segments = {
+            'dashboard': 'Dashboard',
+            'templates': 'Upload Template',
+            'existing-templates': 'Template Library',
+            'generate': 'Generate Certificate',
+            'bulk-generate': 'Bulk Generate',
+            'documents': 'Generated PDFs',
+            'change-password': 'Change Password',
+            'profile': 'Personal Info',
+            'activity': 'User Activity',
+            'security': 'Security & 2FA'
+        };
+
+        const currentPath = path[path.length - 1];
+        const pageTitle = segments[currentPath] || 'Dashboard';
+
+        return { pageTitle };
+    };
+
+    const { pageTitle } = getPageDetails();
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -25,14 +51,15 @@ const DashboardHeader = ({ user }) => {
 
     return (
         <header className="w-full border-b border-glass-border bg-slate-900/10 backdrop-blur-xl px-8 py-4 flex items-center justify-between sticky top-0 z-40">
-            <div className="flex items-center space-x-4">
-                <div className="flex flex-col">
-                    <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">Welcome back,</span>
-                    <span className="text-sm font-semibold text-white">{user?.name || user?.email}</span>
-                </div>
-                <div className="h-8 w-px bg-glass-border mx-2"></div>
-                <div className="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-[10px] text-primary uppercase font-bold tracking-wider">
-                    {user?.role || 'User'}
+            <div className="flex items-center space-x-5">
+                <div className="flex items-center gap-4">
+                    <h2 className="text-xl font-bold text-white tracking-tight">{pageTitle}</h2>
+                    <div className="h-5 w-px bg-glass-border"></div>
+                    <nav className="flex items-center gap-2 text-sm">
+                        <Link href="/dashboard" className="text-gray-400 hover:text-primary transition-colors font-medium">Home</Link>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        <span className="text-gray-500 font-medium">{pageTitle}</span>
+                    </nav>
                 </div>
             </div>
 
