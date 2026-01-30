@@ -127,7 +127,7 @@ export default function DocumentsPage() {
     }, [search, startDate, endDate, selectedTemplate, page]);
 
     return (
-        <div className="animate-fade-in max-w-6xl mx-auto pb-10">
+        <div className="animate-fade-in max-w-7xl mx-auto pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 {/* <h1 className="text-3xl font-bold">Generated PDFs</h1> */}
 

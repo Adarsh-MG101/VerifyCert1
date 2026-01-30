@@ -102,7 +102,7 @@ export default function TemplatesPage() {
     };
 
     return (
-        <div className="animate-fade-in max-w-4xl mx-auto">
+        <div className="animate-fade-in max-w-7xl mx-auto pb-10">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">Upload Template</h1>
                 <Link href="/dashboard/existing-templates">

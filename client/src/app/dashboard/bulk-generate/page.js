@@ -173,11 +173,11 @@ export default function BulkGeneratePage() {
     };
 
     return (
-        <div className="animate-fade-in max-w-6xl mx-auto">
+        <div className="animate-fade-in max-w-7xl mx-auto pb-10">
             {/* <h1 className="text-4xl font-bold mb-10">Generate Multiple Certificates</h1> */}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className={`${result ? 'lg:col-span-2' : 'lg:col-span-3 max-w-4xl'}`}>
+                <div className={`${result ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
                     <Card title="Upload Configuration" subtitle="Configure your bulk certificate generation" className="p-8">
                         <div className="mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
                             <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">

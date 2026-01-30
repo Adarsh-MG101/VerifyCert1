@@ -72,10 +72,10 @@ export default function AccountSettingsPage() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto py-10 animate-fade-in text-white">
+        <div className="max-w-7xl mx-auto py-10 animate-fade-in text-white">
             <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
 
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                 <Card title="Profile Information" subtitle="Your registered account details">
                     <div className="p-2 space-y-4">
                         <div className="flex flex-col space-y-2">
@@ -95,16 +95,16 @@ export default function AccountSettingsPage() {
                             label="Current Password"
                             type="password"
                             placeholder="••••••••"
-                            value={currentPassword}
-                            onChange={(e) => setCurrentPassword(e.target.value)}
-                            required
+                            value="********"
+                            disabled
+                            className="opacity-50 grayscale cursor-not-allowed"
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 gap-6">
                             <Input
                                 label="New Password"
                                 type="password"
-                                placeholder="••••••••"
+                                placeholder="Enter new password"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 required
@@ -112,7 +112,7 @@ export default function AccountSettingsPage() {
                             <Input
                                 label="Confirm New Password"
                                 type="password"
-                                placeholder="••••••••"
+                                placeholder="Re-enter new password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required

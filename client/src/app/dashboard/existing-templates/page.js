@@ -155,7 +155,7 @@ export default function ExistingTemplatesPage() {
     };
 
     return (
-        <div className="animate-fade-in max-w-6xl mx-auto pb-10">
+        <div className="animate-fade-in max-w-7xl mx-auto pb-10">
             {/* Header with Stats */}
             {/* Action Bar */}
             <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-slate-900/40 backdrop-blur-xl p-4 rounded-2xl border border-glass-border shadow-lg gap-6 overflow-hidden">
