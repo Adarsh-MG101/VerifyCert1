@@ -18,7 +18,7 @@ const DashboardHeader = ({ user }) => {
             'generate': 'Generate Certificate',
             'bulk-generate': 'Bulk Generate',
             'documents': 'Generated PDFs',
-            'change-password': 'Change Password',
+            'settings': 'Account Settings',
             'profile': 'Personal Info',
             'activity': 'User Activity',
             'security': 'Security & 2FA'
@@ -141,11 +141,11 @@ const DashboardHeader = ({ user }) => {
                                     </div>
                                 </Link>
 
-                                <Link href="/dashboard/change-password" className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all group">
+                                <Link href="/dashboard/settings" className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all group">
                                     <span className="p-1.5 rounded-lg bg-green-500/10 text-green-400 group-hover:scale-110 transition-transform">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3m-3-3l-2.5-2.5"></path></svg>
                                     </span>
-                                    <span className="font-medium">Change Password</span>
+                                    <span className="font-medium">Account Settings</span>
                                 </Link>
                             </div>
 
