@@ -28,7 +28,7 @@
   }
 
   .input {
-    @apply w-full p-3 rounded-lg bg-glass border border-glass-border text-white outline-none focus:border-purple-500 transition-colors;
+    @apply w-full p-3 rounded-lg bg-glass border border-glass-border text-white outline-none focus:border-orange-500 transition-colors;
     color-scheme: dark;
   }
 

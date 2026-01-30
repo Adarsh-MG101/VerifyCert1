@@ -42,9 +42,9 @@ export default function DashboardPage() {
     }, []);
 
     const statCards = [
-        { title: 'Total Templates', value: stats.totalTemplates, color: 'text-blue-400' },
+        { title: 'Total Templates', value: stats.totalTemplates, color: 'text-orange-400' },
         { title: 'Documents Issued', value: stats.documentsIssued, color: 'text-green-400' },
-        { title: 'Pending Verifications', value: stats.pendingVerifications, color: 'text-purple-400' },
+        { title: 'Pending Verifications', value: stats.pendingVerifications, color: 'text-yellow-400' },
     ];
 
     return (
