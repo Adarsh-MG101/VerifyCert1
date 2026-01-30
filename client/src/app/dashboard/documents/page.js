@@ -150,7 +150,7 @@ export default function DocumentsPage() {
             </div>
 
             {/* Filter Section */}
-            <Card className="mb-4 overflow-visible !p-3 bg-slate-900/20">
+            <Card className="mb-4 overflow-visible p-3! bg-slate-900/20">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Input
                         label="Search ID or Name"

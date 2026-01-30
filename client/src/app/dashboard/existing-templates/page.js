@@ -157,41 +157,34 @@ export default function ExistingTemplatesPage() {
     return (
         <div className="animate-fade-in max-w-6xl mx-auto pb-10">
             {/* Header with Stats */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div>
-                    {/* <h1 className="text-3xl font-bold">Template Library</h1> */}
-                    {/* <p className="text-gray-400 mt-1">Manage your certificate designs</p> */}
-                </div>
+            {/* Action Bar */}
+            <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-slate-900/40 backdrop-blur-xl p-4 rounded-2xl border border-glass-border shadow-lg gap-6 overflow-hidden">
+                <div className="flex-1 flex flex-col md:flex-row items-center gap-4 w-full">
+                    <div className="w-full md:w-96 group relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors">🔍</span>
+                        <input
+                            placeholder="Search templates by name..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none transition-all"
+                        />
+                    </div>
 
-                <div className="flex items-center gap-6 bg-slate-900/40 backdrop-blur-xl border border-glass-border px-5 py-3 rounded-2xl shadow-xl">
-                    <div className="flex flex-col">
-                        <span className="text-[10px] uppercase font-bold text-gray-500 tracking-[0.2em] leading-none mb-1.5">System Stats</span>
-                        <div className="flex items-center gap-2.5">
-                            <div className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                    <div className="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-xl border border-white/5 whitespace-nowrap">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] uppercase font-bold text-gray-500 tracking-wider leading-none mb-1">Total Templates</span>
+                            <div className="flex items-center gap-2">
+                                <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
+                                </span>
+                                <span className="text-lg font-black text-white">{loading && templates.length === 0 ? '...' : totalDocs}</span>
                             </div>
-                            <span className="text-xl font-black text-white tracking-tighter">
-                                {loading && templates.length === 0 ? '...' : totalDocs}
-                                <span className="text-xs font-bold text-gray-400 ml-1.5 uppercase tracking-normal">Templates Available</span>
-                            </span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Action Bar */}
-            <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-slate-900/40 backdrop-blur-xl p-4 rounded-2xl border border-glass-border shadow-lg gap-4 overflow-hidden">
-                <div className="w-full md:w-96 group relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors">🔍</span>
-                    <input
-                        placeholder="Search templates by name..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none transition-all"
-                    />
-                </div>
-                <Link href="/dashboard/templates">
+                <Link href="/dashboard/templates" className="w-full md:w-auto">
                     <Button variant="primary" className="w-full md:w-auto px-6 py-2.5 rounded-xl text-xs uppercase font-bold tracking-widest">
                         + Upload Template
                     </Button>
