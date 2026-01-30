@@ -20,12 +20,13 @@ export default function BulkGeneratePage() {
     const [result, setResult] = useState(null);
     const [recipientEmail, setRecipientEmail] = useState('');
     const [sending, setSending] = useState(false);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/templates?onlyEnabled=true`, {
+        fetch(`${API_URL}/api/templates?onlyEnabled=true&limit=1000`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

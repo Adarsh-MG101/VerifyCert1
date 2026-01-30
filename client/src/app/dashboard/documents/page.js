@@ -27,7 +27,6 @@ export default function DocumentsPage() {
     const [recipientEmail, setRecipientEmail] = useState('');
     const [sendingEmail, setSendingEmail] = useState(false);
     const limit = 5;
-
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
     const fetchDocuments = async () => {
@@ -100,7 +99,7 @@ export default function DocumentsPage() {
         const fetchTemplates = async () => {
             const token = localStorage.getItem('token');
             try {
-                const res = await fetch(`${API_URL}/api/templates`, {
+                const res = await fetch(`${API_URL}/api/templates?limit=1000`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
