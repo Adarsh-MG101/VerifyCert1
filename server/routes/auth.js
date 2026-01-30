@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Activity = require('../models/Activity');
 
 // Login
 router.post('/register', async (req, res) => {
@@ -48,6 +49,16 @@ router.post('/login', async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
+
+        // Log Activity
+        const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        const activity = new Activity({
+            userId: user._id,
+            ipAddress: ip,
+            userAgent: req.headers['user-agent'],
+            type: 'login'
+        });
+        await activity.save();
 
         res.json({
             success: true,
@@ -111,6 +122,18 @@ router.post('/change-password', auth, async (req, res) => {
         await user.save();
 
         res.json({ success: true, message: 'Password updated successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get Activity Logs
+router.get('/activity', auth, async (req, res) => {
+    try {
+        const activities = await Activity.find({ userId: req.user.userId })
+            .sort({ timestamp: -1 })
+            .limit(50);
+        res.json({ success: true, activities });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
