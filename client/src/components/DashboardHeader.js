@@ -43,6 +43,11 @@ const DashboardHeader = ({ user }) => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // Close dropdown on navigation
+    useEffect(() => {
+        setIsProfileOpen(false);
+    }, [pathname]);
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
