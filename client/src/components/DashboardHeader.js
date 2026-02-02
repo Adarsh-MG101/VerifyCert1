@@ -67,7 +67,7 @@ const DashboardHeader = ({ user }) => {
         <header className="w-full border-b border-border bg-card/80 backdrop-blur-md px-8 py-4 flex items-center justify-between sticky top-0 z-40 transition-colors">
             <div className="flex items-center space-x-5">
                 <div className="flex items-center gap-4">
-                    <h2 className="text-xl font-bold text-gray-800 tracking-tight font-header">{pageTitle}</h2>
+                    <h2 className="text-xl font-bold text-foreground tracking-tight font-header">{pageTitle}</h2>
                 </div>
             </div>
 
