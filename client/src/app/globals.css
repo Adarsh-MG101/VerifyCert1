@@ -1,39 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "../components/ThemeSettings.css";
 
 @theme {
+  /* Colors mapping - Only modify ThemeSettings.css */
   --color-background: var(--color-bg);
   --color-foreground: var(--color-text);
   --color-primary: var(--color-primary);
   --color-accent: var(--color-accent);
-  --color-glass: var(--color-glass);
-  --color-glass-border: var(--color-glass-border);
-  --shadow-glass: var(--shadow-glass);
+  --color-card: var(--color-card);
+  --color-border: var(--color-border);
+
+  /* Fonts mapping - Only modify ThemeSettings.css */
+  --font-sans: var(--font-primary);
+  --font-header: var(--font-header);
+  --font-subtitle: var(--font-subtitle);
+  --font-body: var(--font-body);
+
+  /* Utilities */
+  --shadow-card: var(--shadow-card);
   --background-image-primary-gradient: var(--grad-primary);
 }
 
 @layer base {
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans transition-colors duration-200;
   }
 }
 
 @layer components {
   .btn {
-    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200 cursor-pointer hover:-translate-y-0.5 active:translate-y-0;
+    @apply px-5 py-2.5 rounded-lg font-medium transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white shadow-sm hover:bg-accent;
   }
 
   .btn-outline {
-    @apply bg-transparent border border-primary text-primary hover:bg-primary/10;
+    @apply bg-transparent border border-border text-foreground hover:bg-gray-100;
   }
 
   .input {
-    @apply w-full p-3 rounded-lg bg-glass border border-glass-border text-white outline-none focus:border-orange-500 transition-colors;
-    color-scheme: dark;
+    @apply w-full p-2.5 rounded-lg bg-white border border-border text-foreground outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all;
   }
 
   .card {
-    @apply p-6 rounded-2xl bg-glass backdrop-blur-xl border border-glass-border shadow-glass;
+    @apply p-6 rounded-xl bg-card border border-border shadow-card;
   }
 
   .gradient-text {
@@ -47,7 +60,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
 
   to {
@@ -57,12 +70,12 @@
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.4s ease-out forwards;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar for Dashboard */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -70,10 +83,10 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: #cbd5e1;
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #94a3b8;
 }

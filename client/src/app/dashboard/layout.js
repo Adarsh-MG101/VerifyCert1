@@ -112,10 +112,10 @@ export default function DashboardLayout({ children }) {
     }
 
     return (
-        <div className="flex h-screen overflow-hidden bg-black text-white">
-            <aside className="w-72 border-r border-glass-border p-8 flex flex-col bg-black z-30 shrink-0 h-full">
+        <div className="flex h-screen overflow-hidden bg-background text-foreground">
+            <aside className="w-72 border-r border-border p-8 flex flex-col bg-card z-30 shrink-0 h-full">
                 <Link href={user?.role === 'admin' ? "/dashboard" : "/dashboard/templates"}>
-                    <h2 className="text-3xl font-bold gradient-text mb-12 flex items-center">
+                    <h2 className="text-3xl font-bold text-primary mb-12 flex items-center font-header">
                         VerifyCert
                     </h2>
                 </Link>
@@ -128,31 +128,31 @@ export default function DashboardLayout({ children }) {
                                 key={item.path}
                                 href={item.path}
                                 className={`flex items-center gap-3 p-3 rounded-xl transition-all group ${isActive(item.path)
-                                    ? 'bg-primary/20 text-white font-bold border border-primary/30 shadow-lg shadow-primary/5'
-                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                    ? 'bg-primary/10 text-primary font-bold shadow-sm'
+                                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                                     }`}
                             >
-                                <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive(item.path) ? 'text-primary' : 'text-gray-500'}`}>
+                                <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive(item.path) ? 'text-primary' : 'text-gray-400'}`}>
                                     {item.icon}
                                 </span>
-                                <span className="text-base font-semibold tracking-tight">{item.name}</span>
+                                <span className="text-sm font-semibold tracking-tight">{item.name}</span>
                             </Link>
                         ))}
                 </nav>
 
-                <div className="mt-auto space-y-4 pt-4 border-t border-glass-border/20">
+                <div className="mt-auto space-y-4 pt-4 border-t border-border">
                     <button
                         onClick={handleLogout}
-                        className="flex items-center justify-center gap-3 w-full p-3 rounded-xl bg-red-600/90 text-white hover:bg-red-600 transition-all group shadow-lg shadow-red-900/20 active:scale-[0.98]"
+                        className="flex items-center justify-center gap-3 w-full p-3 rounded-xl bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all group border border-transparent hover:border-red-100 active:scale-[0.98]"
                     >
                         <span className="transition-transform group-hover:scale-110">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                         </span>
-                        <span className="text-sm font-black tracking-tight uppercase">Sign Out</span>
+                        <span className="text-xs font-bold tracking-tight uppercase">Sign Out</span>
                     </button>
 
-                    <div className="opacity-30">
-                        <div className="text-[8px] text-gray-400 text-center uppercase tracking-[0.2em]">
+                    <div className="opacity-50">
+                        <div className="text-[10px] text-gray-400 text-center font-medium uppercase tracking-[0.1em]">
                             v1.0.0 &copy; VerifyCert
                         </div>
                     </div>

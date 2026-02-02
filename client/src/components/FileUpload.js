@@ -18,15 +18,15 @@ const FileUpload = ({
                 onChange={onFileChange}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
             />
-            <div className={`p-8 border-2 border-dashed rounded-2xl text-center transition-all ${file ? 'border-primary bg-primary/5' : 'border-glass-border group-hover:border-primary/50'}`}>
+            <div className={`p-8 border-2 border-dashed rounded-2xl text-center transition-all ${file ? 'border-primary bg-primary/5' : 'border-border group-hover:border-primary/50 bg-gray-50'}`}>
                 <div className="text-4xl mb-3">{file ? selectedIcon : icon}</div>
-                <div className="font-medium text-gray-300">{file ? file.name : placeholder}</div>
+                <div className="font-medium text-gray-700">{file ? file.name : placeholder}</div>
                 {file && rowCountText && (
                     <div className="mt-2 text-xs font-bold text-primary uppercase tracking-widest">
                         {rowCountText}
                     </div>
                 )}
-                <div className="text-sm text-gray-500 mt-1">{file ? `${(file.size / 1024).toFixed(2)} KB` : helperText}</div>
+                <div className="text-sm text-gray-400 mt-1">{file ? `${(file.size / 1024).toFixed(2)} KB` : helperText}</div>
             </div>
         </div>
     );

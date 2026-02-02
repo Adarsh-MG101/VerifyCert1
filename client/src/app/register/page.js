@@ -68,12 +68,12 @@ export default function RegisterPage() {
             <main className="flex-1 flex items-center justify-center p-4">
                 <Card className="w-full max-w-md p-8 animate-fade-in">
                     <div className="text-center mb-10">
-                        <h1 className="text-3xl font-bold gradient-text mb-2">Create Account</h1>
-                        <p className="text-gray-400">Join VerifyCert to start issuing documents</p>
+                        <h1 className="text-3xl font-bold text-primary mb-2 font-header">Create Account</h1>
+                        <p className="text-gray-500 font-subtitle">Join VerifyCert to start issuing documents</p>
                     </div>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-3 rounded mb-6 text-sm">
+                        <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg mb-6 text-sm">
                             {error}
                         </div>
                     )}
@@ -120,7 +120,7 @@ export default function RegisterPage() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full"
+                            className="w-full text-white"
                         >
                             {loading ? 'Creating Account...' : 'Sign Up'}
                         </Button>
@@ -129,7 +129,7 @@ export default function RegisterPage() {
                     <div className="mt-8 text-center">
                         <p className="text-sm text-gray-500">
                             Already have an account?{' '}
-                            <Link href="/login" className="text-primary hover:underline transition-all">
+                            <Link href="/login" className="text-primary font-bold hover:underline transition-all">
                                 Login here
                             </Link>
                         </p>

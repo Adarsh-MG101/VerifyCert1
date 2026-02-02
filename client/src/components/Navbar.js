@@ -4,28 +4,22 @@ import Button from './Button';
 
 const Navbar = () => {
     return (
-        <nav className="w-full border-b border-glass-border bg-background/50 backdrop-blur-md sticky top-0 z-50">
+        <nav className="w-full border-b border-border bg-white/80 backdrop-blur-md sticky top-0 z-50">
             <div className="container mx-auto px-6 py-4 flex items-center justify-between">
                 <Link href="/">
                     <div className="flex items-center space-x-2 group">
-                        <span className="text-2xl font-bold gradient-text group-hover:opacity-80 transition-opacity">VerifyCert</span>
+                        <span className="text-2xl font-bold text-primary group-hover:opacity-80 transition-opacity font-header">VerifyCert</span>
                     </div>
                 </Link>
 
-                {/* <div className="hidden md:flex items-center space-x-8">
-                    <Link href="/" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Home</Link>
-                    <Link href="/verify" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Verify</Link>
-                    <Link href="/about" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">About</Link>
-                </div> */}
-
                 <div className="flex items-center space-x-4">
                     <Link href="/login">
-                        <Button variant="ghost" className="text-sm px-4 py-2 border border-transparent hover:border-glass-border">
+                        <Button variant="ghost" className="text-sm px-4 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 border border-transparent">
                             Login
                         </Button>
                     </Link>
                     <Link href="/register">
-                        <Button className="text-sm px-5 py-2">
+                        <Button className="text-sm px-5 py-2 text-white">
                             Register
                         </Button>
                     </Link>

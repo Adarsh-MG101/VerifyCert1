@@ -68,18 +68,18 @@ export default function LoginPage() {
             <main className="flex-1 flex items-center justify-center p-4">
                 <Card className="w-full max-w-md p-8 animate-fade-in">
                     <div className="text-center mb-10">
-                        <h1 className="text-3xl font-bold gradient-text mb-2">Welcome Back</h1>
-                        <p className="text-gray-400">Login to manage VerifyCert</p>
+                        <h1 className="text-3xl font-bold text-primary mb-2 font-header">Welcome Back</h1>
+                        <p className="text-gray-500 font-subtitle">Login to manage VerifyCert</p>
                     </div>
 
                     {isRegistered && (
-                        <div className="bg-green-500/10 border border-green-500/50 text-green-400 p-3 rounded mb-6 text-sm">
+                        <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded-lg mb-6 text-sm">
                             Registration successful! Please login with your credentials.
                         </div>
                     )}
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-3 rounded mb-6 text-sm">
+                        <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg mb-6 text-sm">
                             {error}
                         </div>
                     )}
@@ -117,14 +117,14 @@ export default function LoginPage() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full"
+                            className="w-full text-white"
                         >
                             {loading ? 'Authenticating...' : 'Sign In'}
                         </Button>
                     </form>
 
                     <div className="mt-8 text-center">
-                        <Link href="/" className="text-sm text-gray-500 hover:text-white transition-colors">
+                        <Link href="/" className="text-sm text-gray-400 hover:text-primary transition-colors">
                             ← Back to Homepage
                         </Link>
                     </div>
