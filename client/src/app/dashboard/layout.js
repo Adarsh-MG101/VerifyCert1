@@ -152,7 +152,7 @@ export default function DashboardLayout({ children }) {
                     </button>
 
                     <div className="opacity-50">
-                        <div className="text-[10px] text-gray-400 text-center font-medium uppercase tracking-[0.1em]">
+                        <div className="text-[10px] text-gray-400 text-center font-medium uppercase tracking-widest">
                             v1.0.0 &copy; VerifyCert
                         </div>
                     </div>

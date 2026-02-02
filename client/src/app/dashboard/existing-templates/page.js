@@ -156,7 +156,6 @@ export default function ExistingTemplatesPage() {
 
     return (
         <div className="animate-fade-in max-w-7xl mx-auto pb-10">
-            {/* Header with Stats */}
             {/* Action Bar */}
             <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-card p-4 rounded-2xl border border-border shadow-card gap-6 overflow-hidden">
                 <div className="flex-1 flex flex-col md:flex-row items-center gap-4 w-full">
@@ -200,57 +199,65 @@ export default function ExistingTemplatesPage() {
             ) : (
                 <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-card">
                     <div className="overflow-x-auto custom-scrollbar">
-                        <table className="w-full text-left border-collapse">
+                        <table className="w-full text-left border-collapse table-fixed">
                             <thead>
-                                <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-border">
-                                    <th className="px-6 py-5 w-16">S.No</th>
-                                    <th className="px-6 py-5">Template Name</th>
-                                    <th className="px-6 py-5 text-center">Preview</th>
-                                    <th className="px-6 py-5 whitespace-nowrap text-center">Certs Issued</th>
-                                    <th className="px-6 py-5 text-center">Status</th>
-                                    <th className="px-6 py-5">Placeholders</th>
-                                    <th className="px-6 py-5 text-center">Action</th>
+                                <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-border h-[60px]">
+                                    <th className="px-6 py-0 w-[80px] text-center">S.No</th>
+                                    <th className="px-6 py-0 w-[20%]">Template Name</th>
+                                    <th className="px-6 py-0 w-[10%] text-center">Preview</th>
+                                    <th className="px-6 py-0 w-[10%] text-center">Certs Issued</th>
+                                    <th className="px-6 py-0 w-[10%] text-center">Status</th>
+                                    <th className="px-6 py-0 w-[20%]">Placeholders</th>
+                                    <th className="px-6 py-0 w-[30%] text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
                                 {templates.length > 0 ? (
                                     <>
                                         {templates.map((t, index) => (
-                                            <tr key={t._id} className={`hover:bg-gray-50/50 transition-all group h-[88px] ${t.enabled === false ? 'opacity-50 grayscale-[0.5]' : ''}`}>
-                                                <td className="px-6 py-4 text-xs text-gray-600 font-mono">
-                                                    {((page - 1) * limit) + index + 1}
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className={`text-sm font-bold tracking-tight transition-colors ${t.enabled !== false ? 'text-foreground group-hover:text-primary' : 'text-gray-400'}`}>
-                                                        {t.name.replace(/\.[^/.]+$/, "")}
-                                                        {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 border border-border font-bold uppercase">DISABLED</span>}
-                                                    </div>
-                                                    <div className="text-[10px] text-gray-600 font-mono mt-0.5">
-                                                        ID: {t._id.slice(-8)}
+                                            <tr key={t._id} className={`hover:bg-gray-50/50 transition-all group h-[80px] ${t.enabled === false ? 'opacity-50 grayscale-[0.5]' : ''}`}>
+                                                <td className="px-6 py-0 text-xs text-gray-600 font-mono text-center">
+                                                    <div className="h-[80px] flex items-center justify-center">
+                                                        {((page - 1) * limit) + index + 1}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    <div className={`w-20 h-14 mx-auto rounded-lg overflow-hidden border bg-gray-50 cursor-pointer transition-all shadow-sm ${t.enabled !== false ? 'border-border hover:border-primary/50' : 'border-border/50 opacity-50'}`} onClick={() => setPreviewTemplate(t)}>
-                                                        {t.thumbnailPath ? (
-                                                            <img src={`${API_URL}/${t.thumbnailPath}`} alt="" className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            <div className="w-full h-full flex items-center justify-center text-lg">📄</div>
-                                                        )}
+                                                <td className="px-6 py-0">
+                                                    <div className="h-[80px] flex flex-col justify-center">
+                                                        <div className={`text-sm font-bold tracking-tight transition-colors ${t.enabled !== false ? 'text-foreground group-hover:text-primary' : 'text-gray-400'}`}>
+                                                            {t.name.replace(/\.[^/.]+$/, "")}
+                                                            {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 border border-border font-bold uppercase">DISABLED</span>}
+                                                        </div>
+                                                        <div className="text-[10px] text-gray-600 font-mono mt-0.5">
+                                                            ID: {t._id.slice(-8)}
+                                                        </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <Link
-                                                        href={`/dashboard/documents?templateId=${t._id}`}
-                                                        className={`flex items-center justify-center gap-2 group/stat cursor-pointer ${t.enabled === false ? 'pointer-events-none' : ''}`}
-                                                    >
-                                                        <span className={`w-2 h-2 rounded-full ${t.enabled !== false ? 'bg-primary animate-pulse' : 'bg-gray-600'}`}></span>
-                                                        <span className={`text-sm font-black group-hover/stat:text-primary transition-colors underline-offset-4 group-hover/stat:underline ${t.enabled !== false ? 'text-foreground' : 'text-gray-400'}`}>
-                                                            {t.documentCount || 0}
-                                                        </span>
-                                                    </Link>
+                                                <td className="px-6 py-0">
+                                                    <div className="h-[80px] flex items-center justify-center">
+                                                        <div className={`w-20 h-14 rounded-lg overflow-hidden border bg-gray-50 cursor-pointer transition-all shadow-sm ${t.enabled !== false ? 'border-border hover:border-primary/50' : 'border-border/50 opacity-50'}`} onClick={() => setPreviewTemplate(t)}>
+                                                            {t.thumbnailPath ? (
+                                                                <img src={`${API_URL}/${t.thumbnailPath}`} alt="" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-lg">📄</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <div className="flex justify-center">
+                                                <td className="px-6 py-0 whitespace-nowrap">
+                                                    <div className="h-[80px] flex items-center justify-center">
+                                                        <Link
+                                                            href={`/dashboard/documents?templateId=${t._id}`}
+                                                            className={`flex items-center justify-center gap-2 group/stat cursor-pointer ${t.enabled === false ? 'pointer-events-none' : ''}`}
+                                                        >
+                                                            <span className={`w-2 h-2 rounded-full ${t.enabled !== false ? 'bg-primary animate-pulse' : 'bg-gray-600'}`}></span>
+                                                            <span className={`text-sm font-black group-hover/stat:text-primary transition-colors underline-offset-4 group-hover/stat:underline ${t.enabled !== false ? 'text-foreground' : 'text-gray-400'}`}>
+                                                                {t.documentCount || 0}
+                                                            </span>
+                                                        </Link>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-0 text-center">
+                                                    <div className="h-[80px] flex items-center justify-center">
                                                         <button
                                                             onClick={() => handleToggleStatus(t._id)}
                                                             className={`relative w-10 h-5 rounded-full transition-all duration-300 ${t.enabled !== false ? 'bg-primary/20 p-1' : 'bg-gray-200 p-1'}`}
@@ -259,20 +266,23 @@ export default function ExistingTemplatesPage() {
                                                         </button>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex flex-wrap gap-1 max-w-[200px]">
+                                                <td className="px-6 py-0">
+                                                    <div className="h-[80px] flex flex-wrap gap-1 content-center max-w-[200px]">
                                                         {t.placeholders?.slice(0, 3).map(p => (
-                                                            <span key={p} className="bg-gray-50 text-[9px] px-2 py-0.5 rounded text-muted font-mono border border-border italic">
+                                                            <span key={p} className="bg-gray-50 text-[9px] px-2 py-0.5 rounded text-muted font-mono border border-border italic whitespace-nowrap">
                                                                 {p}
                                                             </span>
                                                         ))}
                                                         {t.placeholders?.length > 3 && (
                                                             <span className="text-[9px] text-gray-500 font-bold self-center">+{t.placeholders.length - 3}</span>
                                                         )}
+                                                        {t.placeholders?.length === 0 && (
+                                                            <span className="text-[9px] text-gray-400 italic">No placeholders</span>
+                                                        )}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <div className="flex justify-center gap-2">
+                                                <td className="px-6 py-0 text-center">
+                                                    <div className="h-[80px] flex items-center justify-center gap-2">
                                                         <button
                                                             onClick={() => setPreviewTemplate(t)}
                                                             className="w-8 h-8 rounded-lg bg-gray-50 border border-border flex items-center justify-center text-gray-500 hover:bg-primary/20 hover:text-primary transition-all"
@@ -308,8 +318,10 @@ export default function ExistingTemplatesPage() {
                                         ))}
                                         {templates.length < limit && templates.length > 0 &&
                                             [...Array(limit - templates.length)].map((_, i) => (
-                                                <tr key={`empty-${i}`} className="h-[88px]">
-                                                    <td colSpan="7" className="px-6 py-4"></td>
+                                                <tr key={`empty-${i}`} className="h-[80px]">
+                                                    <td colSpan="7" className="px-6 py-0">
+                                                        <div className="h-[80px]"></div>
+                                                    </td>
                                                 </tr>
                                             ))
                                         }
@@ -370,48 +382,45 @@ export default function ExistingTemplatesPage() {
             )}
 
             {/* Modals */}
-            <Modal
-                isOpen={!!previewTemplate}
-                onClose={() => setPreviewTemplate(null)}
-                title="Template Preview"
-                subtitle={previewTemplate?.name?.replace(/\.[^/.]+$/, "")}
-            >
-                <div className="bg-black/20 rounded-2xl overflow-hidden border border-white/5">
-                    <TemplatePreview
-                        template={previewTemplate}
-                        showLabel={false}
-                        maxWidth="100%"
-                    />
-                </div>
-                <div className="mt-8 flex gap-4">
-                    <Button className="flex-1" onClick={() => {
-                        window.location.href = `/dashboard/generate?templateId=${previewTemplate._id}`;
-                    }}>Use Template</Button>
-                </div>
-            </Modal>
+            {previewTemplate && (
+                <TemplatePreview
+                    template={previewTemplate}
+                    onClose={() => setPreviewTemplate(null)}
+                />
+            )}
 
-            <Modal
-                isOpen={!!editingTemplate}
-                onClose={() => setEditingTemplate(null)}
-                title="Rename Template"
-                subtitle={`Current: ${editingTemplate?.name?.replace(/\.[^/.]+$/, "")}`}
-            >
-                <form onSubmit={handleEditName} className="space-y-6">
-                    <Input
-                        label="New Template Name"
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        placeholder="Enter new name..."
-                        required
-                    />
-                    <div className="flex gap-4">
-                        <Button variant="ghost" className="flex-1 border border-white/10" onClick={() => setEditingTemplate(null)}>Cancel</Button>
-                        <Button className="flex-2" type="submit" disabled={saving || !newName || newName === editingTemplate?.name}>
-                            {saving ? 'Saving...' : 'Save Changes'}
-                        </Button>
-                    </div>
-                </form>
-            </Modal>
+            {editingTemplate && (
+                <Modal
+                    title="Rename Template"
+                    onClose={() => setEditingTemplate(null)}
+                >
+                    <form onSubmit={handleEditName} className="space-y-4">
+                        <Input
+                            label="New Name"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            placeholder="Enter new template name"
+                            required
+                        />
+                        <div className="flex justify-end gap-3">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => setEditingTemplate(null)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="primary"
+                                loading={saving}
+                            >
+                                Save Changes
+                            </Button>
+                        </div>
+                    </form>
+                </Modal>
+            )}
         </div>
     );
 }
