@@ -204,11 +204,10 @@ export default function DocumentsPage() {
                             <thead>
                                 <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-border h-[60px]">
                                     <th className="px-6 py-0 text-center w-[80px]">S.No</th>
-                                    <th className="px-6 py-0 text-center w-[15%]">Unique ID</th>
                                     <th className="px-6 py-0 text-center w-[20%]">Template</th>
                                     <th className="px-6 py-0 text-center w-[30%]">Details</th>
                                     <th className="px-6 py-0 text-center w-[15%]">Generated On</th>
-                                    <th className="px-6 py-0 text-center w-[20%]">Action</th>
+                                    <th className="px-6 py-0 text-center w-[25%]">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
@@ -221,13 +220,7 @@ export default function DocumentsPage() {
                                                         {((page - 1) * limit) + index + 1}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-0 text-center">
-                                                    <div className="h-[80px] flex items-center justify-center">
-                                                        <div className="text-xs font-mono text-muted bg-gray-50 py-1 px-2 rounded-md w-fit border border-border">
-                                                            {doc.uniqueId.slice(0, 8)}...
-                                                        </div>
-                                                    </div>
-                                                </td>
+
                                                 <td className="px-6 py-0 text-center">
                                                     <div className="h-[80px] flex items-center justify-center">
                                                         <div className="text-sm font-medium text-foreground tracking-tight group-hover:text-primary transition-colors line-clamp-1">
@@ -298,14 +291,14 @@ export default function DocumentsPage() {
                                         {documents.length < limit && documents.length > 0 &&
                                             [...Array(limit - documents.length)].map((_, i) => (
                                                 <tr key={`empty-${i}`} className="h-[80px]">
-                                                    <td colSpan="6"><div className="h-[80px]"></div></td>
+                                                    <td colSpan="5"><div className="h-[80px]"></div></td>
                                                 </tr>
                                             ))
                                         }
                                     </>
                                 ) : (
                                     <tr>
-                                        <td colSpan="6" className="px-6 py-20 text-center">
+                                        <td colSpan="5" className="px-6 py-20 text-center">
                                             <div className="flex flex-col items-center">
                                                 <span className="text-4xl mb-4 grayscale opacity-50">📂</span>
                                                 <p className="text-gray-500 font-medium">No documents found matching your filters.</p>
