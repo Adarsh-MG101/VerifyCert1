@@ -209,7 +209,7 @@ export default function ExistingTemplatesPage() {
                                     <th className="px-6 py-5">Certs Issued</th>
                                     <th className="px-6 py-5 text-center">Status</th>
                                     <th className="px-6 py-5">Placeholders</th>
-                                    <th className="px-6 py-5 text-right">Action</th>
+                                    <th className="px-6 py-5 text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
@@ -269,8 +269,8 @@ export default function ExistingTemplatesPage() {
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex justify-end gap-2">
+                                        <td className="px-6 py-4 text-center">
+                                            <div className="flex justify-center gap-2">
                                                 <button
                                                     onClick={() => setPreviewTemplate(t)}
                                                     className="w-8 h-8 rounded-lg bg-gray-50 border border-border flex items-center justify-center text-gray-500 hover:bg-primary/20 hover:text-primary transition-all"
@@ -294,7 +294,7 @@ export default function ExistingTemplatesPage() {
                                                 </button>
                                                 <Link
                                                     href={`/dashboard/generate?templateId=${t._id}`}
-                                                    className={`h-8 px-4 flex items-center justify-center border text-[10px] font-black uppercase rounded-lg transition-all ${t.enabled !== false
+                                                    className={`h-8 px-4 flex items-center justify-center border text-[10px] font-black  rounded-lg transition-all leading-none ${t.enabled !== false
                                                         ? 'bg-primary/20 text-primary border-primary/30 hover:bg-primary hover:text-black shadow-lg shadow-primary/10'
                                                         : 'bg-white/5 text-gray-600 border-white/5 cursor-not-allowed pointer-events-none'}`}
                                                 >
