@@ -414,6 +414,7 @@ export default function ExistingTemplatesPage() {
 
             {editingTemplate && (
                 <Modal
+                    isOpen={!!editingTemplate}
                     title="Rename Template"
                     onClose={() => setEditingTemplate(null)}
                 >
