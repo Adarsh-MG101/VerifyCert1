@@ -160,7 +160,23 @@ export default function ExistingTemplatesPage() {
             <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-card p-4 rounded-2xl border border-border shadow-card gap-6 overflow-hidden">
                 <div className="flex-1 flex flex-col md:flex-row items-center gap-4 w-full">
                     <div className="w-full md:w-96 group relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors">🔍</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                <path d="M11 7a4 4 0 0 0-4 4" opacity="0.3"></path>
+                            </svg>
+                        </span>
                         <input
                             placeholder="Search templates by name..."
                             value={search}
@@ -169,16 +185,15 @@ export default function ExistingTemplatesPage() {
                         />
                     </div>
 
-                    <div className="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-xl border border-border whitespace-nowrap">
-                        <div className="flex flex-col">
-                            <span className="text-[9px] uppercase font-medium text-gray-500 tracking-wider leading-none mb-1">Total Templates</span>
-                            <div className="flex items-center gap-2">
-                                <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
-                                </span>
-                                <span className="text-lg font-medium text-foreground">{loading && templates.length === 0 ? '...' : totalDocs}</span>
-                            </div>
+                    <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-border whitespace-nowrap">
+                        <span className="text-[10px] uppercase font-medium text-gray-500 tracking-wider">Total Templates</span>
+                        <div className="w-[1px] h-3 bg-border"></div>
+                        <div className="flex items-center gap-2">
+                            <span className="relative flex h-1.5 w-1.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
+                            </span>
+                            <span className="text-sm font-bold text-foreground">{loading && templates.length === 0 ? '...' : totalDocs}</span>
                         </div>
                     </div>
                 </div>
