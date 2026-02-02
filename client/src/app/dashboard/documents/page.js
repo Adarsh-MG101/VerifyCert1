@@ -131,7 +131,7 @@ export default function DocumentsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 {/* <h1 className="text-3xl font-bold">Generated PDFs</h1> */}
 
-                <div className="flex items-center gap-6 bg-slate-900/40 backdrop-blur-xl border border-glass-border px-5 py-3 rounded-2xl shadow-xl">
+                <div className="flex items-center gap-6 bg-card border border-border px-5 py-3 rounded-2xl shadow-card">
                     <div className="flex flex-col">
                         <span className="text-[10px] uppercase font-bold text-gray-500 tracking-[0.2em] leading-none mb-1.5">Search Results</span>
                         <div className="flex items-center gap-2.5">
@@ -149,7 +149,7 @@ export default function DocumentsPage() {
             </div>
 
             {/* Filter Section */}
-            <Card className="mb-4 overflow-visible p-3! bg-slate-900/20">
+            <Card className="mb-4 overflow-visible p-3!">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Input
                         label="Search ID or Name"
@@ -201,11 +201,11 @@ export default function DocumentsPage() {
                     <p className="text-gray-400 animate-pulse">Fetching your documents...</p>
                 </div>
             ) : (
-                <div className="rounded-2xl border border-glass-border bg-slate-900/40 backdrop-blur-xl overflow-hidden shadow-2xl">
+                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-card">
                     <div className="overflow-x-auto custom-scrollbar">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-white/5 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-glass-border">
+                                <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-border">
                                     <th className="px-6 py-5">S.No</th>
                                     <th className="px-6 py-5">Unique ID</th>
                                     <th className="px-6 py-5">Template</th>
@@ -214,9 +214,9 @@ export default function DocumentsPage() {
                                     <th className="px-6 py-5 text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-glass-border/50">
+                            <tbody className="divide-y divide-border">
                                 {documents.length > 0 ? documents.map((doc, index) => (
-                                    <tr key={doc._id} className="hover:bg-white/5 transition-all group">
+                                    <tr key={doc._id} className="hover:bg-gray-50/50 transition-all group">
                                         <td className="px-6 py-4 text-xs text-gray-600 font-mono">
                                             {((page - 1) * limit) + index + 1}
                                         </td>
@@ -226,7 +226,7 @@ export default function DocumentsPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm font-bold text-white uppercase tracking-tight group-hover:text-primary transition-colors">
+                                            <div className="text-sm font-bold text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">
                                                 {doc.template?.name || 'Unknown'}
                                             </div>
                                         </td>
@@ -288,14 +288,14 @@ export default function DocumentsPage() {
 
                     {/* Pagination Controls */}
                     {totalPages > 1 && (
-                        <div className="bg-white/5 px-6 py-4 flex items-center justify-between border-t border-glass-border">
-                            <div className="text-xs text-gray-400">
-                                Showing <span className="text-white font-bold">{((page - 1) * limit) + 1}</span> to <span className="text-white font-bold">{Math.min(page * limit, totalDocs)}</span> of <span className="text-white font-bold">{totalDocs}</span> documents
+                        <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-border">
+                            <div className="text-xs text-muted">
+                                Showing <span className="text-foreground font-bold">{((page - 1) * limit) + 1}</span> to <span className="text-foreground font-bold">{Math.min(page * limit, totalDocs)}</span> of <span className="text-foreground font-bold">{totalDocs}</span> documents
                             </div>
                             <div className="flex gap-2">
                                 <Button
                                     variant="ghost"
-                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-white/10 disabled:opacity-30"
+                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-border disabled:opacity-30"
                                     onClick={() => setPage(p => Math.max(1, p - 1))}
                                     disabled={page === 1}
                                 >
@@ -306,8 +306,8 @@ export default function DocumentsPage() {
                                         key={i + 1}
                                         onClick={() => setPage(i + 1)}
                                         className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${page === i + 1
-                                            ? 'bg-primary text-black shadow-lg shadow-primary/20'
-                                            : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/5'
+                                            ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                                            : 'bg-gray-50 text-muted hover:bg-gray-100 border border-border'
                                             }`}
                                     >
                                         {i + 1}
@@ -315,7 +315,7 @@ export default function DocumentsPage() {
                                 ))}
                                 <Button
                                     variant="ghost"
-                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-white/10 disabled:opacity-30"
+                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-border disabled:opacity-30"
                                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                     disabled={page === totalPages}
                                 >
