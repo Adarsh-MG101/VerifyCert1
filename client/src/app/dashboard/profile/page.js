@@ -14,7 +14,7 @@ export default function ProfilePage() {
 
     return (
         <div className="animate-fade-in max-w-7xl mx-auto pb-10 text-white">
-            <h1 className="text-3xl font-bold mb-8">Personal Info</h1>
+            {/* <h1 className="text-3xl font-bold mb-8">Personal Info</h1> */}
 
             <div className="grid grid-cols-1 gap-8 items-start">
                 <Card title="Account Profile" subtitle="General information about your account">

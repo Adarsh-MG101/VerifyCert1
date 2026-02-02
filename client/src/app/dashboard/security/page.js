@@ -5,7 +5,7 @@ import Button from '@/components/Button';
 export default function SecurityPage() {
     return (
         <div className="animate-fade-in max-w-7xl mx-auto pb-10 text-white">
-            <h1 className="text-3xl font-bold mb-8">Security & 2FA</h1>
+            {/* <h1 className="text-3xl font-bold mb-8">Security & 2FA</h1> */}
 
             <div className="grid grid-cols-1 gap-8 items-start">
                 <Card title="Two-Factor Authentication" subtitle="Add an extra layer of security to your account">

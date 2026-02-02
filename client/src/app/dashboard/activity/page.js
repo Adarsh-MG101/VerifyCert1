@@ -55,7 +55,7 @@ export default function ActivityPage() {
 
     return (
         <div className="animate-fade-in max-w-7xl mx-auto pb-10 text-white">
-            <h1 className="text-3xl font-bold mb-8 uppercase tracking-tighter">Security & Activity Log</h1>
+            {/* <h1 className="text-3xl font-bold mb-8 uppercase tracking-tighter">Security & Activity Log</h1> */}
 
             <div className="grid grid-cols-1 gap-8 items-start">
                 <Card title="Current Session" subtitle="Details about your active login session">
