@@ -220,7 +220,7 @@ export default function ExistingTemplatesPage() {
                                     <th className="px-6 py-0 w-[80px] text-center">S.No</th>
                                     <th className="px-6 py-0 w-[20%]">Template Name</th>
                                     <th className="px-6 py-0 w-[10%] text-center">Preview</th>
-                                    <th className="px-6 py-0 w-[10%] text-center">Certs Issued</th>
+                                    <th className="px-6 py-0 w-[10%] text-center whitespace-nowrap">Certs Issued</th>
                                     <th className="px-6 py-0 w-[10%] text-center">Status</th>
                                     <th className="px-6 py-0 w-[20%]">Placeholders</th>
                                     <th className="px-6 py-0 w-[30%] text-center">Action</th>
