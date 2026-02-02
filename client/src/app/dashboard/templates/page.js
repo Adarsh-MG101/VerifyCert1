@@ -124,10 +124,10 @@ export default function TemplatesPage() {
                             <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
                                 <span className="mr-3 text-2xl">📝</span> Template Guidelines
                             </h4>
-                            <ul className="text-base text-gray-300 space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>All placeholders must be <span className="text-white font-bold">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{NAME}}"}</code>).</li>
+                            <ul className="text-base text-foreground space-y-3 ml-10 list-disc leading-relaxed font-medium">
+                                <li>All placeholders must be <span className="text-foreground font-extrabold">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{NAME}}"}</code>).</li>
                                 <li>Use <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{QR}}"}</code> to position the verification QR code.</li>
-                                <li>Lowercase tags like <code className="opacity-60 italic">{"{{Name}}"}</code> will <span className="text-red-400/80 font-bold uppercase">not</span> be detected.</li>
+                                <li>Lowercase tags like <code className="text-muted italic">{"{{Name}}"}</code> will <span className="text-red-600 font-bold uppercase">not</span> be detected.</li>
                             </ul>
                         </div>
 
@@ -143,8 +143,8 @@ export default function TemplatesPage() {
                             {file && (
                                 <div className="space-y-4 animate-fade-in">
                                     {detectedPlaceholders.length > 0 ? (
-                                        <div className="bg-slate-800/40 border border-white/5 p-4 rounded-xl">
-                                            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">Detected Placeholders</div>
+                                        <div className="bg-gray-50 border border-border p-4 rounded-xl">
+                                            <div className="text-[10px] font-bold text-muted uppercase tracking-widest mb-3">Detected Placeholders</div>
                                             <div className="flex flex-wrap gap-2">
                                                 {detectedPlaceholders.map(p => (
                                                     <span key={p} className="bg-primary/10 text-[10px] px-2.5 py-1 rounded-md text-primary font-mono border border-primary/20">

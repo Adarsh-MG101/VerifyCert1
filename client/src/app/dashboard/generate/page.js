@@ -158,10 +158,10 @@ export default function GeneratePage() {
                             <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
                                 <span className="mr-3 text-2xl">✨</span> Generation Guidelines
                             </h4>
-                            <ul className="text-base text-gray-300 space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>Select a <span className="text-white font-bold">Template</span> to automatically load its required variables.</li>
-                                <li>Ensure all <span className="text-white font-bold">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
-                                <li>The <span className="text-white font-bold">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
+                            <ul className="text-base text-foreground space-y-3 ml-10 list-disc leading-relaxed font-medium">
+                                <li>Select a <span className="text-foreground font-extrabold">Template</span> to automatically load its required variables.</li>
+                                <li>Ensure all <span className="text-foreground font-extrabold">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
+                                <li>The <span className="text-foreground font-extrabold">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
                                 <li>Click <span className="italic">"Generate Document"</span> to process the PDF conversion in real-time.</li>
                             </ul>
                         </div>
@@ -182,7 +182,7 @@ export default function GeneratePage() {
 
                         {selectedTemplate && (
                             <form onSubmit={handleGenerate} className="space-y-6">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] border-b border-glass-border pb-3">Variables Found</h3>
+                                <h3 className="text-xs font-bold text-muted uppercase tracking-[0.2em] border-b border-border pb-3">Variables Found</h3>
 
                                 <div className="grid grid-cols-1 gap-5">
                                     {selectedTemplate.placeholders && selectedTemplate.placeholders.filter(p => p !== 'certificate_id' && p !== 'qr_code').length > 0 ? (
@@ -199,7 +199,7 @@ export default function GeneratePage() {
                                                 />
                                             ))
                                     ) : (
-                                        <div className="py-4 text-center bg-white/5 rounded-xl border border-white/5 text-gray-500 italic">
+                                        <div className="py-4 text-center bg-gray-50 rounded-xl border border-border text-muted italic">
                                             No custom placeholders in this template.
                                         </div>
                                     )}
@@ -229,9 +229,9 @@ export default function GeneratePage() {
                     {generatedDoc && (
                         <Card className="border-green-500/30 bg-green-500/5 animate-fade-in" title="Success!">
                             <div className="space-y-5">
-                                <div className="p-4 bg-black/40 rounded-xl border border-white/5">
-                                    <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Document ID</span>
-                                    <span className="font-mono text-sm break-all">{generatedDoc.document.uniqueId}</span>
+                                <div className="p-4 bg-gray-50 rounded-xl border border-border">
+                                    <span className="text-[10px] text-muted uppercase font-bold block mb-1">Document ID</span>
+                                    <span className="font-mono text-sm break-all text-foreground">{generatedDoc.document.uniqueId}</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3">
@@ -242,8 +242,8 @@ export default function GeneratePage() {
                                     </a>
                                 </div>
 
-                                <div className="pt-4 border-t border-white/10 space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400">Email Certificate</h4>
+                                <div className="pt-4 border-t border-border space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted">Email Certificate</h4>
                                     <Input
                                         type="email"
                                         placeholder="recipient@example.com"

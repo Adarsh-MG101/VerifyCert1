@@ -178,16 +178,16 @@ export default function BulkGeneratePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className={`${result ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
-                    <Card  className="p-8">
+                    <Card className="p-8">
                         <div className="mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
                             <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
                                 <span className="mr-3 text-2xl">🚀</span> Bulk Processing Guidelines
                             </h4>
-                            <ul className="text-base text-gray-300 space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>Upload a <span className="text-white font-bold">CSV File</span> where the headers match exactly with your template's placeholders.</li>
+                            <ul className="text-base text-foreground space-y-3 ml-10 list-disc leading-relaxed font-medium">
+                                <li>Upload a <span className="text-foreground font-extrabold">CSV File</span> where the headers match exactly with your template's placeholders.</li>
                                 <li>Download the <span className="italic">"Sample CSV"</span> (available after template selection) for the correct column structure.</li>
-                                <li>The system will generate a <span className="text-white font-bold">ZIP Archive</span> containing all successfully generated PDFs.</li>
-                                <li>Any row with <span className="text-red-400 font-bold">Incomplete Data</span> will be skipped and reported in the failure log.</li>
+                                <li>The system will generate a <span className="text-foreground font-extrabold">ZIP Archive</span> containing all successfully generated PDFs.</li>
+                                <li>Any row with <span className="text-red-600 font-bold">Incomplete Data</span> will be skipped and reported in the failure log.</li>
                             </ul>
                         </div>
 
@@ -221,7 +221,7 @@ export default function BulkGeneratePage() {
                                             Download Sample
                                         </Button>
                                     </div>
-                                    <div className="bg-black/40 p-3 rounded-lg font-mono text-xs text-gray-400 overflow-x-auto whitespace-nowrap border border-white/5">
+                                    <div className="bg-gray-50 p-3 rounded-lg font-mono text-xs text-muted overflow-x-auto whitespace-nowrap border border-border">
                                         {selectedTemplate.placeholders
                                             .filter(p => p !== 'certificate_id' && p !== 'qr_code')
                                             .join(', ') || 'No placeholders required'}
@@ -229,7 +229,7 @@ export default function BulkGeneratePage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-2 uppercase tracking-wider">File Upload</label>
+                                    <label className="block text-sm font-medium text-muted mb-2 uppercase tracking-wider">File Upload</label>
                                     <FileUpload
                                         file={csvFile}
                                         onFileChange={handleFileChange}
@@ -271,13 +271,13 @@ export default function BulkGeneratePage() {
                                     <span className="bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-xs font-bold uppercase">Success</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <div className="bg-black/30 p-4 rounded-xl text-center">
-                                        <div className="text-gray-500 text-[10px] uppercase font-bold mb-1">Generated</div>
-                                        <div className="text-2xl font-bold text-green-400">{result.generated}</div>
+                                    <div className="bg-gray-50 p-4 rounded-xl text-center border border-border">
+                                        <div className="text-muted text-[10px] uppercase font-bold mb-1">Generated</div>
+                                        <div className="text-2xl font-bold text-green-500">{result.generated}</div>
                                     </div>
-                                    <div className="bg-black/30 p-4 rounded-xl text-center">
-                                        <div className="text-gray-500 text-[10px] uppercase font-bold mb-1">Failed</div>
-                                        <div className="text-2xl font-bold text-red-400">{result.failed}</div>
+                                    <div className="bg-gray-50 p-4 rounded-xl text-center border border-border">
+                                        <div className="text-muted text-[10px] uppercase font-bold mb-1">Failed</div>
+                                        <div className="text-2xl font-bold text-red-500">{result.failed}</div>
                                     </div>
                                 </div>
 
@@ -301,8 +301,8 @@ export default function BulkGeneratePage() {
                                     </a>
                                 </div>
 
-                                <div className="pt-4 border-t border-white/10 space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400">Email Entire Batch</h4>
+                                <div className="pt-4 border-t border-border space-y-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted">Email Entire Batch</h4>
                                     <Input
                                         type="email"
                                         placeholder="admin@example.com"
