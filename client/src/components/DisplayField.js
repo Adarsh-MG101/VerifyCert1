@@ -2,9 +2,9 @@ import React from 'react';
 
 const DisplayField = ({ label, value, className = "", variant = "default", icon, extra, subtext }) => {
     const variants = {
-        default: "bg-gray-50 border-border text-foreground font-medium",
-        primary: "bg-primary/10 border-primary/20 text-primary font-bold font-mono",
-        muted: "bg-gray-50 border-border text-muted font-medium select-none"
+        default: "bg-gray-50 border-border text-gray-400 text-sm font-medium",
+        primary: "bg-primary/10 border-primary/20 text-primary font-bold font-mono text-sm",
+        muted: "bg-gray-50 border-border text-gray-400 text-sm font-medium select-none"
     };
 
     return (
