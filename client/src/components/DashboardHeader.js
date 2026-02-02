@@ -10,29 +10,6 @@ const DashboardHeader = ({ user }) => {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    const getPageDetails = () => {
-        const path = pathname.split('/').filter(Boolean);
-        const segments = {
-            'dashboard': 'Dashboard',
-            'templates': 'Upload Template',
-            'existing-templates': 'Template Library',
-            'generate': 'Generate Certificate',
-            'bulk-generate': 'Bulk Generate',
-            'documents': 'Generated PDFs',
-            'settings': 'Account Settings',
-            'profile': 'Personal Info',
-            'activity': 'User Activity',
-            'security': 'Security & 2FA'
-        };
-
-        const currentPath = path[path.length - 1];
-        const pageTitle = segments[currentPath] || 'Dashboard';
-
-        return { pageTitle };
-    };
-
-    const { pageTitle } = getPageDetails();
-
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -66,9 +43,6 @@ const DashboardHeader = ({ user }) => {
     return (
         <header className="w-full border-b border-border bg-card/80 backdrop-blur-md px-8 py-4 flex items-center justify-between sticky top-0 z-40 transition-colors">
             <div className="flex items-center space-x-5">
-                <div className="flex items-center gap-4">
-                    <h2 className="text-xl font-bold text-foreground tracking-tight font-header">{pageTitle}</h2>
-                </div>
             </div>
 
             <div className="flex items-center space-x-4">
