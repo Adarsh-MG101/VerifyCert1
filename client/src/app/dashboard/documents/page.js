@@ -166,10 +166,8 @@ export default function DocumentsPage() {
                 </div>
 
                 {(search || startDate || endDate || selectedTemplate) && (
-                    <div className="flex justify-end mt-4 pt-4 border-t border-border">
-                        <Button
-                            variant="outline"
-                            className="text-xs h-8 px-4"
+                    <div className="flex flex-col items-center mt-4">
+                        <button
                             onClick={() => {
                                 setSearch('');
                                 setStartDate('');
@@ -177,9 +175,18 @@ export default function DocumentsPage() {
                                 setSelectedTemplate('');
                                 setPage(1);
                             }}
+                            className="flex flex-col items-center gap-1 group transition-all text-gray-300 hover:text-primary active:scale-95"
                         >
-                            <span className="mr-2">🔄</span> Reset Filters
-                        </Button>
+                            <div className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center group-hover:border-primary/30 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                    <path d="M3 3v5h5"></path>
+                                </svg>
+                            </div>
+                            <span className="text-[9px] font-bold uppercase tracking-widest">
+                                Reset
+                            </span>
+                        </button>
                     </div>
                 )}
             </Card>
