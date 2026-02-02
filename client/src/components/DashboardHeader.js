@@ -125,8 +125,8 @@ const DashboardHeader = ({ user }) => {
                     {isProfileOpen && (
                         <div className="absolute right-0 mt-3 w-64 bg-card border border-border rounded-xl shadow-xl z-50 animate-fade-in py-1 overflow-hidden">
                             <div className="px-5 py-3 border-b border-border bg-muted/20">
-                                <p className="text-[10px] text-muted font-bold uppercase tracking-widest mb-1">Signed in as</p>
-                                <p className="text-sm font-bold text-foreground truncate">{user?.name || 'Administrator'}</p>
+                                <p className="text-[10px] text-muted font-medium uppercase tracking-widest mb-1">Signed in as</p>
+                                <p className="text-sm font-medium text-foreground truncate">{user?.name || 'Administrator'}</p>
                                 <p className="text-[10px] text-muted truncate">{user?.email}</p>
                             </div>
 
@@ -157,7 +157,7 @@ const DashboardHeader = ({ user }) => {
                             <div className="py-1 border-t border-border">
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center gap-3 w-full px-5 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-all font-bold uppercase tracking-wider text-[10px]"
+                                    className="flex items-center gap-3 w-full px-5 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-all font-medium uppercase tracking-wider text-[10px]"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                     Sign Out

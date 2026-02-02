@@ -128,14 +128,14 @@ export default function DashboardLayout({ children }) {
                                 key={item.path}
                                 href={item.path}
                                 className={`flex items-center gap-3 p-3 rounded-xl transition-all group ${isActive(item.path)
-                                    ? 'bg-primary/10 text-primary font-bold shadow-sm'
+                                    ? 'bg-primary/10 text-primary font-medium shadow-sm'
                                     : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                                     }`}
                             >
                                 <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive(item.path) ? 'text-primary' : 'text-gray-400'}`}>
                                     {item.icon}
                                 </span>
-                                <span className="text-sm font-semibold tracking-tight">{item.name}</span>
+                                <span className="text-sm font-medium tracking-tight">{item.name}</span>
                             </Link>
                         ))}
                 </nav>
@@ -148,7 +148,7 @@ export default function DashboardLayout({ children }) {
                         <span className="transition-transform group-hover:scale-110">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                         </span>
-                        <span className="text-xs font-bold tracking-tight uppercase">Sign Out</span>
+                        <span className="text-xs font-medium tracking-tight uppercase">Sign Out</span>
                     </button>
 
                     <div className="opacity-50">
@@ -164,7 +164,7 @@ export default function DashboardLayout({ children }) {
                     <DashboardHeader user={user} />
                     <div className="flex-1 p-8">
                         {/* Breadcrumbs */}
-                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-wider mb-6">
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-medium tracking-wider mb-6">
                             <Link href="/dashboard" className="flex items-center gap-1.5 text-gray-400 hover:text-primary transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                                 Home

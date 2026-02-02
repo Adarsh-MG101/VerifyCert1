@@ -184,9 +184,9 @@ export default function BulkGeneratePage() {
                                 <span className="mr-3 text-2xl">🚀</span> Bulk Processing Guidelines
                             </h4>
                             <ul className="text-base text-foreground space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>Upload a <span className="text-foreground font-extrabold">CSV File</span> where the headers match exactly with your template's placeholders.</li>
+                                <li>Upload a <span className="text-foreground font-medium">CSV File</span> where the headers match exactly with your template's placeholders.</li>
                                 <li>Download the <span className="italic">"Sample CSV"</span> (available after template selection) for the correct column structure.</li>
-                                <li>The system will generate a <span className="text-foreground font-extrabold">ZIP Archive</span> containing all successfully generated PDFs.</li>
+                                <li>The system will generate a <span className="text-foreground font-medium">ZIP Archive</span> containing all successfully generated PDFs.</li>
                                 <li>Any row with <span className="text-red-600 font-bold">Incomplete Data</span> will be skipped and reported in the failure log.</li>
                             </ul>
                         </div>
@@ -210,7 +210,7 @@ export default function BulkGeneratePage() {
                             <form onSubmit={handleGenerate} className="space-y-6">
                                 <div className="p-5 bg-primary/5 border border-primary/20 rounded-xl">
                                     <div className="flex items-center justify-between mb-4">
-                                        <h3 className="font-bold text-primary flex items-center">
+                                        <h3 className="font-medium text-primary flex items-center">
                                             <span className="mr-2 italic">Format:</span> CSV Required
                                         </h3>
                                         <Button
@@ -268,16 +268,16 @@ export default function BulkGeneratePage() {
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-gray-400 font-medium uppercase tracking-tighter">Status</span>
-                                    <span className="bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-xs font-bold uppercase">Success</span>
+                                    <span className="bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-xs font-medium uppercase">Success</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="bg-gray-50 p-4 rounded-xl text-center border border-border">
-                                        <div className="text-muted text-[10px] uppercase font-bold mb-1">Generated</div>
-                                        <div className="text-2xl font-bold text-green-500">{result.generated}</div>
+                                        <div className="text-muted text-[10px] uppercase font-medium mb-1">Generated</div>
+                                        <div className="text-2xl font-medium text-green-500">{result.generated}</div>
                                     </div>
                                     <div className="bg-gray-50 p-4 rounded-xl text-center border border-border">
-                                        <div className="text-muted text-[10px] uppercase font-bold mb-1">Failed</div>
-                                        <div className="text-2xl font-bold text-red-500">{result.failed}</div>
+                                        <div className="text-muted text-[10px] uppercase font-medium mb-1">Failed</div>
+                                        <div className="text-2xl font-medium text-red-500">{result.failed}</div>
                                     </div>
                                 </div>
 
@@ -302,7 +302,7 @@ export default function BulkGeneratePage() {
                                 </div>
 
                                 <div className="pt-4 border-t border-border space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted">Email Entire Batch</h4>
+                                    <h4 className="text-xs font-medium uppercase tracking-widest text-muted">Email Entire Batch</h4>
                                     <Input
                                         type="email"
                                         placeholder="admin@example.com"

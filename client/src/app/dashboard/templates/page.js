@@ -125,9 +125,9 @@ export default function TemplatesPage() {
                                 <span className="mr-3 text-2xl">📝</span> Template Guidelines
                             </h4>
                             <ul className="text-base text-foreground space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>All placeholders must be <span className="text-foreground font-extrabold">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{NAME}}"}</code>).</li>
-                                <li>Use <code className="text-primary font-mono font-bold bg-primary/10 px-1.5 py-0.5 rounded">{"{{QR}}"}</code> to position the verification QR code.</li>
-                                <li>Lowercase tags like <code className="text-muted italic">{"{{Name}}"}</code> will <span className="text-red-600 font-bold uppercase">not</span> be detected.</li>
+                                <li>All placeholders must be <span className="text-foreground font-medium">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-medium bg-primary/10 px-1.5 py-0.5 rounded">{"{{NAME}}"}</code>).</li>
+                                <li>Use <code className="text-primary font-mono font-medium bg-primary/10 px-1.5 py-0.5 rounded">{"{{QR}}"}</code> to position the verification QR code.</li>
+                                <li>Lowercase tags like <code className="text-muted italic">{"{{Name}}"}</code> will <span className="text-red-600 font-medium uppercase">not</span> be detected.</li>
                             </ul>
                         </div>
 
@@ -144,7 +144,7 @@ export default function TemplatesPage() {
                                 <div className="space-y-4 animate-fade-in">
                                     {detectedPlaceholders.length > 0 ? (
                                         <div className="bg-gray-50 border border-border p-4 rounded-xl">
-                                            <div className="text-[10px] font-bold text-muted uppercase tracking-widest mb-3">Detected Placeholders</div>
+                                            <div className="text-[10px] font-medium text-muted uppercase tracking-widest mb-3">Detected Placeholders</div>
                                             <div className="flex flex-wrap gap-2">
                                                 {detectedPlaceholders.map(p => (
                                                     <span key={p} className="bg-primary/10 text-[10px] px-2.5 py-1 rounded-md text-primary font-mono border border-primary/20">
@@ -155,7 +155,7 @@ export default function TemplatesPage() {
                                         </div>
                                     ) : (
                                         <div className="bg-red-500/5 border border-red-500/20 p-4 rounded-xl">
-                                            <p className="text-xs text-red-400 font-bold uppercase tracking-wider text-center">⚠️ No valid uppercase placeholders detected</p>
+                                            <p className="text-xs text-red-400 font-medium uppercase tracking-wider text-center">⚠️ No valid uppercase placeholders detected</p>
                                         </div>
                                     )}
 

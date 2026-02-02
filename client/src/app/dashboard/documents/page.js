@@ -183,7 +183,7 @@ export default function DocumentsPage() {
                                     <path d="M3 3v5h5"></path>
                                 </svg>
                             </div>
-                            <span className="text-[9px] font-bold uppercase tracking-widest">
+                            <span className="text-[9px] font-medium uppercase tracking-widest">
                                 Reset
                             </span>
                         </button>
@@ -230,7 +230,7 @@ export default function DocumentsPage() {
                                                 </td>
                                                 <td className="px-6 py-0 text-center">
                                                     <div className="h-[80px] flex items-center justify-center">
-                                                        <div className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors line-clamp-1">
+                                                        <div className="text-sm font-medium text-foreground tracking-tight group-hover:text-primary transition-colors line-clamp-1">
                                                             {doc.template?.name?.replace(/\.[^/.]+$/, "") || 'Unknown'}
                                                         </div>
                                                     </div>
@@ -246,7 +246,7 @@ export default function DocumentsPage() {
                                                                 </span>
                                                             ))}
                                                         {Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length > 3 && (
-                                                            <span className="text-[9px] text-gray-500 font-bold self-center">
+                                                            <span className="text-[9px] text-gray-500 font-medium self-center">
                                                                 +{Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length - 3}
                                                             </span>
                                                         )}
@@ -288,7 +288,7 @@ export default function DocumentsPage() {
                                                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                                                     <polyline points="14 2 14 8 20 8"></polyline>
                                                                 </svg>
-                                                                <span className="text-[11px] font-black text-gray-900 tracking-tight">PDF</span>
+                                                                <span className="text-[11px] font-medium text-gray-900 tracking-tight">PDF</span>
                                                             </div>
                                                         </a>
                                                     </div>
@@ -321,12 +321,12 @@ export default function DocumentsPage() {
                     {totalPages > 1 && (
                         <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-border">
                             <div className="text-xs text-muted">
-                                Showing <span className="text-foreground font-bold">{((page - 1) * limit) + 1}</span> to <span className="text-foreground font-bold">{Math.min(page * limit, totalDocs)}</span> of <span className="text-foreground font-bold">{totalDocs}</span> documents
+                                Showing <span className="text-foreground font-medium">{((page - 1) * limit) + 1}</span> to <span className="text-foreground font-medium">{Math.min(page * limit, totalDocs)}</span> of <span className="text-foreground font-medium">{totalDocs}</span> documents
                             </div>
                             <div className="flex gap-2">
                                 <Button
                                     variant="ghost"
-                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-border disabled:opacity-30"
+                                    className="text-[10px] uppercase font-medium py-2 px-4 border border-border disabled:opacity-30"
                                     onClick={() => setPage(p => Math.max(1, p - 1))}
                                     disabled={page === 1}
                                 >
@@ -336,7 +336,7 @@ export default function DocumentsPage() {
                                     <button
                                         key={i + 1}
                                         onClick={() => setPage(i + 1)}
-                                        className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${page === i + 1
+                                        className={`w-8 h-8 rounded-lg text-[10px] font-medium transition-all ${page === i + 1
                                             ? 'bg-primary text-white shadow-lg shadow-primary/20'
                                             : 'bg-gray-50 text-muted hover:bg-gray-100 border border-border'
                                             }`}
@@ -346,7 +346,7 @@ export default function DocumentsPage() {
                                 ))}
                                 <Button
                                     variant="ghost"
-                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-border disabled:opacity-30"
+                                    className="text-[10px] uppercase font-medium py-2 px-4 border border-border disabled:opacity-30"
                                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                     disabled={page === totalPages}
                                 >

@@ -171,20 +171,20 @@ export default function ExistingTemplatesPage() {
 
                     <div className="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-xl border border-border whitespace-nowrap">
                         <div className="flex flex-col">
-                            <span className="text-[9px] uppercase font-bold text-gray-500 tracking-wider leading-none mb-1">Total Templates</span>
+                            <span className="text-[9px] uppercase font-medium text-gray-500 tracking-wider leading-none mb-1">Total Templates</span>
                             <div className="flex items-center gap-2">
                                 <span className="relative flex h-1.5 w-1.5">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
                                 </span>
-                                <span className="text-lg font-black text-foreground">{loading && templates.length === 0 ? '...' : totalDocs}</span>
+                                <span className="text-lg font-medium text-foreground">{loading && templates.length === 0 ? '...' : totalDocs}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <Link href="/dashboard/templates" className="w-full md:w-auto">
-                    <Button variant="primary" className="w-full md:w-auto px-6 py-2.5 rounded-xl text-xs uppercase font-bold tracking-widest">
+                    <Button variant="primary" className="w-full md:w-auto px-6 py-2.5 rounded-xl text-xs uppercase font-medium tracking-widest">
                         + Upload Template
                     </Button>
                 </Link>
@@ -223,9 +223,9 @@ export default function ExistingTemplatesPage() {
                                                 </td>
                                                 <td className="px-6 py-0">
                                                     <div className="h-[80px] flex flex-col justify-center">
-                                                        <div className={`text-sm font-bold tracking-tight transition-colors ${t.enabled !== false ? 'text-foreground group-hover:text-primary' : 'text-gray-400'}`}>
+                                                        <div className={`text-sm font-medium tracking-tight transition-colors ${t.enabled !== false ? 'text-foreground group-hover:text-primary' : 'text-gray-400'}`}>
                                                             {t.name.replace(/\.[^/.]+$/, "")}
-                                                            {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 border border-border font-bold uppercase">DISABLED</span>}
+                                                            {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 border border-border font-medium uppercase">DISABLED</span>}
                                                         </div>
                                                         <div className="text-[10px] text-gray-600 font-mono mt-0.5">
                                                             ID: {t._id.slice(-8)}
@@ -250,7 +250,7 @@ export default function ExistingTemplatesPage() {
                                                             className={`flex items-center justify-center gap-2 group/stat cursor-pointer ${t.enabled === false ? 'pointer-events-none' : ''}`}
                                                         >
                                                             <span className={`w-2 h-2 rounded-full ${t.enabled !== false ? 'bg-primary animate-pulse' : 'bg-gray-600'}`}></span>
-                                                            <span className={`text-sm font-black group-hover/stat:text-primary transition-colors underline-offset-4 group-hover/stat:underline ${t.enabled !== false ? 'text-foreground' : 'text-gray-400'}`}>
+                                                            <span className={`text-sm font-medium group-hover/stat:text-primary transition-colors underline-offset-4 group-hover/stat:underline ${t.enabled !== false ? 'text-foreground' : 'text-gray-400'}`}>
                                                                 {t.documentCount || 0}
                                                             </span>
                                                         </Link>
@@ -274,7 +274,7 @@ export default function ExistingTemplatesPage() {
                                                             </span>
                                                         ))}
                                                         {t.placeholders?.length > 3 && (
-                                                            <span className="text-[9px] text-gray-500 font-bold self-center">+{t.placeholders.length - 3}</span>
+                                                            <span className="text-[9px] text-gray-500 font-medium self-center">+{t.placeholders.length - 3}</span>
                                                         )}
                                                         {t.placeholders?.length === 0 && (
                                                             <span className="text-[9px] text-gray-400 italic">No placeholders</span>
@@ -306,7 +306,7 @@ export default function ExistingTemplatesPage() {
                                                         </button>
                                                         <Link
                                                             href={`/dashboard/generate?templateId=${t._id}`}
-                                                            className={`h-8 px-4 flex items-center justify-center border text-[10px] font-black  rounded-lg transition-all leading-none ${t.enabled !== false
+                                                            className={`h-8 px-4 flex items-center justify-center border text-[10px] font-medium  rounded-lg transition-all leading-none ${t.enabled !== false
                                                                 ? 'bg-primary/20 text-primary border-primary/30 hover:bg-primary hover:text-black shadow-lg shadow-primary/10'
                                                                 : 'bg-white/5 text-gray-600 border-white/5 cursor-not-allowed pointer-events-none'}`}
                                                         >
@@ -344,12 +344,12 @@ export default function ExistingTemplatesPage() {
                     {totalPages > 1 && (
                         <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-border">
                             <div className="text-xs text-muted">
-                                Showing <span className="text-foreground font-bold">{((page - 1) * limit) + 1}</span> to <span className="text-foreground font-bold">{Math.min(page * limit, totalDocs)}</span> of <span className="text-foreground font-bold">{totalDocs}</span> templates
+                                Showing <span className="text-foreground font-medium">{((page - 1) * limit) + 1}</span> to <span className="text-foreground font-medium">{Math.min(page * limit, totalDocs)}</span> of <span className="text-foreground font-medium">{totalDocs}</span> templates
                             </div>
                             <div className="flex gap-2">
                                 <Button
                                     variant="ghost"
-                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-border disabled:opacity-30"
+                                    className="text-[10px] uppercase font-medium py-2 px-4 border border-border disabled:opacity-30"
                                     onClick={() => setPage(p => Math.max(1, p - 1))}
                                     disabled={page === 1}
                                 >
@@ -359,7 +359,7 @@ export default function ExistingTemplatesPage() {
                                     <button
                                         key={i + 1}
                                         onClick={() => setPage(i + 1)}
-                                        className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${page === i + 1
+                                        className={`w-8 h-8 rounded-lg text-[10px] font-medium transition-all ${page === i + 1
                                             ? 'bg-primary text-white shadow-lg shadow-primary/20'
                                             : 'bg-gray-50 text-muted hover:bg-gray-100 border border-border'
                                             }`}
@@ -369,7 +369,7 @@ export default function ExistingTemplatesPage() {
                                 ))}
                                 <Button
                                     variant="ghost"
-                                    className="text-[10px] uppercase font-bold py-2 px-4 border border-border disabled:opacity-30"
+                                    className="text-[10px] uppercase font-medium py-2 px-4 border border-border disabled:opacity-30"
                                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                     disabled={page === totalPages}
                                 >

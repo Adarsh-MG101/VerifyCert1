@@ -159,9 +159,9 @@ export default function GeneratePage() {
                                 <span className="mr-3 text-2xl">✨</span> Generation Guidelines
                             </h4>
                             <ul className="text-base text-foreground space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>Select a <span className="text-foreground font-extrabold">Template</span> to automatically load its required variables.</li>
-                                <li>Ensure all <span className="text-foreground font-extrabold">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
-                                <li>The <span className="text-foreground font-extrabold">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
+                                <li>Select a <span className="text-foreground font-medium">Template</span> to automatically load its required variables.</li>
+                                <li>Ensure all <span className="text-foreground font-medium">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
+                                <li>The <span className="text-foreground font-medium">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
                                 <li>Click <span className="italic">"Generate Document"</span> to process the PDF conversion in real-time.</li>
                             </ul>
                         </div>
@@ -182,7 +182,7 @@ export default function GeneratePage() {
 
                         {selectedTemplate && (
                             <form onSubmit={handleGenerate} className="space-y-6">
-                                <h3 className="text-xs font-bold text-muted uppercase tracking-[0.2em] border-b border-border pb-3">Variables Found</h3>
+                                <h3 className="text-xs font-medium text-muted uppercase tracking-[0.2em] border-b border-border pb-3">Variables Found</h3>
 
                                 <div className="grid grid-cols-1 gap-5">
                                     {selectedTemplate.placeholders && selectedTemplate.placeholders.filter(p => p !== 'certificate_id' && p !== 'qr_code').length > 0 ? (
@@ -230,7 +230,7 @@ export default function GeneratePage() {
                         <Card className="border-green-500/30 bg-green-500/5 animate-fade-in" title="Success!">
                             <div className="space-y-5">
                                 <div className="p-4 bg-gray-50 rounded-xl border border-border">
-                                    <span className="text-[10px] text-muted uppercase font-bold block mb-1">Document ID</span>
+                                    <span className="text-[10px] text-muted uppercase font-medium block mb-1">Document ID</span>
                                     <span className="font-mono text-sm break-all text-foreground">{generatedDoc.document.uniqueId}</span>
                                 </div>
 
@@ -243,7 +243,7 @@ export default function GeneratePage() {
                                 </div>
 
                                 <div className="pt-4 border-t border-border space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted">Email Certificate</h4>
+                                    <h4 className="text-xs font-medium uppercase tracking-widest text-muted">Email Certificate</h4>
                                     <Input
                                         type="email"
                                         placeholder="recipient@example.com"

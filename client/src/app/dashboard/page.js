@@ -54,8 +54,8 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {statCards.map((stat, index) => (
                     <Card key={index} className="flex flex-col items-center justify-center py-10 hover:border-primary/50 transition-all group">
-                        <h3 className="text-muted text-[10px] uppercase tracking-[0.2em] mb-3 font-bold">{stat.title}</h3>
-                        <p className={`text-5xl font-bold ${stat.color} group-hover:scale-110 transition-transform duration-500`}>
+                        <h3 className="text-muted text-[10px] uppercase tracking-[0.2em] mb-3 font-medium">{stat.title}</h3>
+                        <p className={`text-5xl font-medium ${stat.color} group-hover:scale-110 transition-transform duration-500`}>
                             {loading ? <span className="animate-pulse">...</span> : stat.value}
                         </p>
                     </Card>
@@ -76,7 +76,7 @@ export default function DashboardPage() {
                                 className="flex items-center p-4 bg-gray-50 rounded-xl hover:bg-primary/5 transition-all border border-border hover:border-primary/30 group"
                             >
                                 <span className="text-2xl mr-4 group-hover:scale-110 transition-transform">{action.icon}</span>
-                                <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{action.name}</span>
+                                <span className="font-medium text-foreground group-hover:text-primary transition-colors">{action.name}</span>
                                 <span className="ml-auto text-muted group-hover:translate-x-1 transition-all">→</span>
                             </Link>
                         ))}
