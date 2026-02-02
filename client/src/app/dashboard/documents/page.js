@@ -212,73 +212,84 @@ export default function DocumentsPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
-                                {documents.length > 0 ? documents.map((doc, index) => (
-                                    <tr key={doc._id} className="hover:bg-gray-50/50 transition-all group">
-                                        <td className="px-6 py-4 text-xs text-gray-600 font-mono text-center">
-                                            {((page - 1) * limit) + index + 1}
-                                        </td>
-                                        <td className="px-6 py-4 text-center">
-                                            <div className="text-xs font-mono text-muted bg-gray-50 py-1 px-2 rounded-md w-fit border border-border mx-auto">
-                                                {doc.uniqueId.slice(0, 8)}...
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-center">
-                                            <div className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
-                                                {doc.template?.name?.replace(/\.[^/.]+$/, "") || 'Unknown'}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-wrap gap-1 justify-center max-w-[220px] mx-auto">
-                                                {Object.entries(doc.data || {})
-                                                    .filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' '))
-                                                    .slice(0, 3)
-                                                    .map(([key, val]) => (
-                                                        <span key={key} className="bg-gray-50 text-[9px] px-2 py-0.5 rounded text-muted font-mono border border-border italic whitespace-nowrap">
-                                                            {key}: {val}
-                                                        </span>
-                                                    ))}
-                                                {Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length > 3 && (
-                                                    <span className="text-[9px] text-gray-500 font-bold self-center">
-                                                        +{Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length - 3}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-center">
-                                            <div className="text-xs text-gray-400">
-                                                {new Date(doc.createdAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
-                                            </div>
-                                            <div className="text-[10px] text-gray-600">
-                                                {new Date(doc.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-center flex justify-center gap-2">
-                                            <button
-                                                onClick={() => setSelectedDocForEmail(doc)}
-                                                className="inline-flex items-center justify-center w-9 h-9 text-primary hover:bg-primary/10 transition-all rounded-lg border border-primary/20"
-                                                title="Send via Email"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                                    <polyline points="22,6 12,13 2,6"></polyline>
-                                                </svg>
-                                            </button>
-                                            <a
-                                                href={`${API_URL}/${doc.filePath}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 text-[10px] uppercase font-bold text-primary hover:bg-primary hover:text-black transition-all px-4 py-2 rounded-lg border border-primary/30 group-hover:border-primary shadow-lg shadow-primary/5"
-                                            >
-                                                <span>Preview</span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                                    <polyline points="15 3 21 3 21 9"></polyline>
-                                                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                                                </svg>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                )) : (
+                                {documents.length > 0 ? (
+                                    <>
+                                        {documents.map((doc, index) => (
+                                            <tr key={doc._id} className="hover:bg-gray-50/50 transition-all group h-[73px]">
+                                                <td className="px-6 py-4 text-xs text-gray-600 font-mono text-center">
+                                                    {((page - 1) * limit) + index + 1}
+                                                </td>
+                                                <td className="px-6 py-4 text-center">
+                                                    <div className="text-xs font-mono text-muted bg-gray-50 py-1 px-2 rounded-md w-fit border border-border mx-auto">
+                                                        {doc.uniqueId.slice(0, 8)}...
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 text-center">
+                                                    <div className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                                                        {doc.template?.name?.replace(/\.[^/.]+$/, "") || 'Unknown'}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-wrap gap-1 justify-center max-w-[220px] mx-auto">
+                                                        {Object.entries(doc.data || {})
+                                                            .filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' '))
+                                                            .slice(0, 3)
+                                                            .map(([key, val]) => (
+                                                                <span key={key} className="bg-gray-50 text-[9px] px-2 py-0.5 rounded text-muted font-mono border border-border italic whitespace-nowrap">
+                                                                    {key}: {val}
+                                                                </span>
+                                                            ))}
+                                                        {Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length > 3 && (
+                                                            <span className="text-[9px] text-gray-500 font-bold self-center">
+                                                                +{Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length - 3}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 text-center">
+                                                    <div className="text-xs text-gray-400">
+                                                        {new Date(doc.createdAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                    </div>
+                                                    <div className="text-[10px] text-gray-600">
+                                                        {new Date(doc.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 text-center flex justify-center gap-2">
+                                                    <button
+                                                        onClick={() => setSelectedDocForEmail(doc)}
+                                                        className="inline-flex items-center justify-center w-9 h-9 text-primary hover:bg-primary/10 transition-all rounded-lg border border-primary/20"
+                                                        title="Send via Email"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                                        </svg>
+                                                    </button>
+                                                    <a
+                                                        href={`${API_URL}/${doc.filePath}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-2 text-[10px] uppercase font-bold text-primary hover:bg-primary hover:text-black transition-all px-4 py-2 rounded-lg border border-primary/30 group-hover:border-primary shadow-lg shadow-primary/5"
+                                                    >
+                                                        <span>Preview</span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                            <polyline points="15 3 21 3 21 9"></polyline>
+                                                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                                                        </svg>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {documents.length < limit && documents.length > 0 &&
+                                            [...Array(limit - documents.length)].map((_, i) => (
+                                                <tr key={`empty-${i}`} className="h-[73px]">
+                                                    <td colSpan="6" className="px-6 py-4"></td>
+                                                </tr>
+                                            ))
+                                        }
+                                    </>
+                                ) : (
                                     <tr>
                                         <td colSpan="6" className="px-6 py-20 text-center">
                                             <div className="flex flex-col items-center">
