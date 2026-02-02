@@ -72,19 +72,19 @@ export default function AccountSettingsPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto py-10 animate-fade-in text-white">
+        <div className="max-w-7xl mx-auto py-10 animate-fade-in">
             {/* <h1 className="text-3xl font-bold mb-8">Account Settings</h1> */}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                 <Card title="Profile Information" subtitle="Your registered account details">
                     <div className="p-2 space-y-4">
                         <div className="flex flex-col space-y-2">
-                            <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Email Address</label>
-                            <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400 font-medium select-none flex items-center justify-between">
+                            <label className="text-xs font-bold text-muted uppercase tracking-widest">Email Address</label>
+                            <div className="px-4 py-3 bg-gray-50 border border-border rounded-xl text-muted font-medium select-none flex items-center justify-between">
                                 {user?.email || 'Loading...'}
-                                <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-md uppercase font-bold tracking-tighter">Verified</span>
+                                <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-md uppercase font-bold tracking-tighter border border-primary/20">Verified</span>
                             </div>
-                            <p className="text-[10px] text-gray-600 mt-1 italic">Email address cannot be changed at this time.</p>
+                            <p className="text-[10px] text-muted mt-1 italic">Email address cannot be changed at this time.</p>
                         </div>
                     </div>
                 </Card>
@@ -131,11 +131,11 @@ export default function AccountSettingsPage() {
                             </div>
                         )}
 
-                        <div className="flex justify-end space-x-4 pt-4 border-t border-white/5">
+                        <div className="flex justify-end space-x-4 pt-4 border-t border-border">
                             <Button
                                 type="button"
-                                variant="ghost"
-                                className="border border-white/10"
+                                variant="outline"
+                                className="border border-border"
                                 onClick={() => router.back()}
                                 disabled={loading}
                             >
