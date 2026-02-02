@@ -128,25 +128,7 @@ export default function DocumentsPage() {
 
     return (
         <div className="animate-fade-in max-w-7xl mx-auto pb-10">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                {/* <h1 className="text-3xl font-bold">Generated PDFs</h1> */}
 
-                <div className="flex items-center gap-6 bg-card border border-border px-5 py-3 rounded-2xl shadow-card">
-                    <div className="flex flex-col">
-                        <span className="text-[10px] uppercase font-bold text-gray-500 tracking-[0.2em] leading-none mb-1.5">Search Results</span>
-                        <div className="flex items-center gap-2.5">
-                            <div className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                            </div>
-                            <span className="text-xl font-black text-black tracking-tighter">
-                                {loading && documents.length === 0 ? '...' : totalDocs}
-                                <span className="text-xs font-bold text-gray-400 ml-1.5 uppercase tracking-normal">Certificates Found</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {/* Filter Section */}
             <Card className="mb-4 overflow-visible p-3!">
@@ -182,14 +164,22 @@ export default function DocumentsPage() {
                         compact={true}
                     />
                 </div>
+
                 {(search || startDate || endDate || selectedTemplate) && (
-                    <div className="flex justify-end mt-2">
-                        <button
-                            onClick={() => { setSearch(''); setStartDate(''); setEndDate(''); setSelectedTemplate(''); }}
-                            className="text-[9px] uppercase font-bold text-primary/60 hover:text-primary transition-colors"
+                    <div className="flex justify-end mt-4 pt-4 border-t border-border">
+                        <Button
+                            variant="outline"
+                            className="text-xs h-8 px-4"
+                            onClick={() => {
+                                setSearch('');
+                                setStartDate('');
+                                setEndDate('');
+                                setSelectedTemplate('');
+                                setPage(1);
+                            }}
                         >
-                            Reset Filters
-                        </button>
+                            <span className="mr-2">🔄</span> Reset Filters
+                        </Button>
                     </div>
                 )}
             </Card>
