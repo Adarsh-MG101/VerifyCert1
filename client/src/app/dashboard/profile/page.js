@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
+import DisplayField from '@/components/DisplayField';
 
 export default function ProfilePage() {
     const [user, setUser] = useState(null);
@@ -19,26 +20,22 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 gap-8 items-start">
                 <Card title="Account Profile" subtitle="General information about your account">
                     <div className="space-y-6">
-                        <div className="flex flex-col space-y-2">
-                            <label className="text-xs font-bold text-muted uppercase tracking-widest">Full Name</label>
-                            <div className="px-4 py-3 bg-gray-50 border border-border rounded-xl text-foreground font-medium">
-                                {user?.name || 'Loading...'}
-                            </div>
-                        </div>
+                        <DisplayField
+                            label="Full Name"
+                            value={user?.name || 'Loading...'}
+                        />
 
-                        <div className="flex flex-col space-y-2">
-                            <label className="text-xs font-bold text-muted uppercase tracking-widest">Email Address</label>
-                            <div className="px-4 py-3 bg-gray-50 border border-border rounded-xl text-foreground font-medium">
-                                {user?.email || 'Loading...'}
-                            </div>
-                        </div>
+                        <DisplayField
+                            label="Email Address"
+                            value={user?.email || 'Loading...'}
+                        />
 
-                        <div className="flex flex-col space-y-2">
-                            <label className="text-xs font-bold text-muted uppercase tracking-widest">Role</label>
-                            <div className="px-4 py-3 bg-gray-50 border border-border rounded-xl text-foreground font-medium uppercase text-xs">
-                                {user?.role || 'User'}
-                            </div>
-                        </div>
+                        <DisplayField
+                            label="Role"
+                            value={user?.role || 'User'}
+                            variant="default"
+                            className="capitalize"
+                        />
                     </div>
                 </Card>
             </div>

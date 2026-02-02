@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
+import DisplayField from '@/components/DisplayField';
 
 export default function ActivityPage() {
     const [activities, setActivities] = useState([]);
@@ -60,24 +61,19 @@ export default function ActivityPage() {
             <div className="grid grid-cols-1 gap-8 items-start">
                 <Card title="Current Session" subtitle="Details about your active login session">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-2">
-                        <div className="flex flex-col space-y-2">
-                            <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em]">Current IP Address</label>
-                            <div className="px-4 py-3 bg-primary/10 border border-primary/20 rounded-xl text-primary font-bold font-mono">
-                                {activities[0]?.ipAddress || 'Detecting...'}
-                            </div>
-                        </div>
-                        <div className="flex flex-col space-y-2">
-                            <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em]">Session Started At</label>
-                            <div className="px-4 py-3 bg-gray-50 border border-border rounded-xl text-muted font-medium">
-                                {activities[0] ? formatDate(activities[0].timestamp) : 'Loading...'}
-                            </div>
-                        </div>
-                        <div className="flex flex-col space-y-2">
-                            <label className="text-[10px] font-bold text-muted uppercase tracking-[0.2em]">Device Information</label>
-                            <div className="px-4 py-3 bg-gray-50 border border-border rounded-xl text-muted font-medium truncate text-xs">
-                                {activities[0]?.userAgent || 'Unknown Device'}
-                            </div>
-                        </div>
+                        <DisplayField
+                            label="Current IP Address"
+                            value={activities[0]?.ipAddress || 'Detecting...'}
+                            variant="primary"
+                        />
+                        <DisplayField
+                            label="Session Started At"
+                            value={activities[0] ? formatDate(activities[0].timestamp) : 'Loading...'}
+                        />
+                        <DisplayField
+                            label="Device Information"
+                            value={activities[0]?.userAgent || 'Unknown Device'}
+                        />
                     </div>
                 </Card>
 

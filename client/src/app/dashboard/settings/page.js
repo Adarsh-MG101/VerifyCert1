@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
+import DisplayField from '@/components/DisplayField';
 import { useRouter } from 'next/navigation';
 
 export default function AccountSettingsPage() {
@@ -78,14 +79,13 @@ export default function AccountSettingsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                 <Card title="Profile Information" subtitle="Your registered account details">
                     <div className="p-2 space-y-4">
-                        <div className="flex flex-col space-y-2">
-                            <label className="text-xs font-bold text-muted uppercase tracking-widest">Email Address</label>
-                            <div className="px-4 py-3 bg-gray-50 border border-border rounded-xl text-muted font-medium select-none flex items-center justify-between">
-                                {user?.email || 'Loading...'}
-                                <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-md uppercase font-bold tracking-tighter border border-primary/20">Verified</span>
-                            </div>
-                            <p className="text-[10px] text-muted mt-1 italic">Email address cannot be changed at this time.</p>
-                        </div>
+                        <DisplayField
+                            label="Email Address"
+                            value={user?.email || 'Loading...'}
+                            variant="muted"
+                            extra={<span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-md uppercase font-bold tracking-tighter border border-primary/20">Verified</span>}
+                            subtext="Email address cannot be changed at this time."
+                        />
                     </div>
                 </Card>
 
