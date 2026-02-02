@@ -49,7 +49,7 @@ export default function DashboardPage() {
 
     return (
         <div className="animate-fade-in max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8 text-foreground">System Overview</h1>
+            {/* <h1 className="text-3xl font-bold mb-8 text-foreground">System Overview</h1> */}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {statCards.map((stat, index) => (
