@@ -355,7 +355,7 @@ export default function DocumentsPage() {
                 isOpen={!!selectedDocForEmail}
                 onClose={() => setSelectedDocForEmail(null)}
                 title="Send Certificate"
-                subtitle={`Sending: ${selectedDocForEmail?.template?.name || 'Document'}`}
+                subtitle={`Sending: ${selectedDocForEmail?.template?.name?.replace(/\.[^/.]+$/, "") || 'Document'}`}
             >
                 <form onSubmit={handleSendEmail} className="space-y-6">
                     <Input
@@ -365,24 +365,27 @@ export default function DocumentsPage() {
                         required
                         value={recipientEmail}
                         onChange={(e) => setRecipientEmail(e.target.value)}
-                        className="bg-black/20"
+                        className="bg-gray-50/50 border-gray-200 focus:bg-white"
                     />
-                    <div className="flex gap-3 pt-2">
-                        <Button
+                    <div className="flex items-center gap-4 pt-4 border-t border-border mt-8">
+                        <button
                             type="button"
-                            variant="ghost"
-                            className="flex-1 border border-white/10"
+                            className="flex-1 px-4 py-3 text-sm font-bold text-muted hover:text-foreground transition-colors uppercase tracking-widest"
                             onClick={() => setSelectedDocForEmail(null)}
                             disabled={sendingEmail}
                         >
                             Cancel
-                        </Button>
+                        </button>
                         <Button
                             type="submit"
-                            className="flex-2"
+                            className="flex-1 py-3 h-auto"
                             disabled={sendingEmail || !recipientEmail}
                         >
-                            {sendingEmail ? 'Sending...' : '📧 Send Email'}
+                            {sendingEmail ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            ) : (
+                                "Send Email"
+                            )}
                         </Button>
                     </div>
                 </form>

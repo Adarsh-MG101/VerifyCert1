@@ -326,20 +326,24 @@ export default function BulkGeneratePage() {
                                 </div>
 
                                 <div className="pt-4 border-t border-border space-y-4">
-                                    <h4 className="text-xs font-medium uppercase tracking-widest text-muted">Email Entire Batch</h4>
+                                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted">Email Entire Batch</h4>
                                     <Input
                                         type="email"
                                         placeholder="admin@example.com"
                                         value={recipientEmail}
                                         onChange={(e) => setRecipientEmail(e.target.value)}
-                                        className="bg-black/20"
+                                        className="bg-gray-50/50 border-gray-200 focus:bg-white"
                                     />
                                     <Button
                                         onClick={handleSendEmail}
-                                        className="w-full text-sm"
+                                        className="w-full py-3 h-auto"
                                         disabled={!recipientEmail || sending}
                                     >
-                                        {sending ? 'Sending Batch...' : '📧 Send ZIP via Email'}
+                                        {sending ? (
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        ) : (
+                                            "Send ZIP via Email"
+                                        )}
                                     </Button>
                                 </div>
                             </div>

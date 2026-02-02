@@ -267,20 +267,24 @@ export default function GeneratePage() {
                                 </div>
 
                                 <div className="pt-4 border-t border-border space-y-4">
-                                    <h4 className="text-xs font-medium uppercase tracking-widest text-muted">Email Certificate</h4>
+                                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted">Email Certificate</h4>
                                     <Input
                                         type="email"
                                         placeholder="recipient@example.com"
                                         value={recipientEmail}
                                         onChange={(e) => setRecipientEmail(e.target.value)}
-                                        className="bg-black/20"
+                                        className="bg-gray-50/50 border-gray-200 focus:bg-white"
                                     />
                                     <Button
                                         onClick={handleSendEmail}
-                                        className="w-full text-sm"
+                                        className="w-full py-3 h-auto"
                                         disabled={!recipientEmail || sending}
                                     >
-                                        {sending ? 'Sending...' : '📧 Send via Email'}
+                                        {sending ? (
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        ) : (
+                                            "Send via Email"
+                                        )}
                                     </Button>
                                 </div>
 
