@@ -185,11 +185,11 @@ export default function BulkGeneratePage() {
                             <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
                                 <span className="mr-3 text-2xl">🚀</span> Bulk Processing Guidelines
                             </h4>
-                            <ul className="text-base text-foreground space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>Upload a <span className="text-foreground font-medium">CSV File</span> where the headers match exactly with your template's placeholders.</li>
-                                <li>Download the <span className="italic">"Sample CSV"</span> (available after template selection) for the correct column structure.</li>
-                                <li>The system will generate a <span className="text-foreground font-medium">ZIP Archive</span> containing all successfully generated PDFs.</li>
-                                <li>Any row with <span className="text-red-600 font-bold">Incomplete Data</span> will be skipped and reported in the failure log.</li>
+                            <ul className="text-sm text-foreground/80 space-y-4 ml-6 list-disc marker:text-primary leading-relaxed">
+                                <li className="pl-2">Upload a <span className="text-primary font-bold">CSV File</span> where the headers match exactly with your template's placeholders.</li>
+                                <li className="pl-2">Download the <span className="italic font-bold text-primary">"Sample CSV"</span> (available after selection) for the correct column structure.</li>
+                                <li className="pl-2">The system will generate a <span className="text-primary font-bold">ZIP Archive</span> containing all successfully generated PDFs.</li>
+                                <li className="pl-2">Any row with <span className="text-red-500 font-bold uppercase tracking-tighter">Incomplete Data</span> will be skipped and reported in the log.</li>
                             </ul>
                         </div>
 

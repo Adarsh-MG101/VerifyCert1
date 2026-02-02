@@ -160,11 +160,11 @@ export default function GeneratePage() {
                             <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
                                 <span className="mr-3 text-2xl">✨</span> Generation Guidelines
                             </h4>
-                            <ul className="text-base text-foreground space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>Select a <span className="text-foreground font-medium">Template</span> to automatically load its required variables.</li>
-                                <li>Ensure all <span className="text-foreground font-medium">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
-                                <li>The <span className="text-foreground font-medium">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
-                                <li>Click <span className="italic">"Generate Document"</span> to process the PDF conversion in real-time.</li>
+                            <ul className="text-sm text-foreground/80 space-y-4 ml-6 list-disc marker:text-primary leading-relaxed">
+                                <li className="pl-2">Select a <span className="text-primary font-bold">Template</span> to automatically load its required variables.</li>
+                                <li className="pl-2">Ensure all <span className="text-primary font-bold">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
+                                <li className="pl-2">The <span className="text-primary font-bold">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
+                                <li className="pl-2">Click <span className="italic font-bold text-primary">"Generate Document"</span> to process the PDF conversion in real-time.</li>
                             </ul>
                         </div>
 
