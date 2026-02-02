@@ -70,7 +70,6 @@ export const UIProvider = ({ children }) => {
                 isOpen={confirm.isOpen}
                 onClose={closeConfirm}
                 title={confirm.title}
-                subtitle="❓ Confirmation Required"
             >
                 <div className="space-y-6">
                     <p className="text-gray-300 leading-relaxed">{confirm.message}</p>

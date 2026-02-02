@@ -398,10 +398,18 @@ export default function ExistingTemplatesPage() {
 
             {/* Modals */}
             {previewTemplate && (
-                <TemplatePreview
-                    template={previewTemplate}
+                <Modal
+                    isOpen={!!previewTemplate}
                     onClose={() => setPreviewTemplate(null)}
-                />
+                    title="Template Preview"
+                    subtitle={previewTemplate.name.replace(/\.[^/.]+$/, "")}
+                    className="max-w-2xl"
+                >
+                    <TemplatePreview
+                        template={previewTemplate}
+                        showLabel={false}
+                    />
+                </Modal>
             )}
 
             {editingTemplate && (

@@ -7,6 +7,7 @@ import Input from '@/components/Input';
 import FileUpload from '@/components/FileUpload';
 import TemplateSelector from '@/components/TemplateSelector';
 import TemplatePreview from '@/components/TemplatePreview';
+import Modal from '@/components/Modal';
 
 
 
@@ -20,6 +21,7 @@ export default function BulkGeneratePage() {
     const [result, setResult] = useState(null);
     const [recipientEmail, setRecipientEmail] = useState('');
     const [sending, setSending] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
     useEffect(() => {
@@ -191,19 +193,41 @@ export default function BulkGeneratePage() {
                             </ul>
                         </div>
 
-                        <TemplateSelector
-                            templates={templates}
-                            selectedTemplate={selectedTemplate}
-                            onTemplateSelect={handleTemplateSelect}
-                            label="Select Template"
-                        />
+                        <div className="flex items-center justify-between mb-8">
+                            <TemplateSelector
+                                templates={templates}
+                                selectedTemplate={selectedTemplate}
+                                onTemplateSelect={handleTemplateSelect}
+                                label="Select Template"
+                                className="mb-0 flex-1 mr-4"
+                            />
+                            {selectedTemplate && (
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => setShowPreview(true)}
+                                    className="mt-6 border border-border hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    Preview
+                                </Button>
+                            )}
+                        </div>
 
-                        <TemplatePreview
-                            template={selectedTemplate}
-                            maxWidth="300px"
-                            className="mb-8"
-                            overlayText="Batch processing ready"
-                        />
+                        {selectedTemplate && (
+                            <Modal
+                                isOpen={showPreview}
+                                onClose={() => setShowPreview(false)}
+                                title="Template Preview"
+                                subtitle={selectedTemplate.name.replace(/\.[^/.]+$/, "")}
+                                className="max-w-2xl"
+                            >
+                                <TemplatePreview
+                                    template={selectedTemplate}
+                                    showLabel={false}
+                                />
+                            </Modal>
+                        )}
 
 
                         {selectedTemplate && (
