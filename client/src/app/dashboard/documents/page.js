@@ -206,39 +206,39 @@ export default function DocumentsPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-border">
-                                    <th className="px-6 py-5">S.No</th>
-                                    <th className="px-6 py-5">Unique ID</th>
-                                    <th className="px-6 py-5">Template</th>
-                                    <th className="px-6 py-5">Details</th>
-                                    <th className="px-6 py-5">Generated On</th>
-                                    <th className="px-6 py-5 text-right">Action</th>
+                                    <th className="px-6 py-5 text-center">S.No</th>
+                                    <th className="px-6 py-5 text-center">Unique ID</th>
+                                    <th className="px-6 py-5 text-center">Template</th>
+                                    <th className="px-6 py-5 text-center">Details</th>
+                                    <th className="px-6 py-5 text-center">Generated On</th>
+                                    <th className="px-6 py-5 text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
                                 {documents.length > 0 ? documents.map((doc, index) => (
                                     <tr key={doc._id} className="hover:bg-gray-50/50 transition-all group">
-                                        <td className="px-6 py-4 text-xs text-gray-600 font-mono">
+                                        <td className="px-6 py-4 text-xs text-gray-600 font-mono text-center">
                                             {((page - 1) * limit) + index + 1}
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-xs font-mono text-muted bg-gray-50 py-1 px-2 rounded-md w-fit border border-border">
+                                        <td className="px-6 py-4 text-center">
+                                            <div className="text-xs font-mono text-muted bg-gray-50 py-1 px-2 rounded-md w-fit border border-border mx-auto">
                                                 {doc.uniqueId.slice(0, 8)}...
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 text-center">
                                             <div className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
                                                 {doc.template?.name?.replace(/\.[^/.]+$/, "") || 'Unknown'}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-[10px] text-gray-400 leading-tight max-w-[180px] wrap-break-word line-clamp-2">
+                                        <td className="px-6 py-4 text-center">
+                                            <div className="text-[10px] text-gray-400 leading-tight max-w-[180px] wrap-break-word line-clamp-2 mx-auto">
                                                 {Object.entries(doc.data || {})
                                                     .filter(([key]) => key !== 'QR' && key !== 'QRCODE' && key !== 'CERTIFICATE_ID')
                                                     .map(([key, val]) => `${key}: ${val}`)
                                                     .join(', ')}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 text-center">
                                             <div className="text-xs text-gray-400">
                                                 {new Date(doc.createdAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </div>
@@ -246,7 +246,7 @@ export default function DocumentsPage() {
                                                 {new Date(doc.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-right flex justify-end gap-2">
+                                        <td className="px-6 py-4 text-center flex justify-center gap-2">
                                             <button
                                                 onClick={() => setSelectedDocForEmail(doc)}
                                                 className="inline-flex items-center justify-center w-9 h-9 text-primary hover:bg-primary/10 transition-all rounded-lg border border-primary/20"
