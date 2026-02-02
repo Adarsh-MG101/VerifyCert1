@@ -139,7 +139,7 @@ export default function DocumentsPage() {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                             </div>
-                            <span className="text-xl font-black text-white tracking-tighter">
+                            <span className="text-xl font-black text-black tracking-tighter">
                                 {loading && documents.length === 0 ? '...' : totalDocs}
                                 <span className="text-xs font-bold text-gray-400 ml-1.5 uppercase tracking-normal">Certificates Found</span>
                             </span>
