@@ -11,7 +11,9 @@ import TemplatePreview from '@/components/TemplatePreview';
 import Modal from '@/components/Modal';
 
 
-export default function GeneratePage() {
+import { Suspense } from 'react';
+
+function GenerateContent() {
     const { showAlert } = useUI();
     const [templates, setTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -303,3 +305,16 @@ export default function GeneratePage() {
         </div>
     );
 }
+
+export default function GeneratePage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center p-20">
+                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <GenerateContent />
+        </Suspense>
+    );
+}
+

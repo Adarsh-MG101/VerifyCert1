@@ -10,7 +10,9 @@ import Footer from '@/components/Footer';
 import ValidationError from '@/components/ValidationError';
 import { validateEmail } from '@/utils/validators';
 
-export default function LoginPage() {
+import { Suspense } from 'react';
+
+function LoginContent() {
     const searchParams = useSearchParams();
     const isRegistered = searchParams.get('registered');
     const [email, setEmail] = useState('');
@@ -134,3 +136,16 @@ export default function LoginPage() {
         </div>
     );
 }
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
+    );
+}
+

@@ -8,7 +8,9 @@ import Button from '@/components/Button';
 import TemplateSelector from '@/components/TemplateSelector';
 import Modal from '@/components/Modal';
 
-export default function DocumentsPage() {
+import { Suspense } from 'react';
+
+function DocumentsContent() {
     const { showAlert } = useUI();
     const searchParams = useSearchParams();
     const templateIdParam = searchParams.get('templateId');
@@ -393,3 +395,16 @@ export default function DocumentsPage() {
         </div>
     );
 }
+
+export default function DocumentsPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center py-20">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <DocumentsContent />
+        </Suspense>
+    );
+}
+
