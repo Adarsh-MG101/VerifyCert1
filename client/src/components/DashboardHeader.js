@@ -1,6 +1,5 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const DashboardHeader = ({ user }) => {
@@ -66,12 +65,6 @@ const DashboardHeader = ({ user }) => {
             <div className="flex items-center space-x-5">
                 <div className="flex items-center gap-4">
                     <h2 className="text-xl font-bold text-gray-800 tracking-tight font-header">{pageTitle}</h2>
-                    <div className="h-5 w-px bg-border"></div>
-                    <nav className="flex items-center gap-2 text-sm">
-                        <Link href="/dashboard" className="text-gray-400 hover:text-primary transition-colors font-medium">Home</Link>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        <span className="text-gray-500 font-medium">{pageTitle}</span>
-                    </nav>
                 </div>
             </div>
 

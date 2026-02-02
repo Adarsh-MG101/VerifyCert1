@@ -113,7 +113,7 @@ export default function DashboardLayout({ children }) {
 
     return (
         <div className="flex h-screen overflow-hidden bg-background text-foreground">
-            <aside className="w-72 border-r border-border p-8 flex flex-col bg-card z-30 shrink-0 h-full">
+            <aside className="w-72 border-r border-border p-4 flex flex-col bg-card z-30 shrink-0 h-full">
                 <Link href={user?.role === 'admin' ? "/dashboard" : "/dashboard/templates"}>
                     <h2 className="text-3xl font-bold text-primary mb-12 flex items-center font-header">
                         VerifyCert
@@ -163,6 +163,29 @@ export default function DashboardLayout({ children }) {
                 <div className="min-h-full flex flex-col">
                     <DashboardHeader user={user} />
                     <div className="flex-1 p-8">
+                        {/* Breadcrumbs */}
+                        <div className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-wider mb-6">
+                            <Link href="/dashboard" className="text-gray-400 hover:text-primary transition-colors">Home</Link>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            <span className="text-primary/60">
+                                {(() => {
+                                    const path = pathname.split('/').filter(Boolean);
+                                    const segments = {
+                                        'dashboard': 'Dashboard',
+                                        'templates': 'Upload Template',
+                                        'existing-templates': 'Template Library',
+                                        'generate': 'Generate Certificate',
+                                        'bulk-generate': 'Bulk Generate',
+                                        'documents': 'Generated PDFs',
+                                        'settings': 'Account Settings',
+                                        'profile': 'Personal Info',
+                                        'activity': 'User Activity',
+                                        'security': 'Security & 2FA'
+                                    };
+                                    return segments[path[path.length - 1]] || 'Dashboard';
+                                })()}
+                            </span>
+                        </div>
                         {children}
                     </div>
                     <Footer />
