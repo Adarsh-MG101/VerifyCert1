@@ -1,0 +1,49 @@
+[
+  {
+    "name": "Login - Success",
+    "status": "passed",
+    "details": {
+      "success": true,
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTgwNDUwNDIyZTI4YmM0OWIwNmYzYmIiLCJlbWFpbCI6ImxvZ2luX3Rlc3RfMTc3MDAxMzk1NjY4OUBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzcwMDEzOTU3LCJleHAiOjE3NzAxMDAzNTd9.GGPruZcmKnqzNB6OdGQ0TrivrxQKehczxoHTTIw2_BU",
+      "user": {
+        "id": "6980450422e28bc49b06f3bb",
+        "name": "Login Test User",
+        "email": "login_test_1770013956689@example.com",
+        "role": "user"
+      }
+    },
+    "duration": 131
+  },
+  {
+    "name": "Login - Failure (Wrong Password)",
+    "status": "passed",
+    "details": {
+      "error": "Invalid credentials"
+    },
+    "duration": 117
+  },
+  {
+    "name": "Login - Failure (Invalid User)",
+    "status": "passed",
+    "details": {
+      "error": "Invalid credentials"
+    },
+    "duration": 6
+  },
+  {
+    "name": "Login - Session Verification (Profile Access)",
+    "status": "passed",
+    "details": {
+      "success": true,
+      "user": {
+        "_id": "6980450422e28bc49b06f3bb",
+        "name": "Login Test User",
+        "email": "login_test_1770013956689@example.com",
+        "role": "user",
+        "createdAt": "2026-02-02T06:32:36.771Z",
+        "__v": 0
+      }
+    },
+    "duration": 129
+  }
+]

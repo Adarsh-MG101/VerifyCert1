@@ -1,0 +1,59 @@
+[
+  {
+    "name": "Registration - Success",
+    "status": "passed",
+    "details": {
+      "success": true,
+      "message": "User registered successfully"
+    },
+    "duration": 121
+  },
+  {
+    "name": "Registration - Failure (Duplicate Email)",
+    "status": "passed",
+    "details": {
+      "error": "User already exists"
+    },
+    "duration": 5
+  },
+  {
+    "name": "Registration - Failure (Missing Fields)",
+    "status": "passed",
+    "details": {
+      "error": "User validation failed: email: Path `email` is required., password: Path `password` is required."
+    },
+    "duration": 9
+  },
+  {
+    "name": "Registration - Failure (Invalid Email: No @)",
+    "status": "passed",
+    "details": {
+      "error": "User validation failed: email: Please fill a valid email address"
+    },
+    "duration": 6
+  },
+  {
+    "name": "Registration - Failure (Invalid Email: No Domain)",
+    "status": "passed",
+    "details": {
+      "error": "User validation failed: email: Please fill a valid email address"
+    },
+    "duration": 5
+  },
+  {
+    "name": "Registration - Failure (Invalid Email: No Extension)",
+    "status": "passed",
+    "details": {
+      "error": "User validation failed: email: Please fill a valid email address"
+    },
+    "duration": 5
+  },
+  {
+    "name": "Registration - Failure (Invalid Email: Multiple @)",
+    "status": "passed",
+    "details": {
+      "error": "User validation failed: email: Please fill a valid email address"
+    },
+    "duration": 5
+  }
+]
