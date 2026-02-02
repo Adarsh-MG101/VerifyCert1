@@ -221,13 +221,13 @@ export default function DocumentsPage() {
                                             {((page - 1) * limit) + index + 1}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-xs font-mono text-gray-400 bg-white/5 py-1 px-2 rounded-md w-fit border border-white/5">
+                                            <div className="text-xs font-mono text-muted bg-gray-50 py-1 px-2 rounded-md w-fit border border-border">
                                                 {doc.uniqueId.slice(0, 8)}...
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm font-bold text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">
-                                                {doc.template?.name || 'Unknown'}
+                                            <div className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                                                {doc.template?.name?.replace(/\.[^/.]+$/, "") || 'Unknown'}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">

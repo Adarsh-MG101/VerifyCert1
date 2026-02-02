@@ -219,9 +219,9 @@ export default function ExistingTemplatesPage() {
                                             {((page - 1) * limit) + index + 1}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className={`text-sm font-bold uppercase tracking-tight transition-colors ${t.enabled !== false ? 'text-foreground group-hover:text-primary' : 'text-gray-400'}`}>
-                                                {t.name}
-                                                {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 border border-border">DISABLED</span>}
+                                            <div className={`text-sm font-bold tracking-tight transition-colors ${t.enabled !== false ? 'text-foreground group-hover:text-primary' : 'text-gray-400'}`}>
+                                                {t.name.replace(/\.[^/.]+$/, "")}
+                                                {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 border border-border font-bold uppercase">DISABLED</span>}
                                             </div>
                                             <div className="text-[10px] text-gray-600 font-mono mt-0.5">
                                                 ID: {t._id.slice(-8)}
@@ -363,7 +363,7 @@ export default function ExistingTemplatesPage() {
                 isOpen={!!previewTemplate}
                 onClose={() => setPreviewTemplate(null)}
                 title="Template Preview"
-                subtitle={previewTemplate?.name}
+                subtitle={previewTemplate?.name?.replace(/\.[^/.]+$/, "")}
             >
                 <div className="bg-black/20 rounded-2xl overflow-hidden border border-white/5">
                     <TemplatePreview
@@ -383,7 +383,7 @@ export default function ExistingTemplatesPage() {
                 isOpen={!!editingTemplate}
                 onClose={() => setEditingTemplate(null)}
                 title="Rename Template"
-                subtitle={`Current: ${editingTemplate?.name}`}
+                subtitle={`Current: ${editingTemplate?.name?.replace(/\.[^/.]+$/, "")}`}
             >
                 <form onSubmit={handleEditName} className="space-y-6">
                     <Input

@@ -17,7 +17,7 @@ const TemplateSelector = ({ templates, selectedTemplate, onTemplateSelect, label
                 <option value="" className="bg-white text-foreground">-- {label} --</option>
                 {Array.isArray(templates) && templates.map(t => (
                     <option key={t._id} value={t._id} className="bg-white text-foreground">
-                        {t.name}
+                        {t.name.replace(/\.[^/.]+$/, "")}
                     </option>
                 ))}
             </select>
