@@ -2,8 +2,10 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useUI } from '@/context/UIContext';
 
 const DashboardHeader = ({ user }) => {
+    const { theme, toggleTheme } = useUI();
     const pathname = usePathname();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -62,7 +64,7 @@ const DashboardHeader = ({ user }) => {
     };
 
     return (
-        <header className="w-full border-b border-border bg-white/80 backdrop-blur-md px-8 py-4 flex items-center justify-between sticky top-0 z-40 transition-colors">
+        <header className="w-full border-b border-border bg-card/80 backdrop-blur-md px-8 py-4 flex items-center justify-between sticky top-0 z-40 transition-colors">
             <div className="flex items-center space-x-5">
                 <div className="flex items-center gap-4">
                     <h2 className="text-xl font-bold text-gray-800 tracking-tight font-header">{pageTitle}</h2>
@@ -75,9 +77,17 @@ const DashboardHeader = ({ user }) => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
 
-                {/* Theme Toggle (Duralux style) */}
-                <button className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-all text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                {/* Theme Toggle */}
+                <button
+                    onClick={toggleTheme}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-gray-500"
+                    title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                >
+                    {theme === 'light' ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    )}
                 </button>
 
                 {/* Notifications */}
@@ -113,33 +123,33 @@ const DashboardHeader = ({ user }) => {
 
                     {/* Dropdown Menu */}
                     {isProfileOpen && (
-                        <div className="absolute right-0 mt-3 w-64 bg-white border border-border rounded-xl shadow-xl z-50 animate-fade-in py-1 overflow-hidden">
-                            <div className="px-5 py-3 border-b border-border bg-gray-50/50">
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Signed in as</p>
-                                <p className="text-sm font-bold text-gray-800 truncate">{user?.name || 'Administrator'}</p>
-                                <p className="text-[10px] text-gray-500 truncate">{user?.email}</p>
+                        <div className="absolute right-0 mt-3 w-64 bg-card border border-border rounded-xl shadow-xl z-50 animate-fade-in py-1 overflow-hidden">
+                            <div className="px-5 py-3 border-b border-border bg-muted/20">
+                                <p className="text-[10px] text-muted font-bold uppercase tracking-widest mb-1">Signed in as</p>
+                                <p className="text-sm font-bold text-foreground truncate">{user?.name || 'Administrator'}</p>
+                                <p className="text-[10px] text-muted truncate">{user?.email}</p>
                             </div>
 
                             <div className="py-1">
-                                <Link href="/dashboard/profile" className="flex items-center gap-3 px-5 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-all group">
-                                    <span className="text-gray-400 group-hover:text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+                                <Link href="/dashboard/profile" className="flex items-center gap-3 px-5 py-2 text-sm text-foreground/80 hover:bg-muted/30 transition-all group">
+                                    <span className="text-muted group-hover:text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
                                     <span className="font-medium">Personal Info</span>
                                 </Link>
 
-                                <Link href="/dashboard/activity" className="flex items-center gap-3 px-5 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-all group">
-                                    <span className="text-gray-400 group-hover:text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></span>
+                                <Link href="/dashboard/activity" className="flex items-center gap-3 px-5 py-2 text-sm text-foreground/80 hover:bg-muted/30 transition-all group">
+                                    <span className="text-muted group-hover:text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></span>
                                     <span className="font-medium">User Activity</span>
                                 </Link>
                             </div>
 
                             <div className="py-1 border-t border-border">
-                                <Link href="/dashboard/security" className="flex items-center gap-3 px-5 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-all group">
-                                    <span className="text-gray-400 group-hover:text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+                                <Link href="/dashboard/security" className="flex items-center gap-3 px-5 py-2 text-sm text-foreground/80 hover:bg-muted/30 transition-all group">
+                                    <span className="text-muted group-hover:text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
                                     <span className="font-medium">Security</span>
                                 </Link>
 
-                                <Link href="/dashboard/settings" className="flex items-center gap-3 px-5 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-all group">
-                                    <span className="text-gray-400 group-hover:text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3m-3-3l-2.5-2.5"></path></svg></span>
+                                <Link href="/dashboard/settings" className="flex items-center gap-3 px-5 py-2 text-sm text-foreground/80 hover:bg-muted/30 transition-all group">
+                                    <span className="text-muted group-hover:text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3m-3-3l-2.5-2.5"></path></svg></span>
                                     <span className="font-medium">Settings</span>
                                 </Link>
                             </div>
@@ -147,7 +157,7 @@ const DashboardHeader = ({ user }) => {
                             <div className="py-1 border-t border-border">
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center gap-3 w-full px-5 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-all font-bold uppercase tracking-wider text-[10px]"
+                                    className="flex items-center gap-3 w-full px-5 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-all font-bold uppercase tracking-wider text-[10px]"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                     Sign Out

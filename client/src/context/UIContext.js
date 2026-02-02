@@ -8,6 +8,29 @@ const UIContext = createContext();
 export const UIProvider = ({ children }) => {
     const [alert, setAlert] = useState({ isOpen: false, title: '', message: '', type: 'info' });
     const [confirm, setConfirm] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+    const [theme, setTheme] = useState('light');
+
+    // Initialize theme from localStorage
+    React.useEffect(() => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, []);
+
+    const toggleTheme = useCallback(() => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+        if (newTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [theme]);
 
     const showAlert = useCallback((title, message, type = 'info') => {
         setAlert({ isOpen: true, title, message, type });
@@ -26,7 +49,7 @@ export const UIProvider = ({ children }) => {
     };
 
     return (
-        <UIContext.Provider value={{ showAlert, showConfirm }}>
+        <UIContext.Provider value={{ showAlert, showConfirm, theme, toggleTheme }}>
             {children}
 
             {/* Alert Modal */}
