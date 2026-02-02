@@ -187,7 +187,7 @@ export default function ExistingTemplatesPage() {
 
                     <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-border whitespace-nowrap">
                         <span className="text-[10px] uppercase font-medium text-gray-500 tracking-wider">Total Templates</span>
-                        <div className="w-[1px] h-3 bg-border"></div>
+                        <div className="w-px h-3 bg-border"></div>
                         <div className="flex items-center gap-2">
                             <span className="relative flex h-1.5 w-1.5">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
