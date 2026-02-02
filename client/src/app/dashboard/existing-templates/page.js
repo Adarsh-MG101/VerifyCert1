@@ -205,8 +205,8 @@ export default function ExistingTemplatesPage() {
                                 <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-border">
                                     <th className="px-6 py-5 w-16">S.No</th>
                                     <th className="px-6 py-5">Template Name</th>
-                                    <th className="px-6 py-5">Preview</th>
-                                    <th className="px-6 py-5">Certs Issued</th>
+                                    <th className="px-6 py-5 text-center">Preview</th>
+                                    <th className="px-6 py-5 whitespace-nowrap text-center">Certs Issued</th>
                                     <th className="px-6 py-5 text-center">Status</th>
                                     <th className="px-6 py-5">Placeholders</th>
                                     <th className="px-6 py-5 text-center">Action</th>
@@ -228,7 +228,7 @@ export default function ExistingTemplatesPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className={`w-20 h-14 rounded-lg overflow-hidden border bg-gray-50 cursor-pointer transition-all shadow-sm ${t.enabled !== false ? 'border-border hover:border-primary/50' : 'border-border/50 opacity-50'}`} onClick={() => setPreviewTemplate(t)}>
+                                            <div className={`w-20 h-14 mx-auto rounded-lg overflow-hidden border bg-gray-50 cursor-pointer transition-all shadow-sm ${t.enabled !== false ? 'border-border hover:border-primary/50' : 'border-border/50 opacity-50'}`} onClick={() => setPreviewTemplate(t)}>
                                                 {t.thumbnailPath ? (
                                                     <img src={`${API_URL}/${t.thumbnailPath}`} alt="" className="w-full h-full object-cover" />
                                                 ) : (
@@ -236,10 +236,10 @@ export default function ExistingTemplatesPage() {
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 whitespace-nowrap">
                                             <Link
                                                 href={`/dashboard/documents?templateId=${t._id}`}
-                                                className={`flex items-center gap-2 group/stat cursor-pointer w-fit ${t.enabled === false ? 'pointer-events-none' : ''}`}
+                                                className={`flex items-center justify-center gap-2 group/stat cursor-pointer ${t.enabled === false ? 'pointer-events-none' : ''}`}
                                             >
                                                 <span className={`w-2 h-2 rounded-full ${t.enabled !== false ? 'bg-primary animate-pulse' : 'bg-gray-600'}`}></span>
                                                 <span className={`text-sm font-black group-hover/stat:text-primary transition-colors underline-offset-4 group-hover/stat:underline ${t.enabled !== false ? 'text-foreground' : 'text-gray-400'}`}>
