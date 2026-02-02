@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Card from '@/components/Card';
+import Button from '@/components/Button';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -49,7 +50,7 @@ export default function VerifyPage() {
                             <h2 className="text-2xl font-bold text-red-600 mb-2">Verification Failed</h2>
                             <p className="text-muted">{error}</p>
                             <Link href="/">
-                                <button className="btn mt-6">Try Again</button>
+                                <Button className="mt-6">Try Again</Button>
                             </Link>
                         </div>
                     )}
