@@ -230,12 +230,21 @@ export default function DocumentsPage() {
                                                 {doc.template?.name?.replace(/\.[^/.]+$/, "") || 'Unknown'}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
-                                            <div className="text-[10px] text-gray-400 leading-tight max-w-[180px] wrap-break-word line-clamp-2 mx-auto">
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-wrap gap-1 justify-center max-w-[220px] mx-auto">
                                                 {Object.entries(doc.data || {})
-                                                    .filter(([key]) => key !== 'QR' && key !== 'QRCODE' && key !== 'CERTIFICATE_ID')
-                                                    .map(([key, val]) => `${key}: ${val}`)
-                                                    .join(', ')}
+                                                    .filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' '))
+                                                    .slice(0, 3)
+                                                    .map(([key, val]) => (
+                                                        <span key={key} className="bg-gray-50 text-[9px] px-2 py-0.5 rounded text-muted font-mono border border-border italic whitespace-nowrap">
+                                                            {key}: {val}
+                                                        </span>
+                                                    ))}
+                                                {Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length > 3 && (
+                                                    <span className="text-[9px] text-gray-500 font-bold self-center">
+                                                        +{Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length - 3}
+                                                    </span>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-center">
