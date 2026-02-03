@@ -33,7 +33,8 @@ function GenerateContent() {
     useEffect(() => {
         const fetchTemplatesList = async () => {
             try {
-                const data = await getTemplates({ onlyEnabled: true, limit: 5000 });
+                const response = await getTemplates({ onlyEnabled: true, limit: 5000 });
+                const data = await response.json();
                 let fetchedTemplates = [];
                 if (Array.isArray(data)) {
                     fetchedTemplates = data;
@@ -83,8 +84,9 @@ function GenerateContent() {
 
         setGenerating(true);
         try {
-            const data = await generateCertificate(selectedTemplate._id, formData);
-            if (data.document) {
+            const response = await generateCertificate(selectedTemplate._id, formData);
+            const data = await response.json();
+            if (response.ok) {
                 setGeneratedDoc(data);
             } else {
                 showAlert('Generation Failed', data.error || 'Check your template or data', 'error');
@@ -100,8 +102,9 @@ function GenerateContent() {
 
         setSending(true);
         try {
-            const data = await sendCertificateEmail(generatedDoc.document._id, recipientEmail);
-            if (data.message) {
+            const response = await sendCertificateEmail(generatedDoc.document._id, recipientEmail);
+            const data = await response.json();
+            if (response.ok) {
                 showAlert('Success', 'Certificate has been emailed successfully!', 'info');
                 setRecipientEmail('');
             } else {

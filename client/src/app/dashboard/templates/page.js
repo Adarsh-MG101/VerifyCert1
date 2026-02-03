@@ -70,8 +70,8 @@ export default function TemplatesPage() {
         formData.append('file', file);
 
         try {
-            const res = await uploadTemplate(formData);
-            if (res.ok) {
+            const response = await uploadTemplate(formData);
+            if (response.ok) {
                 setFile(null);
                 setDetectedPlaceholders([]);
                 setDuplicatePlaceholders([]);
@@ -84,7 +84,7 @@ export default function TemplatesPage() {
                     window.location.href = '/dashboard/existing-templates';
                 }, 1500);
             } else {
-                const data = await res.json();
+                const data = await response.json();
                 showAlert('Upload Failed', data.error || 'Check your template format', 'error');
             }
         } catch (err) {

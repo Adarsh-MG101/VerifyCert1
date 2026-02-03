@@ -12,8 +12,7 @@ import { get, post, upload, buildUrl } from './apiService';
  */
 export const getDocuments = async (params = {}) => {
     const endpoint = buildUrl('/api/documents', params);
-    const response = await get(endpoint);
-    return response.json();
+    return get(endpoint);
 };
 
 /**
@@ -22,8 +21,7 @@ export const getDocuments = async (params = {}) => {
  * @returns {Promise<object>}
  */
 export const getDocumentById = async (documentId) => {
-    const response = await get(`/api/documents/${documentId}`);
-    return response.json();
+    return get(`/api/documents/${documentId}`);
 };
 
 /**
@@ -33,8 +31,7 @@ export const getDocumentById = async (documentId) => {
  * @returns {Promise<object>}
  */
 export const generateCertificate = async (templateId, data) => {
-    const response = await post('/api/generate', { templateId, data });
-    return response.json();
+    return post('/api/generate', { templateId, data });
 };
 
 /**
@@ -43,8 +40,7 @@ export const generateCertificate = async (templateId, data) => {
  * @returns {Promise<object>}
  */
 export const generateBulkCertificates = async (formData) => {
-    const response = await upload('/api/generate-bulk', formData);
-    return response.json();
+    return upload('/api/generate-bulk', formData);
 };
 
 /**
@@ -54,11 +50,10 @@ export const generateBulkCertificates = async (formData) => {
  * @returns {Promise<{message: string}>}
  */
 export const sendCertificateEmail = async (documentId, recipientEmail) => {
-    const response = await post('/api/send-email', {
+    return post('/api/send-email', {
         documentId,
         recipientEmail,
     });
-    return response.json();
 };
 
 /**
@@ -67,8 +62,7 @@ export const sendCertificateEmail = async (documentId, recipientEmail) => {
  * @returns {Promise<{valid: boolean, data: object}>}
  */
 export const verifyDocument = async (documentId) => {
-    const response = await get(`/api/verify/${documentId}`);
-    return response.json();
+    return get(`/api/verify/${documentId}`);
 };
 
 export default {

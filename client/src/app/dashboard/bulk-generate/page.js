@@ -28,7 +28,8 @@ export default function BulkGeneratePage() {
     useEffect(() => {
         const fetchTemplatesList = async () => {
             try {
-                const data = await getTemplates({ onlyEnabled: true, limit: 1000 });
+                const response = await getTemplates({ onlyEnabled: true, limit: 1000 });
+                const data = await response.json();
                 if (Array.isArray(data)) {
                     setTemplates(data);
                 } else if (data && Array.isArray(data.templates)) {
@@ -93,8 +94,13 @@ export default function BulkGeneratePage() {
         formData.append('templateId', selectedTemplate._id);
 
         try {
-            const data = await generateBulkCertificates(formData);
-            setResult(data);
+            const response = await generateBulkCertificates(formData);
+            const data = await response.json();
+            if (response.ok) {
+                setResult(data);
+            } else {
+                showAlert('Batch Failed', data.error || 'Bulk generation failed', 'error');
+            }
         } catch (err) {
             console.error(err);
             showAlert('Error', 'Error during bulk generation', 'error');
@@ -107,8 +113,9 @@ export default function BulkGeneratePage() {
 
         setSending(true);
         try {
-            const data = await sendCertificateEmail(`zip:${result.downloadUrl}`, recipientEmail);
-            if (data.message) {
+            const response = await sendCertificateEmail(`zip:${result.downloadUrl}`, recipientEmail);
+            const data = await response.json();
+            if (response.ok) {
                 showAlert('Success', 'Batch ZIP has been emailed successfully!', 'info');
                 setRecipientEmail('');
             } else {

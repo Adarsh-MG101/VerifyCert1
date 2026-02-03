@@ -35,7 +35,7 @@ function DocumentsContent() {
     const fetchDocuments = async () => {
         setLoading(true);
         try {
-            const data = await getDocuments({
+            const response = await getDocuments({
                 search,
                 startDate,
                 endDate,
@@ -43,6 +43,7 @@ function DocumentsContent() {
                 page,
                 limit
             });
+            const data = await response.json();
 
             if (data && Array.isArray(data.documents)) {
                 setDocuments(data.documents);
@@ -71,8 +72,9 @@ function DocumentsContent() {
 
         setSendingEmail(true);
         try {
-            const data = await sendCertificateEmail(selectedDocForEmail._id, recipientEmail);
-            if (data.message) {
+            const response = await sendCertificateEmail(selectedDocForEmail._id, recipientEmail);
+            const data = await response.json();
+            if (response.ok) {
                 showAlert('Success', 'Certificate has been emailed successfully!', 'info');
                 setSelectedDocForEmail(null);
                 setRecipientEmail('');
@@ -89,7 +91,8 @@ function DocumentsContent() {
     useEffect(() => {
         const fetchTemplatesList = async () => {
             try {
-                const data = await getTemplates({ limit: 1000 });
+                const response = await getTemplates({ limit: 1000 });
+                const data = await response.json();
                 if (Array.isArray(data)) {
                     setTemplates(data);
                 } else if (data && Array.isArray(data.templates)) {

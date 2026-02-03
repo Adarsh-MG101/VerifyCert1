@@ -10,8 +10,7 @@ import { get } from './apiService';
  * @returns {Promise<{totalTemplates: number, totalDocuments: number, pendingVerifications: number}>}
  */
 export const getDashboardStats = async () => {
-    const response = await get('/api/stats');
-    return response.json();
+    return get('/api/stats');
 };
 
 /**
@@ -22,8 +21,7 @@ export const getDashboardStats = async () => {
 export const getUserActivity = async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     const endpoint = queryString ? `/api/auth/activity?${queryString}` : '/api/auth/activity';
-    const response = await get(endpoint);
-    return response.json();
+    return get(endpoint);
 };
 
 /**
@@ -32,8 +30,7 @@ export const getUserActivity = async (params = {}) => {
  * @returns {Promise<array>}
  */
 export const getRecentDocuments = async (limit = 5) => {
-    const response = await get(`/api/documents?limit=${limit}&sort=-createdAt`);
-    return response.json();
+    return get(`/api/documents?limit=${limit}&sort=-createdAt`);
 };
 
 /**
@@ -42,8 +39,7 @@ export const getRecentDocuments = async (limit = 5) => {
  * @returns {Promise<object>}
  */
 export const getAnalytics = async (period = 'month') => {
-    const response = await get(`/api/analytics?period=${period}`);
-    return response.json();
+    return get(`/api/analytics?period=${period}`);
 };
 
 export default {

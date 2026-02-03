@@ -12,8 +12,7 @@ import { get, post, put, patch, del, upload, buildUrl } from './apiService';
  */
 export const getTemplates = async (params = {}) => {
     const endpoint = buildUrl('/api/templates', params);
-    const response = await get(endpoint);
-    return response.json();
+    return get(endpoint);
 };
 
 /**
@@ -22,8 +21,7 @@ export const getTemplates = async (params = {}) => {
  * @returns {Promise<object>}
  */
 export const getTemplateById = async (templateId) => {
-    const response = await get(`/api/templates/${templateId}`);
-    return response.json();
+    return get(`/api/templates/${templateId}`);
 };
 
 /**
@@ -32,8 +30,7 @@ export const getTemplateById = async (templateId) => {
  * @returns {Promise<object>}
  */
 export const uploadTemplate = async (formData) => {
-    const response = await upload('/api/templates/upload', formData);
-    return response.json();
+    return upload('/api/templates/upload', formData);
 };
 
 /**
@@ -43,8 +40,7 @@ export const uploadTemplate = async (formData) => {
  * @returns {Promise<object>}
  */
 export const updateTemplateName = async (templateId, name) => {
-    const response = await put(`/api/templates/${templateId}`, { name });
-    return response.json();
+    return put(`/api/templates/${templateId}`, { name });
 };
 
 /**
@@ -53,8 +49,7 @@ export const updateTemplateName = async (templateId, name) => {
  * @returns {Promise<object>}
  */
 export const toggleTemplateStatus = async (templateId) => {
-    const response = await patch(`/api/templates/${templateId}/toggle`);
-    return response.json();
+    return patch(`/api/templates/${templateId}/toggle`);
 };
 
 /**
@@ -63,8 +58,7 @@ export const toggleTemplateStatus = async (templateId) => {
  * @returns {Promise<void>}
  */
 export const deleteTemplate = async (templateId) => {
-    const response = await del(`/api/templates/${templateId}`);
-    return response.json();
+    return del(`/api/templates/${templateId}`);
 };
 
 /**
@@ -73,8 +67,7 @@ export const deleteTemplate = async (templateId) => {
  * @returns {Promise<{placeholders: array}>}
  */
 export const getTemplatePlaceholders = async (templateId) => {
-    const response = await get(`/api/templates/${templateId}/placeholders`);
-    return response.json();
+    return get(`/api/templates/${templateId}/placeholders`);
 };
 
 export default {

@@ -19,11 +19,12 @@ export default function VerifyPage() {
 
         const verify = async () => {
             try {
-                const res = await verifyDocument(id);
-                if (res.valid) {
-                    setData(res);
+                const response = await verifyDocument(id);
+                const resData = await response.json();
+                if (response.ok) {
+                    setData(resData);
                 } else {
-                    setError(res.message || 'Invalid Document');
+                    setError(resData.message || 'Invalid Document');
                 }
             } catch (err) {
                 console.error(err);

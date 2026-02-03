@@ -28,11 +28,12 @@ export default function ExistingTemplatesPage() {
     const fetchTemplates = async () => {
         setLoading(true);
         try {
-            const data = await getTemplates({
+            const response = await getTemplates({
                 search,
                 page,
                 limit
             });
+            const data = await response.json();
 
             if (data && Array.isArray(data.templates)) {
                 setTemplates(data.templates);
@@ -76,9 +77,9 @@ export default function ExistingTemplatesPage() {
 
         setSaving(true);
         try {
-            const res = await updateTemplateName(editingTemplate._id, newName);
+            const response = await updateTemplateName(editingTemplate._id, newName);
 
-            if (res.ok) {
+            if (response.ok) {
                 setEditingTemplate(null);
                 fetchTemplates();
             } else {
@@ -93,8 +94,8 @@ export default function ExistingTemplatesPage() {
 
     const handleToggleStatus = async (id) => {
         try {
-            const res = await toggleTemplateStatus(id);
-            if (res.ok) {
+            const response = await toggleTemplateStatus(id);
+            if (response.ok) {
                 fetchTemplates();
             } else {
                 showAlert('Error', 'Failed to update status', 'error');
@@ -111,8 +112,8 @@ export default function ExistingTemplatesPage() {
             'Are you sure you want to delete this template? This cannot be undone.',
             async () => {
                 try {
-                    const res = await deleteTemplate(id);
-                    if (res.ok) {
+                    const response = await deleteTemplate(id);
+                    if (response.ok) {
                         fetchTemplates();
                     } else {
                         showAlert('Error', 'Delete failed', 'error');

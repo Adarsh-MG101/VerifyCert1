@@ -42,9 +42,10 @@ export default function AccountSettingsPage() {
         setLoading(true);
 
         try {
-            const data = await updatePassword(currentPassword, newPassword);
+            const response = await updatePassword(currentPassword, newPassword);
+            const data = await response.json();
 
-            if (data.message) {
+            if (response.ok) {
                 setSuccess('Password updated successfully!');
                 setCurrentPassword('');
                 setNewPassword('');

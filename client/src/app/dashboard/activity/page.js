@@ -13,7 +13,8 @@ export default function ActivityPage() {
     }, []);
     const fetchActivity = async () => {
         try {
-            const data = await getUserActivity();
+            const response = await getUserActivity();
+            const data = await response.json();
             if (data.success) {
                 setActivities(data.activities);
             }
