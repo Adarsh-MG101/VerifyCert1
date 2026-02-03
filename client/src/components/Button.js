@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Button = ({ children, onClick, type = "button", variant = "primary", className = "", disabled, ...props }) => {
+const Button = ({ children, onClick, type = "button", variant = "primary", className = "", disabled, loading, ...props }) => {
     const baseStyles = "px-5 py-2.5 rounded-lg font-normal transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2";
 
     const variants = {
@@ -16,11 +16,15 @@ const Button = ({ children, onClick, type = "button", variant = "primary", class
         <button
             type={type}
             onClick={onClick}
-            disabled={disabled}
-            className={`${baseStyles} ${variants[variant]} ${disabled ? disabledStyles : ''} ${className} will-change-transform`}
+            disabled={disabled || loading}
+            className={`${baseStyles} ${variants[variant]} ${(disabled || loading) ? disabledStyles : ''} ${className} will-change-transform`}
             {...props}
         >
-            {children}
+            {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : (
+                children
+            )}
         </button>
     );
 };

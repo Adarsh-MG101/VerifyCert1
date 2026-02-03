@@ -154,19 +154,23 @@ function DocumentsContent() {
                                                 <td className="px-6 py-0">
                                                     <div className="h-[80px] flex flex-wrap gap-1 justify-center content-center max-w-[220px] mx-auto overflow-hidden">
                                                         {Object.entries(doc.data || {})
-                                                            .filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' '))
+                                                            .filter(([key, val]) =>
+                                                                !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id', 'IMAGE_QR', 'IMAGE QR'].includes(key.toUpperCase())
+                                                                && !key.includes(' ')
+                                                                && typeof val !== 'object'
+                                                            )
                                                             .slice(0, 3)
                                                             .map(([key, val]) => (
                                                                 <span key={key} className="bg-gray-50 text-[9px] px-2 py-0.5 rounded text-muted font-mono border border-border italic whitespace-nowrap">
                                                                     {key}: {val}
                                                                 </span>
                                                             ))}
-                                                        {Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length > 3 && (
+                                                        {Object.entries(doc.data || {}).filter(([key, val]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id', 'IMAGE_QR', 'IMAGE QR'].includes(key.toUpperCase()) && !key.includes(' ') && typeof val !== 'object').length > 3 && (
                                                             <span className="text-[9px] text-gray-500 font-medium self-center">
-                                                                +{Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length - 3}
+                                                                +{Object.entries(doc.data || {}).filter(([key, val]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id', 'IMAGE_QR', 'IMAGE QR'].includes(key.toUpperCase()) && !key.includes(' ') && typeof val !== 'object').length - 3}
                                                             </span>
                                                         )}
-                                                        {Object.entries(doc.data || {}).filter(([key]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) && !key.includes(' ')).length === 0 && (
+                                                        {Object.entries(doc.data || {}).filter(([key, val]) => !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id', 'IMAGE_QR', 'IMAGE QR'].includes(key.toUpperCase()) && !key.includes(' ') && typeof val !== 'object').length === 0 && (
                                                             <span className="text-[9px] text-gray-400 italic">No extra data</span>
                                                         )}
                                                     </div>

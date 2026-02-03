@@ -78,7 +78,7 @@ export default function VerifyPage() {
                                     <div className="space-y-4">
                                         {data.data && Object.entries(data.data).map(([key, value]) => {
                                             // Skip QR codes, metadata IDs, and complex objects that React can't render
-                                            const isMetadata = ['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id'].includes(key.toUpperCase()) || key.includes(' ');
+                                            const isMetadata = ['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id', 'IMAGE_QR', 'IMAGE QR'].includes(key.toUpperCase()) || key.includes(' ');
                                             const isObject = typeof value === 'object' && value !== null;
 
                                             if (isMetadata || isObject) return null;
