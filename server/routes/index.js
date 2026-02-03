@@ -498,6 +498,8 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
         const template = await Template.findById(templateId);
         if (!template) return res.status(404).json({ error: 'Template not found' });
 
+        console.log(`🚀 Starting Bulk Generation: Template "${template.name}", Request ID: ${crypto.randomUUID()}`);
+
         // Parse CSV
         const csvData = [];
         const csvPath = req.file.path;
@@ -515,6 +517,48 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
             return res.status(400).json({ error: 'CSV file is empty' });
         }
 
+        console.log(`📊 CSV Parsed: ${csvData.length} rows found.`);
+
+        // --- PRE-PROCESS TEMPLATE ONCE ---
+        let baseTemplateBuffer = fs.readFileSync(template.filePath);
+        const tagMapping = []; // Stores { rawTag, capsTag }
+
+        try {
+            // Extract tags once using mammoth
+            const docTextObj = await mammoth.extractRawText({ buffer: baseTemplateBuffer });
+            const docText = docTextObj.value;
+            const tagRegex = /\{\{(.*?)\}\}/g;
+            let m;
+            while ((m = tagRegex.exec(docText)) !== null) {
+                const rawTag = m[1].trim();
+                tagMapping.push({ rawTag, capsTag: rawTag.toUpperCase() });
+            }
+
+            // Global Nuclear Check once
+            const zip = new PizZip(baseTemplateBuffer);
+            const xmlFiles = zip.file(/\.xml$/);
+            const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+            const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*[cC](<[^>]+>)*[oO](<[^>]+>)*[dD](<[^>]+>)*[eE](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
+
+            let transformed = false;
+            xmlFiles.forEach(file => {
+                let content = file.asText();
+                if (nuclearQrRegex.test(content) || nuclearQrCodeRegex.test(content)) {
+                    content = content.replace(nuclearQrRegex, '{{IMAGE QR}}');
+                    content = content.replace(nuclearQrCodeRegex, '{{IMAGE QR}}');
+                    zip.file(file.name, content);
+                    transformed = true;
+                }
+            });
+
+            if (transformed) {
+                baseTemplateBuffer = zip.generate({ type: 'nodebuffer' });
+                console.log('📦 Global Nuclear Pre-processor fixed fragmented tags.');
+            }
+        } catch (e) {
+            console.error('⚠️ Template pre-analysis failed:', e.message);
+        }
+
         // Create a unique folder for this batch
         const batchId = crypto.randomUUID();
         const batchFolder = path.join(__dirname, `../uploads/batch_${batchId}`);
@@ -523,21 +567,34 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
         const generatedDocs = [];
         const errors = [];
 
+        // Soffice Path Search
+        const possiblePaths = [
+            'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
+            'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
+        ];
+        let sofficePath = possiblePaths.find(p => fs.existsSync(p)) || 'soffice';
+
         // Generate PDF for each row
         for (let i = 0; i < csvData.length; i++) {
-            const rowData = csvData[i];
-            const rowNumber = i + 2; // i is 0-indexed, skip header row (+1), so actual row is i+2
+            const rawRowData = csvData[i];
+            const rowNumber = i + 2;
 
-            // Validation: Check if all required placeholders have values in this row
-            const missingValues = template.placeholders.filter(p => !rowData[p] || rowData[p].trim() === "");
+            // 1. Normalize Row Keys to Uppercase for matching
+            const rowDataUpper = {};
+            Object.keys(rawRowData).forEach(key => {
+                rowDataUpper[key.trim().toUpperCase()] = rawRowData[key];
+            });
+
+            // 2. Validation: Check if all required placeholders have values (Case Insensitive)
+            const missingValues = template.placeholders.filter(p => !rowDataUpper[p] || rowDataUpper[p].trim() === "");
 
             if (missingValues.length > 0) {
                 errors.push({
                     row: rowNumber,
                     error: `Missing values for required field(s): ${missingValues.join(', ')}`,
-                    data: rowData
+                    data: rawRowData
                 });
-                continue; // Skip this row and move to the next
+                continue;
             }
 
             const uniqueId = crypto.randomUUID();
@@ -545,116 +602,47 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                 // Generate QR Code
                 const verificationUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/verify/${uniqueId}`;
                 const qrCodeBuffer = await QRCode.toBuffer(verificationUrl);
+                const qrImage = { width: 4, height: 4, data: qrCodeBuffer, extension: '.png' };
 
-                // Prepare data
-                // Prepare data
-                const qrImage = {
-                    width: 4,
-                    height: 4,
-                    data: qrCodeBuffer,
-                    extension: '.png'
-                };
-
-                // Normalize all row data to uppercase
-                const normalizedRowData = {};
-                Object.keys(rowData).forEach(key => {
-                    if (typeof rowData[key] === 'string') {
-                        normalizedRowData[key] = rowData[key].toUpperCase();
-                    } else {
-                        normalizedRowData[key] = rowData[key];
-                    }
-                });
-
+                // 3. Prepare Final Data Map
                 const finalData = {
-                    ...normalizedRowData,
                     CERTIFICATE_ID: uniqueId,
                     certificate_id: uniqueId,
-                    "Certificate ID": uniqueId,
-                    CERTIFICATEID: uniqueId,
                     ID: uniqueId,
                     QR: qrImage,
-                    QRCODE: qrImage
+                    IMAGE_QR: qrImage // Pre-mapped for nuclear tags
                 };
 
-                // --- SAFE CASING MAPPER FOR BULK ---
-                try {
-                    // Extract tags from raw text to avoid XML breakage
-                    const docTextObj = await mammoth.extractRawText({ path: template.filePath });
-                    const docText = docTextObj.value;
-                    const tagRegex = /\{\{(.*?)\}\}/g;
-                    let m;
-                    while ((m = tagRegex.exec(docText)) !== null) {
-                        const rawTag = m[1].trim();
-                        const capsTag = rawTag.toUpperCase();
+                // Add csv values (normalized to uppercase values as requested by user in prev turns)
+                Object.keys(rowDataUpper).forEach(key => {
+                    finalData[key] = (typeof rowDataUpper[key] === 'string')
+                        ? rowDataUpper[key].toUpperCase()
+                        : rowDataUpper[key];
+                });
 
-                        if (capsTag.startsWith('IMAGE ') && rawTag !== capsTag) {
-                            const dataKey = capsTag.replace('IMAGE ', '');
-                            if (finalData[dataKey]) {
-                                finalData[rawTag] = finalData[dataKey];
-                            }
-                        }
-
-                        const idTags = ['CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID'];
-                        if (idTags.includes(capsTag)) {
-                            finalData[rawTag] = uniqueId;
-                        } else if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
-                            finalData[rawTag] = finalData[capsTag];
-                        }
-                    }
-
-
-                } catch (e) {
-                    console.error('Bulk casing mapper failed:', e);
-                }
-
-
-
-
-                // 1. NUCLEAR PRE-PROCESSOR FOR BULK
-                let rowTemplateBuffer = fs.readFileSync(template.filePath);
-                try {
-                    const zip = new PizZip(rowTemplateBuffer);
-                    const xmlFiles = zip.file(/\.xml$/);
-                    const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
-                    const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*[cC](<[^>]+>)*[oO](<[^>]+>)*[dD](<[^>]+>)*[eE](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
-
-
-
-                    let transformed = false;
-                    xmlFiles.forEach(file => {
-                        let content = file.asText();
-                        let docTransformed = false;
-
-                        if (nuclearQrRegex.test(content) || nuclearQrCodeRegex.test(content)) {
-                            content = content.replace(nuclearQrRegex, '{{IMAGE QR}}');
-                            content = content.replace(nuclearQrCodeRegex, '{{IMAGE QR}}');
-                            docTransformed = true;
-                        }
-
-
-                        if (docTransformed) {
-
-                            zip.file(file.name, content);
-                            transformed = true;
-                        }
-                    });
-
-                    if (transformed) {
-                        rowTemplateBuffer = zip.generate({ type: 'nodebuffer' });
-                    }
-                } catch (e) {
-                    console.error('Row pre-processing failed:', e);
-                }
-
-                const outputBuffer = await createReport({
-                    template: rowTemplateBuffer,
-                    data: finalData,
-                    cmdDelimiter: ['{{', '}}'],
-                    additionalJsContext: {
-                        IMAGE: (data) => data
+                // 4. Safe Casing Mapping: Fill the doc's raw tags using our pre-calculated mapping
+                tagMapping.forEach(({ rawTag, capsTag }) => {
+                    // Specific Handling for ID tags
+                    const idTags = ['CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID'];
+                    if (idTags.includes(capsTag)) {
+                        finalData[rawTag] = uniqueId;
+                    } else if (capsTag === 'IMAGE QR' || capsTag === 'QR') {
+                        finalData[rawTag] = qrImage;
+                    } else if (capsTag.startsWith('IMAGE ')) {
+                        const subKey = capsTag.replace('IMAGE ', '');
+                        if (finalData[subKey]) finalData[rawTag] = finalData[subKey];
+                    } else if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
+                        finalData[rawTag] = finalData[capsTag];
                     }
                 });
 
+                // 5. Generate Report
+                const outputBuffer = await createReport({
+                    template: baseTemplateBuffer,
+                    data: finalData,
+                    cmdDelimiter: ['{{', '}}'],
+                    additionalJsContext: { IMAGE: (data) => data }
+                });
 
                 // Save temp DOCX
                 const tempDocxPath = path.join(batchFolder, `${uniqueId}.docx`);
@@ -662,13 +650,6 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
 
                 // Convert to PDF
                 const pdfPath = path.join(batchFolder, `${uniqueId}.pdf`);
-
-                const possiblePaths = [
-                    'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
-                    'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe'
-                ];
-                let sofficePath = possiblePaths.find(p => fs.existsSync(p)) || 'soffice';
-
                 const cmd = `"${sofficePath}" --headless --convert-to pdf --outdir "${batchFolder}" "${tempDocxPath}"`;
 
                 await new Promise((resolve, reject) => {
@@ -678,11 +659,8 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                     });
                 });
 
-                if (!fs.existsSync(pdfPath)) {
-                    throw new Error('PDF file was not created');
-                }
+                if (!fs.existsSync(pdfPath)) throw new Error('PDF conversion failed: File not created');
 
-                // Delete temp DOCX
                 fs.unlinkSync(tempDocxPath);
 
                 // Save to database
@@ -696,37 +674,35 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
 
                 generatedDocs.push({
                     uniqueId,
-                    filename: `${rowData.name || uniqueId}.pdf`,
+                    filename: `${rowDataUpper['NAME'] || rowDataUpper['STUDENT'] || rowDataUpper['RECIPIENT'] || uniqueId}.pdf`,
                     path: pdfPath
                 });
 
             } catch (err) {
-                console.error(`Error generating PDF for row ${i + 1}:`, err);
-                errors.push({ row: i + 1, error: err.message, data: rowData });
+                console.error(`❌ Error generating row ${rowNumber}:`, err.message);
+                errors.push({ row: rowNumber, error: err.message, data: rawRowData });
             }
         }
 
-        // Delete CSV file
-        fs.unlinkSync(csvPath);
+        // Cleanup CSV
+        if (fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
 
         if (generatedDocs.length === 0) {
-            // Clean up batch folder
             fs.rmSync(batchFolder, { recursive: true, force: true });
             return res.status(500).json({
-                error: 'Failed to generate any PDFs',
+                error: 'Failed to generate any valid certificates.',
                 details: errors
             });
         }
 
-        // Create ZIP file
+        // 6. Create ZIP
         const zipPath = path.join(__dirname, `../uploads/batch_${batchId}.zip`);
         const output = fs.createWriteStream(zipPath);
         const archive = archiver('zip', { zlib: { level: 9 } });
 
         output.on('close', () => {
-            // Clean up batch folder after zipping
             fs.rmSync(batchFolder, { recursive: true, force: true });
-
+            console.log(`✅ Bulk Generation Complete: ${generatedDocs.length} success, ${errors.length} failed.`);
             res.json({
                 success: true,
                 totalRows: csvData.length,
@@ -738,22 +714,16 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
             });
         });
 
-        archive.on('error', (err) => {
-            throw err;
-        });
-
+        archive.on('error', (err) => { throw err; });
         archive.pipe(output);
-
-        // Add all PDFs to ZIP
         generatedDocs.forEach(doc => {
             archive.file(doc.path, { name: doc.filename });
         });
-
         archive.finalize();
 
     } catch (err) {
-        console.error('❌ Bulk generation error:', err);
-        res.status(500).json({ error: err.message });
+        console.error('💥 Fatal Bulk Generation Error:', err);
+        res.status(500).json({ error: 'Internal Server Error', details: err.message });
     }
 });
 
