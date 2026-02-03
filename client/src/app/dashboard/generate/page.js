@@ -18,62 +18,44 @@ import { Suspense } from 'react';
 
 import Guidelines from '@/components/Guidelines';
 
+import { useTemplates, useEmail } from '@/hooks';
+
 function GenerateContent() {
-    const { showAlert } = useUI();
-    const [templates, setTemplates] = useState([]);
-    const [selectedTemplate, setSelectedTemplate] = useState(null);
+    const searchParams = useSearchParams();
+    const templateIdParam = searchParams.get('templateId');
+
+    const {
+        templates,
+        selectedTemplate,
+        setSelectedTemplate,
+        handleTemplateSelect
+    } = useTemplates({ onlyEnabled: true });
+
+    const { sending, sendEmail } = useEmail();
+
     const [formData, setFormData] = useState({});
     const [generatedDoc, setGeneratedDoc] = useState(null);
     const [generating, setGenerating] = useState(false);
     const [recipientEmail, setRecipientEmail] = useState('');
-    const [sending, setSending] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
 
-    const searchParams = useSearchParams();
-    const templateIdParam = searchParams.get('templateId');
+    const { showAlert } = useUI();
 
     useEffect(() => {
-        const fetchTemplatesList = async () => {
-            try {
-                const response = await getTemplates({ onlyEnabled: true, limit: 5000 });
-                const data = await response.json();
-                let fetchedTemplates = [];
-                if (Array.isArray(data)) {
-                    fetchedTemplates = data;
-                } else if (data && Array.isArray(data.templates)) {
-                    fetchedTemplates = data.templates;
-                }
-
-                setTemplates(fetchedTemplates);
-
-                // Auto-select if parameter is present
-                if (templateIdParam && fetchedTemplates.length > 0) {
-                    const t = fetchedTemplates.find(x => x._id === templateIdParam);
-                    if (t) {
-                        setSelectedTemplate(t);
-                    }
-                }
-            } catch (err) {
-                console.error('Error fetching templates:', err);
-                if (err.message?.includes('401')) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    window.location.href = '/login';
-                }
-                setTemplates([]);
+        if (templateIdParam && templates.length > 0) {
+            const t = templates.find(x => x._id === templateIdParam);
+            if (t) {
+                setSelectedTemplate(t);
             }
-        };
+        }
+    }, [templateIdParam, templates]);
 
-        fetchTemplatesList();
-    }, [templateIdParam]);
-
-    const handleTemplateSelect = (e) => {
-        const tId = e.target.value;
-        const t = templates.find(x => x._id === tId);
-        setSelectedTemplate(t);
-        setFormData({});
-        setGeneratedDoc(null);
-        setRecipientEmail('');
+    const onTemplateSelect = (e) => {
+        handleTemplateSelect(e, () => {
+            setFormData({});
+            setGeneratedDoc(null);
+            setRecipientEmail('');
+        });
     };
 
     const handleChange = (key, value) => {
@@ -100,23 +82,14 @@ function GenerateContent() {
     };
 
     const handleSendEmail = async () => {
-        if (!recipientEmail || !generatedDoc) return;
+        const success = await sendEmail(generatedDoc.document._id, recipientEmail, {
+            successMessage: 'Certificate has been emailed successfully!',
+            errorMessage: 'Failed to send email'
+        });
 
-        setSending(true);
-        try {
-            const response = await sendCertificateEmail(generatedDoc.document._id, recipientEmail);
-            const data = await response.json();
-            if (response.ok) {
-                showAlert('Success', 'Certificate has been emailed successfully!', 'info');
-                setRecipientEmail('');
-            } else {
-                showAlert('Email Failed', data.error || 'Failed to send email', 'error');
-            }
-        } catch (err) {
-            console.error(err);
-            showAlert('Error', 'An unexpected error occurred', 'error');
+        if (success) {
+            setRecipientEmail('');
         }
-        setSending(false);
     };
 
     const isFormComplete = () => {
@@ -147,7 +120,7 @@ function GenerateContent() {
                             <TemplateSelector
                                 templates={templates}
                                 selectedTemplate={selectedTemplate}
-                                onTemplateSelect={handleTemplateSelect}
+                                onTemplateSelect={onTemplateSelect}
                                 className="mb-0 flex-1 mr-4"
                             />
                             {selectedTemplate && (

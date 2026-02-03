@@ -14,72 +14,41 @@ import { getApiUrl } from '@/services/apiService';
 
 import Guidelines from '@/components/Guidelines';
 
+import { useTemplates, useEmail, useCsvFile } from '@/hooks';
+
 export default function BulkGeneratePage() {
     const { showAlert } = useUI();
-    const [templates, setTemplates] = useState([]);
-    const [selectedTemplate, setSelectedTemplate] = useState(null);
-    const [csvFile, setCsvFile] = useState(null);
-    const [rowCount, setRowCount] = useState(0);
+    const {
+        templates,
+        selectedTemplate,
+        handleTemplateSelect
+    } = useTemplates({ onlyEnabled: true });
+
+    const {
+        file: csvFile,
+        rowCount,
+        handleFileChange: onFileChange
+    } = useCsvFile();
+
+    const { sending, sendEmail } = useEmail();
+
     const [generating, setGenerating] = useState(false);
     const [result, setResult] = useState(null);
     const [recipientEmail, setRecipientEmail] = useState('');
-    const [sending, setSending] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
-    useEffect(() => {
-        const fetchTemplatesList = async () => {
-            try {
-                const response = await getTemplates({ onlyEnabled: true, limit: 1000 });
-                const data = await response.json();
-                if (Array.isArray(data)) {
-                    setTemplates(data);
-                } else if (data && Array.isArray(data.templates)) {
-                    setTemplates(data.templates);
-                } else if (data) {
-                    console.error('Expected array of templates, got:', data);
-                    setTemplates([]);
-                }
-            } catch (err) {
-                console.error('Error fetching templates:', err);
-                if (err.message?.includes('401')) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    window.location.href = '/login';
-                }
-                setTemplates([]);
-            }
-        };
 
-        fetchTemplatesList();
-    }, []);
-
-    const handleTemplateSelect = (e) => {
-        const tId = e.target.value;
-        const t = templates.find(x => x._id === tId);
-        setSelectedTemplate(t);
-        setResult(null);
-        setRecipientEmail('');
+    const onTemplateSelect = (e) => {
+        handleTemplateSelect(e, () => {
+            setResult(null);
+            setRecipientEmail('');
+        });
     };
 
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setCsvFile(file);
-        setResult(null);
-        setRecipientEmail('');
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const text = event.target.result;
-                // Count lines, filter out empty ones
-                const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== "");
-                // Subtract 1 for the header
-                const count = Math.max(0, lines.length - 1);
-                setRowCount(count);
-            };
-            reader.readAsText(file);
-        } else {
-            setRowCount(0);
-        }
+        onFileChange(e, () => {
+            setResult(null);
+            setRecipientEmail('');
+        });
     };
 
     const handleGenerate = async (e) => {
@@ -109,23 +78,14 @@ export default function BulkGeneratePage() {
     };
 
     const handleSendEmail = async () => {
-        if (!recipientEmail || !result) return;
+        const success = await sendEmail(`zip:${result.downloadUrl}`, recipientEmail, {
+            successMessage: 'Batch ZIP has been emailed successfully!',
+            errorMessage: 'Failed to send batch email'
+        });
 
-        setSending(true);
-        try {
-            const response = await sendCertificateEmail(`zip:${result.downloadUrl}`, recipientEmail);
-            const data = await response.json();
-            if (response.ok) {
-                showAlert('Success', 'Batch ZIP has been emailed successfully!', 'info');
-                setRecipientEmail('');
-            } else {
-                showAlert('Email Failed', data.error || 'Failed to send batch email', 'error');
-            }
-        } catch (err) {
-            console.error(err);
-            showAlert('Error', 'Error sending batch email', 'error');
+        if (success) {
+            setRecipientEmail('');
         }
-        setSending(false);
     };
 
     const downloadSampleCSV = () => {
@@ -172,7 +132,7 @@ export default function BulkGeneratePage() {
                             <TemplateSelector
                                 templates={templates}
                                 selectedTemplate={selectedTemplate}
-                                onTemplateSelect={handleTemplateSelect}
+                                onTemplateSelect={onTemplateSelect}
                                 label="Select Template"
                                 className="mb-0 flex-1 mr-4"
                             />

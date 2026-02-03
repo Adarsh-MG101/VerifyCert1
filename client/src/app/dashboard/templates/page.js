@@ -9,57 +9,21 @@ import Link from 'next/link';
 import { uploadTemplate } from '@/services/TemplateLib';
 import Guidelines from '@/components/Guidelines';
 
+import { useDocxTemplate } from '@/hooks';
+
 export default function TemplatesPage() {
     const { showAlert } = useUI();
-    const [file, setFile] = useState(null);
+    const {
+        file,
+        setFile,
+        detectedPlaceholders,
+        duplicatePlaceholders,
+        handleFileChange,
+        resetFile
+    } = useDocxTemplate();
+
     const [loading, setLoading] = useState(false);
     const [showBuffer, setShowBuffer] = useState(false);
-    const [detectedPlaceholders, setDetectedPlaceholders] = useState([]);
-    const [duplicatePlaceholders, setDuplicatePlaceholders] = useState([]);
-
-    const handleFileChange = async (e) => {
-        const selectedFile = e.target.files[0];
-        setFile(selectedFile);
-        setDetectedPlaceholders([]);
-        setDuplicatePlaceholders([]);
-
-        if (selectedFile) {
-            try {
-                const arrayBuffer = await selectedFile.arrayBuffer();
-                const result = await mammoth.extractRawText({ arrayBuffer });
-                const text = result.value;
-
-                // Match all placeholders {{...}}
-                const allMatches = [];
-                const regex = /\{\{(.*?)\}\}/g;
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    allMatches.push(match[1].trim());
-                }
-
-                // Filter for strictly uppercase only
-                const uppercasePlaceholders = allMatches.filter(p => p !== "" && /^[A-Z0-9_]+$/.test(p));
-
-                // Find duplicates
-                const seen = new Set();
-                const duplicates = new Set();
-                uppercasePlaceholders.forEach(p => {
-                    if (seen.has(p)) duplicates.add(p);
-                    seen.add(p);
-                });
-
-                // Unique list for display
-                const uniqueDisplay = Array.from(new Set(uppercasePlaceholders))
-                    .filter(p => p !== 'QR' && p !== 'QRCODE' && p !== 'CERTIFICATE_ID');
-
-                setDetectedPlaceholders(uniqueDisplay);
-                setDuplicatePlaceholders(Array.from(duplicates));
-
-            } catch (err) {
-                console.error("Error analyzing file:", err);
-            }
-        }
-    };
 
     const handleUpload = async (e) => {
         e.preventDefault();
@@ -73,9 +37,7 @@ export default function TemplatesPage() {
         try {
             const response = await uploadTemplate(formData);
             if (response.ok) {
-                setFile(null);
-                setDetectedPlaceholders([]);
-                setDuplicatePlaceholders([]);
+                resetFile();
                 e.target.reset();
 
                 setShowBuffer(true);

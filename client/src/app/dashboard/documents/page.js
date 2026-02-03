@@ -13,108 +13,45 @@ import { getApiUrl } from '@/services/apiService';
 
 import { Suspense } from 'react';
 
+import { useDocuments, useTemplates, useEmail } from '@/hooks';
+
 function DocumentsContent() {
-    const { showAlert } = useUI();
     const searchParams = useSearchParams();
     const templateIdParam = searchParams.get('templateId');
 
-    const [documents, setDocuments] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [templates, setTemplates] = useState([]);
-    const [selectedTemplate, setSelectedTemplate] = useState(templateIdParam || '');
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalDocs, setTotalDocs] = useState(0);
+    const { templates } = useTemplates();
+    const { sending: sendingEmail, sendEmail } = useEmail();
+
+    const {
+        documents,
+        loading,
+        totalPages,
+        totalDocs,
+        page,
+        setPage,
+        limit,
+        filters,
+        updateFilter,
+        resetFilters
+    } = useDocuments({
+        templateId: templateIdParam || ''
+    });
+
     const [selectedDocForEmail, setSelectedDocForEmail] = useState(null);
     const [recipientEmail, setRecipientEmail] = useState('');
-    const [sendingEmail, setSendingEmail] = useState(false);
-    const limit = 5;
-    const fetchDocuments = async () => {
-        setLoading(true);
-        try {
-            const response = await getDocuments({
-                search,
-                startDate,
-                endDate,
-                templateId: selectedTemplate,
-                page,
-                limit
-            });
-            const data = await response.json();
-
-            if (data && Array.isArray(data.documents)) {
-                setDocuments(data.documents);
-                setTotalPages(data.pages);
-                setTotalDocs(data.total);
-            } else {
-                setDocuments([]);
-                setTotalPages(1);
-            }
-        } catch (err) {
-            console.error('Error fetching documents:', err);
-            if (err.message?.includes('401')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = '/login';
-            }
-            setDocuments([]);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleSendEmail = async (e) => {
         e.preventDefault();
-        if (!selectedDocForEmail || !recipientEmail) return;
+        const success = await sendEmail(selectedDocForEmail._id, recipientEmail, {
+            successMessage: 'Certificate has been emailed successfully!',
+            errorMessage: 'Failed to send email'
+        });
 
-        setSendingEmail(true);
-        try {
-            const response = await sendCertificateEmail(selectedDocForEmail._id, recipientEmail);
-            const data = await response.json();
-            if (response.ok) {
-                showAlert('Success', 'Certificate has been emailed successfully!', 'info');
-                setSelectedDocForEmail(null);
-                setRecipientEmail('');
-            } else {
-                showAlert('Email Failed', data.error || 'Failed to send email', 'error');
-            }
-        } catch (err) {
-            console.error(err);
-            showAlert('Error', 'An unexpected error occurred', 'error');
+        if (success) {
+            setSelectedDocForEmail(null);
+            setRecipientEmail('');
         }
-        setSendingEmail(false);
     };
-
-    useEffect(() => {
-        const fetchTemplatesList = async () => {
-            try {
-                const response = await getTemplates({ limit: 1000 });
-                const data = await response.json();
-                if (Array.isArray(data)) {
-                    setTemplates(data);
-                } else if (data && Array.isArray(data.templates)) {
-                    setTemplates(data.templates);
-                }
-            } catch (err) {
-                console.error('Error fetching templates:', err);
-            }
-        };
-        fetchTemplatesList();
-    }, []);
-
-    useEffect(() => {
-        setPage(1); // Reset to first page on filter change
-    }, [search, startDate, endDate, selectedTemplate]);
-
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            fetchDocuments();
-        }, 300); // Small debounce for search
-        return () => clearTimeout(timeoutId);
-    }, [search, startDate, endDate, selectedTemplate, page]);
 
     return (
         <div className="animate-fade-in max-w-7xl mx-auto pb-10">
@@ -126,45 +63,39 @@ function DocumentsContent() {
                     <Input
                         label="Search ID or Name"
                         placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        value={filters.search}
+                        onChange={(e) => updateFilter({ search: e.target.value })}
                         className="!uppercase-none"
                         compact={true}
                     />
                     <TemplateSelector
                         label="Template"
                         templates={templates}
-                        selectedTemplate={selectedTemplate}
-                        onTemplateSelect={(e) => setSelectedTemplate(e.target.value)}
+                        selectedTemplate={filters.templateId}
+                        onTemplateSelect={(e) => updateFilter({ templateId: e.target.value })}
                         className="mb-0"
                         compact={true}
                     />
                     <Input
                         label="From Date"
                         type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
+                        value={filters.startDate}
+                        onChange={(e) => updateFilter({ startDate: e.target.value })}
                         compact={true}
                     />
                     <Input
                         label="To Date"
                         type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                        value={filters.endDate}
+                        onChange={(e) => updateFilter({ endDate: e.target.value })}
                         compact={true}
                     />
                 </div>
 
-                {(search || startDate || endDate || selectedTemplate) && (
+                {(filters.search || filters.startDate || filters.endDate || filters.templateId) && (
                     <div className="flex flex-col items-center mt-4">
                         <button
-                            onClick={() => {
-                                setSearch('');
-                                setStartDate('');
-                                setEndDate('');
-                                setSelectedTemplate('');
-                                setPage(1);
-                            }}
+                            onClick={resetFilters}
                             className="flex flex-col items-center gap-1 group transition-all text-gray-300 hover:text-primary active:scale-95"
                         >
                             <div className="w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center group-hover:border-primary/30 transition-colors">
