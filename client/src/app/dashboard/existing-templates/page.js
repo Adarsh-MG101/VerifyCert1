@@ -7,6 +7,8 @@ import Link from 'next/link';
 import TemplatePreview from '@/components/TemplatePreview';
 import Modal from '@/components/Modal';
 import Input from '@/components/Input';
+import { getTemplates, updateTemplateName, toggleTemplateStatus, deleteTemplate } from '@/services/TemplateLib';
+import { getApiUrl } from '@/services/apiService';
 
 export default function ExistingTemplatesPage() {
     const { showAlert, showConfirm } = useUI();
@@ -23,46 +25,35 @@ export default function ExistingTemplatesPage() {
     const [newName, setNewName] = useState('');
     const [saving, setSaving] = useState(false);
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
-    const fetchTemplates = () => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
+    const fetchTemplates = async () => {
         setLoading(true);
-        const params = new URLSearchParams();
-        if (search) params.append('search', search);
-        params.append('page', page);
-        params.append('limit', limit);
-
-        fetch(`${API_URL}/api/templates?${params.toString()}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
-            .then(res => {
-                if (res.status === 401) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    window.location.href = '/login';
-                    return;
-                }
-                return res.ok ? res.json() : { templates: [], total: 0, pages: 1 };
-            })
-            .then(data => {
-                if (data && Array.isArray(data.templates)) {
-                    setTemplates(data.templates);
-                    setTotalPages(data.pages);
-                    setTotalDocs(data.total);
-                } else {
-                    setTemplates([]);
-                    setTotalPages(1);
-                }
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error('Error fetching templates:', err);
-                setTemplates([]);
-                setLoading(false);
+        try {
+            const data = await getTemplates({
+                search,
+                page,
+                limit
             });
+
+            if (data && Array.isArray(data.templates)) {
+                setTemplates(data.templates);
+                setTotalPages(data.pages);
+                setTotalDocs(data.total);
+            } else {
+                setTemplates([]);
+                setTotalPages(1);
+            }
+        } catch (err) {
+            console.error('Error fetching templates:', err);
+            if (err.message?.includes('401')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+                return;
+            }
+            setTemplates([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -84,16 +75,8 @@ export default function ExistingTemplatesPage() {
         }
 
         setSaving(true);
-        const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`${API_URL}/api/templates/${editingTemplate._id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ name: newName })
-            });
+            const res = await updateTemplateName(editingTemplate._id, newName);
 
             if (res.ok) {
                 setEditingTemplate(null);
@@ -109,14 +92,8 @@ export default function ExistingTemplatesPage() {
     };
 
     const handleToggleStatus = async (id) => {
-        const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`${API_URL}/api/templates/${id}/toggle`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const res = await toggleTemplateStatus(id);
             if (res.ok) {
                 fetchTemplates();
             } else {
@@ -128,19 +105,13 @@ export default function ExistingTemplatesPage() {
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDeleteTemplate = async (id) => {
         showConfirm(
             'Delete Template',
             'Are you sure you want to delete this template? This cannot be undone.',
             async () => {
-                const token = localStorage.getItem('token');
                 try {
-                    const res = await fetch(`${API_URL}/api/templates/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
+                    const res = await deleteTemplate(id);
                     if (res.ok) {
                         fetchTemplates();
                     } else {
@@ -251,7 +222,7 @@ export default function ExistingTemplatesPage() {
                                                     <div className="h-[80px] flex items-center justify-center">
                                                         <div className={`w-20 h-14 rounded-lg overflow-hidden border bg-gray-50 cursor-pointer transition-all shadow-sm ${t.enabled !== false ? 'border-border hover:border-primary/50' : 'border-border/50 opacity-50'}`} onClick={() => setPreviewTemplate(t)}>
                                                             {t.thumbnailPath ? (
-                                                                <img src={`${API_URL}/${t.thumbnailPath}`} alt="" className="w-full h-full object-cover" />
+                                                                <img src={getApiUrl(`/${t.thumbnailPath}`)} alt="" className="w-full h-full object-cover" />
                                                             ) : (
                                                                 <div className="w-full h-full flex items-center justify-center text-lg">📄</div>
                                                             )}
@@ -313,7 +284,7 @@ export default function ExistingTemplatesPage() {
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                                         </button>
                                                         <button
-                                                            onClick={() => handleDelete(t._id)}
+                                                            onClick={() => handleDeleteTemplate(t._id)}
                                                             className="w-8 h-8 rounded-lg bg-gray-50 border border-border flex items-center justify-center text-gray-500 hover:bg-red-500/20 hover:text-red-500 transition-all"
                                                             title="Delete"
                                                         >

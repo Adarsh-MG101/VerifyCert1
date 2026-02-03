@@ -6,6 +6,7 @@ import Button from '@/components/Button';
 import Footer from '@/components/Footer';
 import DashboardHeader from '@/components/DashboardHeader';
 import PageHeader from '@/components/PageHeader';
+import { verifyToken, logout as logoutService } from '@/services/authService';
 
 export default function DashboardLayout({ children }) {
     const router = useRouter();
@@ -16,7 +17,6 @@ export default function DashboardLayout({ children }) {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
 
         if (!token) {
             router.replace('/login');
@@ -24,43 +24,38 @@ export default function DashboardLayout({ children }) {
         }
 
         // Verify token with server to ensure it's still valid
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        fetch(`${API_URL}/api/auth/verify`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(res => {
-                if (res.ok) return res.json();
-                throw new Error('Session expired');
-            })
-            .then(data => {
-                setUser(data.user);
+        const verify = async () => {
+            try {
+                const response = await verifyToken();
+                const data = await response.json();
 
-                // If non-admin tries to access Overview, redirect to Templates
-                if (data.user.role === 'user' && pathname === '/dashboard') {
-                    router.replace('/dashboard/templates');
-                    return; // Stay in loading state while redirecting
+                if (response.ok) {
+                    setUser(data.user);
+
+                    // If non-admin tries to access Overview, redirect to Templates
+                    if (data.user.role === 'user' && pathname === '/dashboard') {
+                        router.replace('/dashboard/templates');
+                        return; // Stay in loading state while redirecting
+                    }
+
+                    setLoading(false);
+                } else {
+                    throw new Error('Session expired');
                 }
-
-                setLoading(false);
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Session validation failed:', err);
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 router.replace('/login');
-            });
+            }
+        };
+
+        verify();
     }, [router, pathname]);
 
     const handleLogout = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-            await fetch(`${API_URL}/api/auth/logout`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            await logoutService();
         } catch (err) {
             console.error('Logout error:', err);
         }

@@ -7,6 +7,9 @@ import Input from '@/components/Input';
 import Button from '@/components/Button';
 import TemplateSelector from '@/components/TemplateSelector';
 import Modal from '@/components/Modal';
+import { getDocuments, sendCertificateEmail } from '@/services/documentService';
+import { getTemplates } from '@/services/TemplateLib';
+import { getApiUrl } from '@/services/apiService';
 
 import { Suspense } from 'react';
 
@@ -29,26 +32,18 @@ function DocumentsContent() {
     const [recipientEmail, setRecipientEmail] = useState('');
     const [sendingEmail, setSendingEmail] = useState(false);
     const limit = 5;
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
     const fetchDocuments = async () => {
         setLoading(true);
-        const token = localStorage.getItem('token');
         try {
-            const params = new URLSearchParams();
-            if (search) params.append('search', search);
-            if (startDate) params.append('startDate', startDate);
-            if (endDate) params.append('endDate', endDate);
-            if (selectedTemplate) params.append('templateId', selectedTemplate);
-            params.append('page', page);
-            params.append('limit', limit);
-
-            const res = await fetch(`${API_URL}/api/documents?${params.toString()}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            const data = await getDocuments({
+                search,
+                startDate,
+                endDate,
+                templateId: selectedTemplate,
+                page,
+                limit
             });
-            const data = await res.json();
+
             if (data && Array.isArray(data.documents)) {
                 setDocuments(data.documents);
                 setTotalPages(data.pages);
@@ -59,9 +54,15 @@ function DocumentsContent() {
             }
         } catch (err) {
             console.error('Error fetching documents:', err);
+            if (err.message?.includes('401')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
             setDocuments([]);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleSendEmail = async (e) => {
@@ -69,21 +70,9 @@ function DocumentsContent() {
         if (!selectedDocForEmail || !recipientEmail) return;
 
         setSendingEmail(true);
-        const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`${API_URL}/api/send-email`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    documentId: selectedDocForEmail._id,
-                    recipientEmail: recipientEmail
-                })
-            });
-            const data = await res.json();
-            if (res.ok) {
+            const data = await sendCertificateEmail(selectedDocForEmail._id, recipientEmail);
+            if (data.message) {
                 showAlert('Success', 'Certificate has been emailed successfully!', 'info');
                 setSelectedDocForEmail(null);
                 setRecipientEmail('');
@@ -98,13 +87,9 @@ function DocumentsContent() {
     };
 
     useEffect(() => {
-        const fetchTemplates = async () => {
-            const token = localStorage.getItem('token');
+        const fetchTemplatesList = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/templates?limit=1000`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
+                const data = await getTemplates({ limit: 1000 });
                 if (Array.isArray(data)) {
                     setTemplates(data);
                 } else if (data && Array.isArray(data.templates)) {
@@ -114,7 +99,7 @@ function DocumentsContent() {
                 console.error('Error fetching templates:', err);
             }
         };
-        fetchTemplates();
+        fetchTemplatesList();
     }, []);
 
     useEffect(() => {
@@ -273,7 +258,7 @@ function DocumentsContent() {
                                                             </svg>
                                                         </button>
                                                         <a
-                                                            href={`${API_URL}/${doc.filePath}`}
+                                                            href={getApiUrl(`/${doc.filePath}`)}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="inline-flex items-center gap-2 group/pdf"

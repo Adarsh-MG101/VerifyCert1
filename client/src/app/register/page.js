@@ -9,6 +9,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ValidationError from '@/components/ValidationError';
 import { validateEmail, validatePassword, validateUsername } from '@/utils/validators';
+import { register } from '@/services/authService';
 
 export default function RegisterPage() {
     const [name, setName] = useState('');
@@ -41,15 +42,10 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password })
-            });
+            const response = await register(name, email, password);
+            const data = await response.json();
 
-            const data = await res.json();
-
-            if (res.ok) {
+            if (response.ok) {
                 router.push('/login?registered=true');
             } else {
                 setError(data.error || 'Registration failed');

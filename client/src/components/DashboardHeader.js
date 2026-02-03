@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUI } from '@/context/UIContext';
+import { logout as logoutService } from '@/services/authService';
 
 const DashboardHeader = ({ user }) => {
     const { theme, toggleTheme } = useUI();
@@ -26,12 +27,7 @@ const DashboardHeader = ({ user }) => {
 
     const handleLogout = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-            await fetch(`${API_URL}/api/auth/logout`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            await logoutService();
         } catch (err) {
             console.error('Logout error:', err);
         }

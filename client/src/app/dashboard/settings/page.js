@@ -5,6 +5,7 @@ import Input from '@/components/Input';
 import Button from '@/components/Button';
 import DisplayField from '@/components/DisplayField';
 import { useRouter } from 'next/navigation';
+import { updatePassword } from '@/services/authService';
 
 export default function AccountSettingsPage() {
     const router = useRouter();
@@ -15,8 +16,6 @@ export default function AccountSettingsPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
@@ -41,21 +40,11 @@ export default function AccountSettingsPage() {
         }
 
         setLoading(true);
-        const token = localStorage.getItem('token');
 
         try {
-            const res = await fetch(`${API_URL}/api/auth/change-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ currentPassword, newPassword })
-            });
+            const data = await updatePassword(currentPassword, newPassword);
 
-            const data = await res.json();
-
-            if (res.ok) {
+            if (data.message) {
                 setSuccess('Password updated successfully!');
                 setCurrentPassword('');
                 setNewPassword('');
@@ -71,6 +60,7 @@ export default function AccountSettingsPage() {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="max-w-7xl mx-auto py-10 animate-fade-in">

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Link from 'next/link';
+import { getDashboardStats } from '@/services/dashboardService';
 
 export default function DashboardPage() {
     const [stats, setStats] = useState({
@@ -12,33 +13,23 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/stats`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(res => {
-                if (res.status === 401) {
+        const fetchStats = async () => {
+            try {
+                const data = await getDashboardStats();
+                setStats(data);
+            } catch (err) {
+                console.error(err);
+                if (err.message?.includes('401')) {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
                     window.location.href = '/login';
-                    return;
                 }
-                return res.json();
-            })
-            .then(data => {
-                if (data) {
-                    setStats(data);
-                    setLoading(false);
-                }
-            })
-            .catch(err => {
-                console.error(err);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchStats();
     }, []);
 
     const statCards = [

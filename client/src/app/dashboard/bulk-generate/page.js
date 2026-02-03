@@ -8,6 +8,9 @@ import FileUpload from '@/components/FileUpload';
 import TemplateSelector from '@/components/TemplateSelector';
 import TemplatePreview from '@/components/TemplatePreview';
 import Modal from '@/components/Modal';
+import { getTemplates } from '@/services/TemplateLib';
+import { generateBulkCertificates, sendCertificateEmail } from '@/services/documentService';
+import { getApiUrl } from '@/services/apiService';
 
 
 
@@ -22,27 +25,10 @@ export default function BulkGeneratePage() {
     const [recipientEmail, setRecipientEmail] = useState('');
     const [sending, setSending] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        fetch(`${API_URL}/api/templates?onlyEnabled=true&limit=1000`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(res => {
-                if (res.status === 401) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    window.location.href = '/login';
-                    return;
-                }
-                return res.ok ? res.json() : [];
-            })
-            .then(data => {
+        const fetchTemplatesList = async () => {
+            try {
+                const data = await getTemplates({ onlyEnabled: true, limit: 1000 });
                 if (Array.isArray(data)) {
                     setTemplates(data);
                 } else if (data && Array.isArray(data.templates)) {
@@ -51,11 +37,18 @@ export default function BulkGeneratePage() {
                     console.error('Expected array of templates, got:', data);
                     setTemplates([]);
                 }
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Error fetching templates:', err);
+                if (err.message?.includes('401')) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                }
                 setTemplates([]);
-            });
+            }
+        };
+
+        fetchTemplatesList();
     }, []);
 
     const handleTemplateSelect = (e) => {
@@ -92,7 +85,6 @@ export default function BulkGeneratePage() {
         e.preventDefault();
         if (!selectedTemplate || !csvFile) return;
 
-        const token = localStorage.getItem('token');
         setGenerating(true);
         setResult(null);
 
@@ -101,19 +93,8 @@ export default function BulkGeneratePage() {
         formData.append('templateId', selectedTemplate._id);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/generate-bulk`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
-            });
-            const data = await res.json();
-            if (res.ok) {
-                setResult(data);
-            } else {
-                showAlert('Batch Failed', data.error || 'Bulk generation failed', 'error');
-            }
+            const data = await generateBulkCertificates(formData);
+            setResult(data);
         } catch (err) {
             console.error(err);
             showAlert('Error', 'Error during bulk generation', 'error');
@@ -125,21 +106,9 @@ export default function BulkGeneratePage() {
         if (!recipientEmail || !result) return;
 
         setSending(true);
-        const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/send-email`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    documentId: `zip:${result.downloadUrl}`, // Prefix for backend switch
-                    recipientEmail: recipientEmail
-                })
-            });
-            const data = await res.json();
-            if (res.ok) {
+            const data = await sendCertificateEmail(`zip:${result.downloadUrl}`, recipientEmail);
+            if (data.message) {
                 showAlert('Success', 'Batch ZIP has been emailed successfully!', 'info');
                 setRecipientEmail('');
             } else {
@@ -315,7 +284,7 @@ export default function BulkGeneratePage() {
 
                                 <div className="grid grid-cols-1 gap-3">
                                     <a
-                                        href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${result.downloadUrl}`}
+                                        href={getApiUrl(result.downloadUrl)}
                                         className="block"
                                         download
                                     >

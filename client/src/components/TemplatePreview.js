@@ -1,9 +1,9 @@
 "use client";
+import { getApiUrl } from '@/services/apiService';
 
 const TemplatePreview = ({ template, className = "", maxWidth = "300px", showLabel = true, overlayText = "" }) => {
     if (!template) return null;
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
     return (
         <div className={`animate-fade-in group ${className}`}>
@@ -18,7 +18,7 @@ const TemplatePreview = ({ template, className = "", maxWidth = "300px", showLab
             >
                 {template.thumbnailPath ? (
                     <img
-                        src={`${API_URL}/${template.thumbnailPath}`}
+                        src={getApiUrl(`/${template.thumbnailPath}`)}
                         alt={template.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />

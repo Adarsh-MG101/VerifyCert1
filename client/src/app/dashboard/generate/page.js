@@ -9,6 +9,9 @@ import Link from 'next/link';
 import TemplateSelector from '@/components/TemplateSelector';
 import TemplatePreview from '@/components/TemplatePreview';
 import Modal from '@/components/Modal';
+import { getTemplates } from '@/services/TemplateLib';
+import { generateCertificate, sendCertificateEmail } from '@/services/documentService';
+import { getApiUrl } from '@/services/apiService';
 
 
 import { Suspense } from 'react';
@@ -24,30 +27,13 @@ function GenerateContent() {
     const [sending, setSending] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
     const searchParams = useSearchParams();
     const templateIdParam = searchParams.get('templateId');
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        fetch(`${API_URL}/api/templates?onlyEnabled=true&limit=5000`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(res => {
-                if (res.status === 401) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    window.location.href = '/login';
-                    return;
-                }
-                return res.ok ? res.json() : [];
-            })
-            .then(data => {
+        const fetchTemplatesList = async () => {
+            try {
+                const data = await getTemplates({ onlyEnabled: true, limit: 5000 });
                 let fetchedTemplates = [];
                 if (Array.isArray(data)) {
                     fetchedTemplates = data;
@@ -64,11 +50,18 @@ function GenerateContent() {
                         setSelectedTemplate(t);
                     }
                 }
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Error fetching templates:', err);
+                if (err.message?.includes('401')) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                }
                 setTemplates([]);
-            });
+            }
+        };
+
+        fetchTemplatesList();
     }, [templateIdParam]);
 
     const handleTemplateSelect = (e) => {
@@ -88,25 +81,13 @@ function GenerateContent() {
         e.preventDefault();
         if (!selectedTemplate) return;
 
-        const token = localStorage.getItem('token');
         setGenerating(true);
         try {
-            const res = await fetch(`${API_URL}/api/generate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    templateId: selectedTemplate._id,
-                    data: formData
-                })
-            });
-            const result = await res.json();
-            if (res.ok) {
-                setGeneratedDoc(result);
+            const data = await generateCertificate(selectedTemplate._id, formData);
+            if (data.document) {
+                setGeneratedDoc(data);
             } else {
-                showAlert('Generation Failed', result.error || 'Check your template or data', 'error');
+                showAlert('Generation Failed', data.error || 'Check your template or data', 'error');
             }
         } catch (err) {
             console.error(err);
@@ -118,21 +99,9 @@ function GenerateContent() {
         if (!recipientEmail || !generatedDoc) return;
 
         setSending(true);
-        const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`${API_URL}/api/send-email`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    documentId: generatedDoc.document._id,
-                    recipientEmail: recipientEmail
-                })
-            });
-            const data = await res.json();
-            if (res.ok) {
+            const data = await sendCertificateEmail(generatedDoc.document._id, recipientEmail);
+            if (data.message) {
                 showAlert('Success', 'Certificate has been emailed successfully!', 'info');
                 setRecipientEmail('');
             } else {
@@ -261,7 +230,7 @@ function GenerateContent() {
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3">
-                                    <a href={`${API_URL}${generatedDoc.downloadUrl}`} target="_blank" rel="noopener noreferrer">
+                                    <a href={getApiUrl(generatedDoc.downloadUrl)} target="_blank" rel="noopener noreferrer">
                                         <Button className="w-full bg-green-600 hover:bg-green-700 border-none shadow-lg shadow-green-900/20">
                                             📥 Download PDF
                                         </Button>

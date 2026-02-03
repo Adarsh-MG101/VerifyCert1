@@ -9,6 +9,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ValidationError from '@/components/ValidationError';
 import { validateEmail } from '@/utils/validators';
+import { login } from '@/services/authService';
 
 import { Suspense } from 'react';
 
@@ -41,15 +42,10 @@ function LoginContent() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+            const response = await login(email, password);
+            const data = await response.json();
 
-            const data = await res.json();
-
-            if (res.ok) {
+            if (response.ok) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 router.replace('/dashboard');

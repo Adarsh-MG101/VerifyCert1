@@ -6,6 +6,7 @@ import Button from '@/components/Button';
 import FileUpload from '@/components/FileUpload';
 import mammoth from 'mammoth';
 import Link from 'next/link';
+import { uploadTemplate } from '@/services/TemplateLib';
 
 export default function TemplatesPage() {
     const { showAlert } = useUI();
@@ -14,8 +15,6 @@ export default function TemplatesPage() {
     const [showBuffer, setShowBuffer] = useState(false);
     const [detectedPlaceholders, setDetectedPlaceholders] = useState([]);
     const [duplicatePlaceholders, setDuplicatePlaceholders] = useState([]);
-
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
     const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
@@ -65,20 +64,13 @@ export default function TemplatesPage() {
         e.preventDefault();
         if (!file) return;
 
-        const token = localStorage.getItem('token');
         setLoading(true);
 
         const formData = new FormData();
         formData.append('file', file);
 
         try {
-            const res = await fetch(`${API_URL}/api/templates`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
-            });
+            const res = await uploadTemplate(formData);
             if (res.ok) {
                 setFile(null);
                 setDetectedPlaceholders([]);

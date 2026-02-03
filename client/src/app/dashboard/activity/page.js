@@ -2,25 +2,18 @@
 import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import DisplayField from '@/components/DisplayField';
+import { getUserActivity } from '@/services/dashboardService';
 
 export default function ActivityPage() {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
     useEffect(() => {
         fetchActivity();
     }, []);
-
     const fetchActivity = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_URL}/api/auth/activity`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const data = await res.json();
+            const data = await getUserActivity();
             if (data.success) {
                 setActivities(data.activities);
             }

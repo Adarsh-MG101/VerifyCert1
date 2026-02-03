@@ -6,6 +6,7 @@ import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { verifyDocument } from '@/services/documentService';
 
 export default function VerifyPage() {
     const { id } = useParams();
@@ -15,21 +16,24 @@ export default function VerifyPage() {
 
     useEffect(() => {
         if (!id) return;
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/verify/${id}`)
-            .then(res => res.json())
-            .then(res => {
+
+        const verify = async () => {
+            try {
+                const res = await verifyDocument(id);
                 if (res.valid) {
                     setData(res);
                 } else {
                     setError(res.message || 'Invalid Document');
                 }
-                setLoading(false);
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error(err);
                 setError('Verification Failed');
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        verify();
     }, [id]);
 
     return (
