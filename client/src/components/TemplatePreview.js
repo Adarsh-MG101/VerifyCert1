@@ -13,7 +13,7 @@ const TemplatePreview = ({ template, className = "", maxWidth = "300px", showLab
                 </span>
             )}
             <div
-                className="relative aspect-[1.414/1] w-full bg-gray-50 rounded-xl overflow-hidden border border-border group-hover:border-primary/30 transition-all shadow-card mx-auto"
+                className="relative aspect-[1.414/1] w-full bg-gray-50 rounded-md overflow-hidden border border-border group-hover:border-primary/30 transition-all shadow-card mx-auto"
                 style={{ maxWidth }}
             >
                 {template.thumbnailPath ? (

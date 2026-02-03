@@ -3,7 +3,7 @@ import React from 'react';
 
 const Guidelines = ({ title, icon, items = [], children, className = "" }) => {
     return (
-        <div className={`mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4 animate-fade-in ${className}`}>
+        <div className={`mb-10 p-8 bg-primary/5 border border-primary/20 rounded-xl space-y-4 animate-fade-in ${className}`}>
             <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
                 <span className="mr-3 text-2xl">{icon}</span> {title}
             </h4>

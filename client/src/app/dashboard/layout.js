@@ -142,7 +142,7 @@ export default function DashboardLayout({ children }) {
                             <Link
                                 key={item.path}
                                 href={item.path}
-                                className={`flex items-center p-3 rounded-xl transition-all group ${isActive(item.path)
+                                className={`flex items-center p-3 rounded-lg transition-all group ${isActive(item.path)
                                     ? 'bg-primary/10 text-primary font-normal shadow-sm'
                                     : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                                     } ${isCollapsed ? 'justify-center gap-0' : 'gap-3'}`}
@@ -161,7 +161,7 @@ export default function DashboardLayout({ children }) {
                 <div className="mt-auto space-y-4 pt-4 border-t border-border">
                     <button
                         onClick={handleLogout}
-                        className={`flex items-center w-full p-3 rounded-xl bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all group border border-transparent hover:border-red-100 active:scale-[0.98] ${isCollapsed ? 'justify-center gap-0 px-0' : 'gap-3'}`}
+                        className={`flex items-center w-full p-3 rounded-lg bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all group border border-transparent hover:border-red-100 active:scale-[0.98] ${isCollapsed ? 'justify-center gap-0 px-0' : 'gap-3'}`}
                         title={isCollapsed ? 'Sign Out' : ''}
                     >
                         <span className="transition-transform group-hover:scale-110 shrink-0">

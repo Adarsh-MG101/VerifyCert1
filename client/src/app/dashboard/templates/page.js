@@ -96,7 +96,7 @@ export default function TemplatesPage() {
                             {file && (
                                 <div className="space-y-4 animate-fade-in">
                                     {detectedPlaceholders.length > 0 ? (
-                                        <div className="bg-gray-50 border border-border p-4 rounded-xl">
+                                        <div className="bg-gray-50 border border-border p-4 rounded-lg">
                                             <div className="text-[10px] font-medium text-muted uppercase tracking-widest mb-3">Detected Placeholders</div>
                                             <div className="flex flex-wrap gap-2">
                                                 {detectedPlaceholders.map(p => (

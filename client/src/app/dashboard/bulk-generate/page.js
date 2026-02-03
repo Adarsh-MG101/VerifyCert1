@@ -227,11 +227,11 @@ export default function BulkGeneratePage() {
                                     <span className="bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-xs font-medium uppercase">Success</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <div className="bg-gray-50 p-4 rounded-xl text-center border border-border">
+                                    <div className="bg-gray-50 p-4 rounded-lg text-center border border-border">
                                         <div className="text-muted text-[10px] uppercase font-medium mb-1">Generated</div>
                                         <div className="text-2xl font-medium text-green-500">{result.generated}</div>
                                     </div>
-                                    <div className="bg-gray-50 p-4 rounded-xl text-center border border-border">
+                                    <div className="bg-gray-50 p-4 rounded-lg text-center border border-border">
                                         <div className="text-muted text-[10px] uppercase font-medium mb-1">Failed</div>
                                         <div className="text-2xl font-medium text-red-500">{result.failed}</div>
                                     </div>

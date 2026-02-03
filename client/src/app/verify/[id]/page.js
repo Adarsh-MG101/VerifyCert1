@@ -57,7 +57,7 @@ export default function VerifyPage() {
 
                     {data && (
                         <div>
-                            <div className="text-center py-6 bg-green-50 rounded-2xl mb-8 border border-green-200 shadow-sm">
+                            <div className="text-center py-6 bg-green-50 rounded-lg mb-8 border border-green-200 shadow-sm">
                                 <div className="text-5xl mb-2">✅</div>
                                 <p className="font-bold text-green-700 text-xl font-header">Perfectly Authentic</p>
                                 <p className="text-green-600/80 text-sm font-subtitle">Verified on Public Ledger</p>

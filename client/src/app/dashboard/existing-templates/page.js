@@ -115,7 +115,7 @@ export default function ExistingTemplatesPage() {
     return (
         <div className="animate-fade-in max-w-7xl mx-auto pb-10">
             {/* Action Bar */}
-            <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-card p-4 rounded-2xl border border-border shadow-card gap-6 overflow-hidden">
+            <div className="mb-8 flex flex-col md:flex-row justify-between items-center bg-card p-4 rounded-lg border border-border shadow-card gap-6 overflow-hidden">
                 <div className="flex-1 flex flex-col md:flex-row items-center gap-4 w-full">
                     <div className="w-full md:w-96 group relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
@@ -139,11 +139,11 @@ export default function ExistingTemplatesPage() {
                             placeholder="Search templates by name..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white border border-border text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-md bg-white border border-border text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
                         />
                     </div>
 
-                    <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-border whitespace-nowrap">
+                    <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-md border border-border whitespace-nowrap">
                         <span className="text-[10px] uppercase font-medium text-gray-500 tracking-wider">Total Templates</span>
                         <div className="w-px h-3 bg-border"></div>
                         <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export default function ExistingTemplatesPage() {
                 </div>
 
                 <Link href="/dashboard/templates" className="w-full md:w-auto">
-                    <Button variant="primary" className="w-full md:w-auto px-6 py-2.5 rounded-xl text-xs uppercase font-medium tracking-widest">
+                    <Button variant="primary" className="w-full md:w-auto px-6 py-2.5 rounded-md text-xs uppercase font-medium tracking-widest">
                         + Upload Template
                     </Button>
                 </Link>
@@ -170,7 +170,7 @@ export default function ExistingTemplatesPage() {
                     <p className="text-gray-400 animate-pulse">Scanning your library...</p>
                 </div>
             ) : (
-                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-card">
+                <div className="rounded-lg border border-border bg-card overflow-hidden shadow-card">
                     <div className="overflow-x-auto custom-scrollbar">
                         <table className="w-full text-left border-collapse table-fixed">
                             <thead>

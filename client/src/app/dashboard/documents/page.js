@@ -121,7 +121,7 @@ function DocumentsContent() {
                     <p className="text-gray-400 animate-pulse">Fetching your documents...</p>
                 </div>
             ) : (
-                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-card">
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-card">
                     <div className="overflow-x-auto custom-scrollbar">
                         <table className="w-full text-left border-collapse table-fixed">
                             <thead>

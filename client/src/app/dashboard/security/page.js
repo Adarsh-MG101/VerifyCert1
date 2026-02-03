@@ -10,7 +10,7 @@ export default function SecurityPage() {
             <div className="grid grid-cols-1 gap-8 items-start">
                 <Card title="Two-Factor Authentication" subtitle="Add an extra layer of security to your account">
                     <div className="space-y-6">
-                        <div className="p-6 bg-gray-50 border border-border rounded-2xl border-dashed flex flex-col items-center text-center">
+                        <div className="p-6 bg-gray-50 border border-border rounded-xl border-dashed flex flex-col items-center text-center">
                             <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center text-3xl mb-4 shadow-lg shadow-primary/5">
                                 📱
                             </div>

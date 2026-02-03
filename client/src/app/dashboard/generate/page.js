@@ -169,7 +169,7 @@ function GenerateContent() {
                                                 />
                                             ))
                                     ) : (
-                                        <div className="py-4 text-center bg-gray-50 rounded-xl border border-border text-muted italic">
+                                        <div className="py-4 text-center bg-gray-50 rounded-lg border border-border text-muted italic">
                                             No custom placeholders in this template.
                                         </div>
                                     )}

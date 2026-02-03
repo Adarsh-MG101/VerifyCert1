@@ -15,7 +15,7 @@ const DisplayField = ({ label, value, className = "", variant = "default", icon,
                     {label}
                 </label>
             )}
-            <div className={`px-4 py-3 border rounded-xl flex items-center justify-between transition-all ${variants[variant] || variants.default}`}>
+            <div className={`px-4 py-3 border rounded-lg flex items-center justify-between transition-all ${variants[variant] || variants.default}`}>
                 <div className="flex-1 truncate">
                     {value || <span className="text-gray-300 italic">Not set</span>}
                 </div>

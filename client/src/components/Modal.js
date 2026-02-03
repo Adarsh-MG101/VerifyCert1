@@ -24,7 +24,7 @@ const Modal = ({ isOpen, onClose, title, subtitle, children, className = "" }) =
             ></div>
 
             {/* Modal Content - Solid Style */}
-            <div className={`relative w-full max-w-md bg-card border border-border rounded-2xl shadow-card p-8 animate-fade-in ${className}`}>
+            <div className={`relative w-full max-w-md bg-card border border-border rounded-xl shadow-card p-8 animate-fade-in ${className}`}>
                 {title && (
                     <div className="mb-6">
                         <h3 className="text-2xl font-bold text-foreground tracking-tight font-header">{title}</h3>

@@ -60,7 +60,7 @@ export default function DashboardPage() {
                             <Link
                                 key={action.path}
                                 href={action.path}
-                                className="flex items-center p-4 bg-gray-50 rounded-xl hover:bg-primary/5 transition-all border border-border hover:border-primary/30 group"
+                                className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-primary/5 transition-all border border-border hover:border-primary/30 group"
                             >
                                 <span className="text-2xl mr-4 group-hover:scale-110 transition-transform">{action.icon}</span>
                                 <span className="font-medium text-foreground group-hover:text-primary transition-colors">{action.name}</span>
