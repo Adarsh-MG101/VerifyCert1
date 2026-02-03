@@ -30,7 +30,7 @@ export const getTemplateById = async (templateId) => {
  * @returns {Promise<object>}
  */
 export const uploadTemplate = async (formData) => {
-    return upload('/api/templates/upload', formData);
+    return upload('/api/templates', formData);
 };
 
 /**
