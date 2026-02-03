@@ -44,19 +44,13 @@ function LoginContent() {
         setLoading(true);
 
         try {
-            const response = await login(email, password);
-            const data = await response.json();
-
-            if (response.ok) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
-                router.replace('/dashboard');
-            } else {
-                setError(data.error || 'Login failed');
-            }
+            const data = await login(email, password);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            router.replace('/dashboard');
         } catch (err) {
-            setError('Something went wrong. Please try again.');
             console.error(err);
+            setError(err.response?.data?.error || 'Login failed');
         } finally {
             setLoading(false);
         }

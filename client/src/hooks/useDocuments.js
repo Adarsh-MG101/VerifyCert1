@@ -28,21 +28,12 @@ export const useDocuments = (initialFilters = {}, limit = 5) => {
     const fetchDocuments = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await getDocuments({
+            const data = await getDocuments({
                 ...filters,
                 search: debouncedSearch,
                 page,
                 limit
             });
-
-            if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = '/login';
-                return;
-            }
-
-            const data = await response.json();
 
             if (data && Array.isArray(data.documents)) {
                 setDocuments(data.documents);

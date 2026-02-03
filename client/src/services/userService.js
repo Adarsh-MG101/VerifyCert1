@@ -10,8 +10,7 @@ import { get, put, post } from './apiService';
  * @returns {Promise<object>}
  */
 export const getUserProfile = async () => {
-    const response = await get('/api/user/profile');
-    return response.json();
+    return get('/api/user/profile');
 };
 
 /**
@@ -20,8 +19,7 @@ export const getUserProfile = async () => {
  * @returns {Promise<object>}
  */
 export const updateUserProfile = async (data) => {
-    const response = await put('/api/user/profile', data);
-    return response.json();
+    return put('/api/user/profile', data);
 };
 
 /**
@@ -30,8 +28,7 @@ export const updateUserProfile = async (data) => {
  * @returns {Promise<object>}
  */
 export const updateUserSettings = async (settings) => {
-    const response = await put('/api/user/settings', settings);
-    return response.json();
+    return put('/api/user/settings', settings);
 };
 
 /**
@@ -39,8 +36,7 @@ export const updateUserSettings = async (settings) => {
  * @returns {Promise<object>}
  */
 export const getUserSettings = async () => {
-    const response = await get('/api/user/settings');
-    return response.json();
+    return get('/api/user/settings');
 };
 
 /**
@@ -50,11 +46,10 @@ export const getUserSettings = async () => {
  * @returns {Promise<{message: string}>}
  */
 export const changePassword = async (currentPassword, newPassword) => {
-    const response = await post('/api/user/change-password', {
+    return post('/api/user/change-password', {
         currentPassword,
         newPassword,
     });
-    return response.json();
 };
 
 export default {

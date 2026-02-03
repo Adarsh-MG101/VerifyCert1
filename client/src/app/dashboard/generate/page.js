@@ -69,15 +69,12 @@ function GenerateContent() {
 
         setGenerating(true);
         try {
-            const response = await generateCertificate(selectedTemplate._id, formData);
-            const data = await response.json();
-            if (response.ok) {
-                setGeneratedDoc(data);
-            } else {
-                showAlert('Generation Failed', data.error || 'Check your template or data', 'error');
-            }
+            const data = await generateCertificate(selectedTemplate._id, formData);
+            setGeneratedDoc(data);
         } catch (err) {
             console.error(err);
+            const errorMsg = err.response?.data?.error || 'Check your template or data';
+            showAlert('Generation Failed', errorMsg, 'error');
         }
         setGenerating(false);
     };

@@ -23,15 +23,7 @@ export const useTemplates = (options = { limit: 1000 }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await getTemplates(options);
-            const data = await response.json();
-
-            if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = '/login';
-                return;
-            }
+            const data = await getTemplates(options);
 
             let fetchedTemplates = [];
             if (Array.isArray(data)) {

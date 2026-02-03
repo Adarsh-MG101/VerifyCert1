@@ -37,23 +37,20 @@ export default function TemplatesPage() {
         formData.append('file', file);
 
         try {
-            const response = await uploadTemplate(formData);
-            if (response.ok) {
-                resetFile();
-                e.target.reset();
+            await uploadTemplate(formData);
+            resetFile();
+            e.target.reset();
 
-                setShowBuffer(true);
-                setTimeout(() => {
-                    setShowBuffer(false);
-                    // Redirect to library after analysis
-                    window.location.href = '/dashboard/existing-templates';
-                }, 1500);
-            } else {
-                const data = await response.json();
-                showAlert('Upload Failed', data.error || 'Check your template format', 'error');
-            }
+            setShowBuffer(true);
+            setTimeout(() => {
+                setShowBuffer(false);
+                // Redirect to library after analysis
+                window.location.href = '/dashboard/existing-templates';
+            }, 1500);
         } catch (err) {
             console.error(err);
+            const errorMsg = err.response?.data?.error || 'Check your template format';
+            showAlert('Upload Failed', errorMsg, 'error');
         }
         setLoading(false);
     };

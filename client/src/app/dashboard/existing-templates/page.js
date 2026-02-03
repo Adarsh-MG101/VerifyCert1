@@ -30,12 +30,11 @@ export default function ExistingTemplatesPage() {
     const fetchTemplates = async () => {
         setLoading(true);
         try {
-            const response = await getTemplates({
+            const data = await getTemplates({
                 search,
                 page,
                 limit
             });
-            const data = await response.json();
 
             if (data && Array.isArray(data.templates)) {
                 setTemplates(data.templates);
@@ -47,12 +46,7 @@ export default function ExistingTemplatesPage() {
             }
         } catch (err) {
             console.error('Error fetching templates:', err);
-            if (err.message?.includes('401')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = '/login';
-                return;
-            }
+            // 401 redirect is handled by interceptor
             setTemplates([]);
         } finally {
             setLoading(false);
@@ -79,32 +73,25 @@ export default function ExistingTemplatesPage() {
 
         setSaving(true);
         try {
-            const response = await updateTemplateName(editingTemplate._id, newName);
-
-            if (response.ok) {
-                setEditingTemplate(null);
-                fetchTemplates();
-            } else {
-                const data = await res.json();
-                showAlert('Failed', data.error || 'Update failed', 'error');
-            }
+            await updateTemplateName(editingTemplate._id, newName);
+            setEditingTemplate(null);
+            fetchTemplates();
         } catch (err) {
             console.error('Error updating template name:', err);
+            const errorMsg = err.response?.data?.error || 'Update failed';
+            showAlert('Failed', errorMsg, 'error');
         }
         setSaving(false);
     };
 
     const handleToggleStatus = async (id) => {
         try {
-            const response = await toggleTemplateStatus(id);
-            if (response.ok) {
-                fetchTemplates();
-            } else {
-                showAlert('Error', 'Failed to update status', 'error');
-            }
+            await toggleTemplateStatus(id);
+            fetchTemplates();
         } catch (err) {
             console.error(err);
-            showAlert('Error', 'An error occurred while updating status', 'error');
+            const errorMsg = err.response?.data?.error || 'Failed to update status';
+            showAlert('Error', errorMsg, 'error');
         }
     };
 
@@ -114,15 +101,12 @@ export default function ExistingTemplatesPage() {
             'Are you sure you want to delete this template? This cannot be undone.',
             async () => {
                 try {
-                    const response = await deleteTemplate(id);
-                    if (response.ok) {
-                        fetchTemplates();
-                    } else {
-                        showAlert('Error', 'Delete failed', 'error');
-                    }
+                    await deleteTemplate(id);
+                    fetchTemplates();
                 } catch (err) {
                     console.error(err);
-                    showAlert('Error', 'An error occurred while deleting', 'error');
+                    const errorMsg = err.response?.data?.error || 'Delete failed';
+                    showAlert('Error', errorMsg, 'error');
                 }
             }
         );

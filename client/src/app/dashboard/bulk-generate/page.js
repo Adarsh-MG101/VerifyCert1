@@ -64,16 +64,12 @@ export default function BulkGeneratePage() {
         formData.append('templateId', selectedTemplate._id);
 
         try {
-            const response = await generateBulkCertificates(formData);
-            const data = await response.json();
-            if (response.ok) {
-                setResult(data);
-            } else {
-                showAlert('Batch Failed', data.error || 'Bulk generation failed', 'error');
-            }
+            const data = await generateBulkCertificates(formData);
+            setResult(data);
         } catch (err) {
             console.error(err);
-            showAlert('Error', 'Error during bulk generation', 'error');
+            const errorMsg = err.response?.data?.error || 'Bulk generation failed';
+            showAlert('Batch Failed', errorMsg, 'error');
         }
         setGenerating(false);
     };

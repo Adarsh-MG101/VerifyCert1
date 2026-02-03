@@ -44,17 +44,11 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const response = await register(name, email, password);
-            const data = await response.json();
-
-            if (response.ok) {
-                router.push('/login?registered=true');
-            } else {
-                setError(data.error || 'Registration failed');
-            }
+            await register(name, email, password);
+            router.push('/login?registered=true');
         } catch (err) {
-            setError('Something went wrong. Please try again.');
             console.error(err);
+            setError(err.response?.data?.error || 'Registration failed');
         } finally {
             setLoading(false);
         }

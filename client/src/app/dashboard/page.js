@@ -15,16 +15,11 @@ export default function DashboardPage() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await getDashboardStats();
-                const data = await response.json();
+                const data = await getDashboardStats();
                 setStats(data);
             } catch (err) {
                 console.error(err);
-                if (err.message?.includes('401')) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    window.location.href = '/login';
-                }
+                // 401 redirect is handled by interceptor
             } finally {
                 setLoading(false);
             }

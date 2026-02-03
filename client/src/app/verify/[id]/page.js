@@ -19,16 +19,11 @@ export default function VerifyPage() {
 
         const verify = async () => {
             try {
-                const response = await verifyDocument(id);
-                const resData = await response.json();
-                if (response.ok) {
-                    setData(resData);
-                } else {
-                    setError(resData.message || 'Invalid Document');
-                }
+                const resData = await verifyDocument(id);
+                setData(resData);
             } catch (err) {
                 console.error(err);
-                setError('Verification Failed');
+                setError(err.response?.data?.message || 'Verification Failed');
             } finally {
                 setLoading(false);
             }

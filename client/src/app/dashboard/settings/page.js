@@ -42,21 +42,15 @@ export default function AccountSettingsPage() {
         setLoading(true);
 
         try {
-            const response = await updatePassword(currentPassword, newPassword);
-            const data = await response.json();
-
-            if (response.ok) {
-                setSuccess('Password updated successfully!');
-                setCurrentPassword('');
-                setNewPassword('');
-                setConfirmPassword('');
-                setTimeout(() => router.push('/dashboard'), 2000);
-            } else {
-                setError(data.error || 'Failed to update password');
-            }
+            await updatePassword(currentPassword, newPassword);
+            setSuccess('Password updated successfully!');
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            setTimeout(() => router.push('/dashboard'), 2000);
         } catch (err) {
             console.error('Error updating password:', err);
-            setError('An error occurred. Please try again.');
+            setError(err.response?.data?.error || 'Failed to update password');
         } finally {
             setLoading(false);
         }

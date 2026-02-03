@@ -26,21 +26,14 @@ export const useEmail = () => {
 
         setSending(true);
         try {
-            const response = await sendCertificateEmail(targetId, email);
-            const data = await response.json();
-
-            if (response.ok) {
-                showAlert('Success', successMessage, 'info');
-                setSending(false);
-                return true;
-            } else {
-                showAlert('Email Failed', data.error || errorMessage, 'error');
-                setSending(false);
-                return false;
-            }
+            await sendCertificateEmail(targetId, email);
+            showAlert('Success', successMessage, 'info');
+            setSending(false);
+            return true;
         } catch (err) {
             console.error('Email error:', err);
-            showAlert('Error', 'An unexpected error occurred while sending email', 'error');
+            const errorMsg = err.response?.data?.error || errorMessage;
+            showAlert('Email Failed', errorMsg, 'error');
             setSending(false);
             return false;
         }

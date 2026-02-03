@@ -26,22 +26,16 @@ export default function DashboardLayout({ children }) {
         // Verify token with server to ensure it's still valid
         const verify = async () => {
             try {
-                const response = await verifyToken();
-                const data = await response.json();
+                const data = await verifyToken();
+                setUser(data.user);
 
-                if (response.ok) {
-                    setUser(data.user);
-
-                    // If non-admin tries to access Overview, redirect to Templates
-                    if (data.user.role === 'user' && pathname === '/dashboard') {
-                        router.replace('/dashboard/templates');
-                        return; // Stay in loading state while redirecting
-                    }
-
-                    setLoading(false);
-                } else {
-                    throw new Error('Session expired');
+                // If non-admin tries to access Overview, redirect to Templates
+                if (data.user.role === 'user' && pathname === '/dashboard') {
+                    router.replace('/dashboard/templates');
+                    return; // Stay in loading state while redirecting
                 }
+
+                setLoading(false);
             } catch (err) {
                 console.error('Session validation failed:', err);
                 localStorage.removeItem('token');
