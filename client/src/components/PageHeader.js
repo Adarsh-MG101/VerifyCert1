@@ -53,7 +53,7 @@ const PageHeader = () => {
     const currentPage = config[lastSegment] || config['dashboard'];
 
     return (
-        <div className="flex items-center justify-between mb-8 py-2 px-1">
+        <div className="flex items-center justify-between mb-2 py-1 px-1">
             <div>
                 <h2 className="text-2xl font-bold text-foreground tracking-tight font-header">{currentPage.title}</h2>
             </div>
