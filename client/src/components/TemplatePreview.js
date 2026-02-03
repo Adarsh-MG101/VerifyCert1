@@ -30,7 +30,7 @@ const TemplatePreview = ({ template, className = "", maxWidth = "300px", showLab
                 )}
 
                 <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-gray-900/60 via-gray-900/20 to-transparent p-3 pt-8">
-                    <p className="text-xs text-white font-medium line-clamp-1">{template.name.replace(/\.[^/.]+$/, "")}</p>
+                    <p className="text-xs text-white font-normal line-clamp-1">{template.name.replace(/\.[^/.]+$/, "")}</p>
                     {overlayText && (
                         <p className="text-[10px] text-white/70 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                             {overlayText}

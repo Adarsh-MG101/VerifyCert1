@@ -213,7 +213,7 @@ function DocumentsContent() {
 
                                                 <td className="px-6 py-0 text-center">
                                                     <div className="h-[80px] flex items-center justify-center">
-                                                        <div className="text-sm font-medium text-foreground tracking-tight group-hover:text-primary transition-colors line-clamp-1">
+                                                        <div className="text-sm font-normal text-foreground tracking-tight group-hover:text-primary transition-colors line-clamp-1">
                                                             {doc.template?.name?.replace(/\.[^/.]+$/, "") || 'Unknown'}
                                                         </div>
                                                     </div>

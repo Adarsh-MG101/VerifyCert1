@@ -12,7 +12,7 @@ import { getTemplates } from '@/services/TemplateLib';
 import { generateBulkCertificates, sendCertificateEmail } from '@/services/documentService';
 import { getApiUrl } from '@/services/apiService';
 
-
+import Guidelines from '@/components/Guidelines';
 
 export default function BulkGeneratePage() {
     const { showAlert } = useUI();
@@ -157,17 +157,16 @@ export default function BulkGeneratePage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className={`${result ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
                     <Card className="p-8">
-                        <div className="mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
-                            <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
-                                <span className="mr-3 text-2xl">🚀</span> Bulk Processing Guidelines
-                            </h4>
-                            <ul className="text-sm text-foreground/80 space-y-4 ml-6 list-disc marker:text-primary leading-relaxed">
-                                <li className="pl-2">Upload a <span className="text-primary font-bold">CSV File</span> where the headers match exactly with your template's placeholders.</li>
-                                <li className="pl-2">Download the <span className="italic font-bold text-primary">"Sample CSV"</span> (available after selection) for the correct column structure.</li>
-                                <li className="pl-2">The system will generate a <span className="text-primary font-bold">ZIP Archive</span> containing all successfully generated PDFs.</li>
-                                <li className="pl-2">Any row with <span className="text-red-500 font-bold uppercase tracking-tighter">Incomplete Data</span> will be skipped and reported in the log.</li>
-                            </ul>
-                        </div>
+                        <Guidelines
+                            title="Bulk Processing Guidelines"
+                            icon="🚀"
+                            items={[
+                                <>Upload a <span className="text-primary font-normal">CSV File</span> where the headers match exactly with your template's placeholders.</>,
+                                <>Download the <span className="italic font-normal text-primary">"Sample CSV"</span> (available after selection) for the correct column structure.</>,
+                                <>The system will generate a <span className="text-primary font-normal">ZIP Archive</span> containing all successfully generated PDFs.</>,
+                                <>Any row with <span className="text-red-500 font-normal uppercase tracking-tighter">Incomplete Data</span> will be skipped and reported in the log.</>
+                            ]}
+                        />
 
                         <div className="flex items-center justify-between mb-8">
                             <TemplateSelector

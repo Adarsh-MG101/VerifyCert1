@@ -210,9 +210,9 @@ export default function ExistingTemplatesPage() {
                                                 </td>
                                                 <td className="px-6 py-0">
                                                     <div className="h-[80px] flex flex-col justify-center">
-                                                        <div className={`text-sm font-medium tracking-tight transition-colors ${t.enabled !== false ? 'text-foreground group-hover:text-primary' : 'text-gray-400'}`}>
+                                                        <div className={`text-sm font-normal tracking-tight transition-colors ${t.enabled !== false ? 'text-foreground group-hover:text-primary' : 'text-gray-400'}`}>
                                                             {t.name.replace(/\.[^/.]+$/, "")}
-                                                            {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 border border-border font-medium uppercase">DISABLED</span>}
+                                                            {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 border border-border font-normal uppercase">DISABLED</span>}
                                                         </div>
                                                         <div className="text-[10px] text-gray-600 font-mono mt-0.5">
                                                             ID: {t._id.slice(-8)}

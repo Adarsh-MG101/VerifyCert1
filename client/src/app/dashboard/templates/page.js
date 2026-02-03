@@ -7,6 +7,7 @@ import FileUpload from '@/components/FileUpload';
 import mammoth from 'mammoth';
 import Link from 'next/link';
 import { uploadTemplate } from '@/services/TemplateLib';
+import Guidelines from '@/components/Guidelines';
 
 export default function TemplatesPage() {
     const { showAlert } = useUI();
@@ -112,16 +113,15 @@ export default function TemplatesPage() {
                     </div>
                 ) : (
                     <div className="space-y-6 mt-4">
-                        <div className="mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
-                            <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
-                                <span className="mr-3 text-2xl">📝</span> Template Guidelines
-                            </h4>
-                            <ul className="text-base text-foreground space-y-3 ml-10 list-disc leading-relaxed font-medium">
-                                <li>All placeholders must be <span className="text-foreground font-medium">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-medium bg-primary/10 px-1.5 py-0.5 rounded">{"{{NAME}}"}</code>).</li>
-                                <li>Use <code className="text-primary font-mono font-medium bg-primary/10 px-1.5 py-0.5 rounded">{"{{QR}}"}</code> to position the verification QR code.</li>
-                                <li>Lowercase tags like <code className="text-muted italic">{"{{Name}}"}</code> will <span className="text-red-600 font-medium uppercase">not</span> be detected.</li>
-                            </ul>
-                        </div>
+                        <Guidelines
+                            title="Template Guidelines"
+                            icon="📝"
+                            items={[
+                                <>All placeholders must be <span className="text-foreground font-normal">ALL CAPS</span> (e.g., <code className="text-primary font-mono font-normal bg-primary/10 px-1.5 py-0.5 rounded">{"{{NAME}}"}</code>).</>,
+                                <>Use <code className="text-primary font-mono font-normal bg-primary/10 px-1.5 py-0.5 rounded">{"{{QR}}"}</code> to position the verification QR code.</>,
+                                <>Lowercase tags like <code className="text-muted italic">{"{{Name}}"}</code> will <span className="text-red-600 font-normal uppercase">not</span> be detected.</>
+                            ]}
+                        />
 
                         <form onSubmit={handleUpload} className="space-y-6">
                             <FileUpload

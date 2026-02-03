@@ -16,6 +16,8 @@ import { getApiUrl } from '@/services/apiService';
 
 import { Suspense } from 'react';
 
+import Guidelines from '@/components/Guidelines';
+
 function GenerateContent() {
     const { showAlert } = useUI();
     const [templates, setTemplates] = useState([]);
@@ -130,17 +132,16 @@ function GenerateContent() {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 <div className={`${generatedDoc ? 'lg:col-span-3' : 'lg:col-span-5'}`}>
                     <Card className="p-8">
-                        <div className="mb-10 p-8 bg-primary/5 border border-primary/20 rounded-2xl space-y-4">
-                            <h4 className="text-xl font-bold text-primary flex items-center uppercase tracking-wider">
-                                <span className="mr-3 text-2xl">✨</span> Generation Guidelines
-                            </h4>
-                            <ul className="text-sm text-foreground/80 space-y-4 ml-6 list-disc marker:text-primary leading-relaxed">
-                                <li className="pl-2">Select a <span className="text-primary font-bold">Template</span> to automatically load its required variables.</li>
-                                <li className="pl-2">Ensure all <span className="text-primary font-bold">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</li>
-                                <li className="pl-2">The <span className="text-primary font-bold">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</li>
-                                <li className="pl-2">Click <span className="italic font-bold text-primary">"Generate Document"</span> to process the PDF conversion in real-time.</li>
-                            </ul>
-                        </div>
+                        <Guidelines
+                            title="Generation Guidelines"
+                            icon="✨"
+                            items={[
+                                <>Select a <span className="text-primary font-normal">Template</span> to automatically load its required variables.</>,
+                                <>Ensure all <span className="text-primary font-normal">Variables</span> are filled correctly; they are case-sensitive if specific formats are required.</>,
+                                <>The <span className="text-primary font-normal">Verification Footer</span> (QR & ID) will be automatically appended to the final PDF.</>,
+                                <>Click <span className="italic font-normal text-primary">"Generate Document"</span> to process the PDF conversion in real-time.</>
+                            ]}
+                        />
 
                         <div className="flex items-center justify-between mb-8">
                             <TemplateSelector
