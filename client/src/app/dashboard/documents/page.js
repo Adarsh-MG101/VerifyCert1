@@ -2,11 +2,13 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useUI } from '@/context/UIContext';
-import Card from '@/components/Card';
-import Input from '@/components/Input';
-import Button from '@/components/Button';
-import TemplateSelector from '@/components/TemplateSelector';
-import Modal from '@/components/Modal';
+import {
+    Card,
+    Input,
+    Button,
+    TemplateSelector,
+    Modal
+} from '@/components';
 import { getDocuments, sendCertificateEmail } from '@/services/documentService';
 import { getTemplates } from '@/services/TemplateLib';
 import { getApiUrl } from '@/services/apiService';

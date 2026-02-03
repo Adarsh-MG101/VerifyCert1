@@ -1,12 +1,14 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useUI } from '@/context/UIContext';
-import Card from '@/components/Card';
-import Button from '@/components/Button';
+import {
+    Card,
+    Button,
+    TemplatePreview,
+    Modal,
+    Input
+} from '@/components';
 import Link from 'next/link';
-import TemplatePreview from '@/components/TemplatePreview';
-import Modal from '@/components/Modal';
-import Input from '@/components/Input';
 import { getTemplates, updateTemplateName, toggleTemplateStatus, deleteTemplate } from '@/services/TemplateLib';
 import { getApiUrl } from '@/services/apiService';
 

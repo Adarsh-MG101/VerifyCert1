@@ -2,12 +2,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Button from '@/components/Button';
-import Card from '@/components/Card';
-import Input from '@/components/Input';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import ValidationError from '@/components/ValidationError';
+import {
+    Button,
+    Card,
+    Input,
+    Navbar,
+    Footer,
+    ValidationError
+} from '@/components';
 import { validateEmail, validatePassword, validateUsername } from '@/utils/validators';
 import { register } from '@/services/authService';
 

@@ -1,13 +1,15 @@
 "use client";
 import { useState } from 'react';
 import { useUI } from '@/context/UIContext';
-import Card from '@/components/Card';
-import Button from '@/components/Button';
-import FileUpload from '@/components/FileUpload';
+import {
+    Card,
+    Button,
+    FileUpload,
+    Guidelines
+} from '@/components';
 import mammoth from 'mammoth';
 import Link from 'next/link';
 import { uploadTemplate } from '@/services/TemplateLib';
-import Guidelines from '@/components/Guidelines';
 
 import { useDocxTemplate } from '@/hooks';
 

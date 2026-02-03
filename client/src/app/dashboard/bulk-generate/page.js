@@ -1,18 +1,19 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useUI } from '@/context/UIContext';
-import Card from '@/components/Card';
-import Button from '@/components/Button';
-import Input from '@/components/Input';
-import FileUpload from '@/components/FileUpload';
-import TemplateSelector from '@/components/TemplateSelector';
-import TemplatePreview from '@/components/TemplatePreview';
-import Modal from '@/components/Modal';
+import {
+    Card,
+    Button,
+    Input,
+    FileUpload,
+    TemplateSelector,
+    TemplatePreview,
+    Modal,
+    Guidelines
+} from '@/components';
 import { getTemplates } from '@/services/TemplateLib';
 import { generateBulkCertificates, sendCertificateEmail } from '@/services/documentService';
 import { getApiUrl } from '@/services/apiService';
-
-import Guidelines from '@/components/Guidelines';
 
 import { useTemplates, useEmail, useCsvFile } from '@/hooks';
 
