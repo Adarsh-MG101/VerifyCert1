@@ -217,6 +217,9 @@ router.get('/templates', auth, async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
+        const sortBy = req.query.sortBy || 'createdAt';
+        const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
         const total = await Template.countDocuments(query);
         const templatesWithCount = await Template.aggregate([
             { $match: query },
@@ -239,7 +242,7 @@ router.get('/templates', auth, async (req, res) => {
                     documentCount: { $size: '$documents' }
                 }
             },
-            { $sort: { createdAt: -1 } },
+            { $sort: { [sortBy]: sortOrder } },
             { $skip: skip },
             { $limit: limit }
         ]);
@@ -879,12 +882,38 @@ router.get('/documents', auth, async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
+        const sortBy = req.query.sortBy || 'createdAt';
+        const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+        let sortKey = sortBy;
+        if (sortBy === 'template') sortKey = 'template.name';
+
         const total = await Document.countDocuments(query);
-        const documents = await Document.find(query)
-            .populate('template', 'name')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
+        const documents = await Document.aggregate([
+            { $match: query },
+            {
+                $lookup: {
+                    from: 'templates',
+                    localField: 'template',
+                    foreignField: '_id',
+                    as: 'template'
+                }
+            },
+            { $unwind: { path: '$template', preserveNullAndEmptyArrays: true } },
+            { $sort: { [sortKey]: sortOrder } },
+            { $skip: skip },
+            { $limit: limit },
+            {
+                $project: {
+                    uniqueId: 1,
+                    data: 1,
+                    filePath: 1,
+                    createdAt: 1,
+                    'template.name': 1,
+                    'template._id': 1
+                }
+            }
+        ]);
 
         res.json({
             documents,

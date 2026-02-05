@@ -20,6 +20,8 @@ export default function ExistingTemplatesPage() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalDocs, setTotalDocs] = useState(0);
+    const [sortBy, setSortBy] = useState('createdAt');
+    const [sortOrder, setSortOrder] = useState('desc');
     const limit = 5;
 
     const [previewTemplate, setPreviewTemplate] = useState(null);
@@ -33,8 +35,11 @@ export default function ExistingTemplatesPage() {
             const data = await getTemplates({
                 search,
                 page,
-                limit
+                limit,
+                sortBy,
+                sortOrder
             });
+
 
             if (data && Array.isArray(data.templates)) {
                 setTemplates(data.templates);
@@ -62,7 +67,8 @@ export default function ExistingTemplatesPage() {
             fetchTemplates();
         }, 300);
         return () => clearTimeout(timeoutId);
-    }, [search, page]);
+    }, [search, page, sortBy, sortOrder]);
+
 
     const handleEditName = async (e) => {
         e.preventDefault();
@@ -143,6 +149,12 @@ export default function ExistingTemplatesPage() {
                         />
                     </div>
 
+                    <div className="hidden">
+                        {/* Hidden limit variable tracker for easier replacement */}
+                        {(() => { global.templatesLimit = 5; })()}
+                    </div>
+
+
                     <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-md border border-border whitespace-nowrap">
                         <span className="text-[10px] uppercase font-medium text-gray-500 tracking-wider">Total Templates</span>
                         <div className="w-px h-3 bg-border"></div>
@@ -176,13 +188,27 @@ export default function ExistingTemplatesPage() {
                             <thead>
                                 <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-border h-[60px]">
                                     <th className="px-6 py-0 w-[80px] text-center">S.No</th>
-                                    <th className="px-6 py-0 w-[20%]">Template Name</th>
+                                    <th className="px-6 py-0 w-[20%]">
+                                        <button
+                                            onClick={() => {
+                                                if (sortBy === 'name') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                                                else { setSortBy('name'); setSortOrder('asc'); }
+                                            }}
+                                            className="flex items-center gap-1 hover:text-primary transition-colors uppercase"
+                                        >
+                                            Template Name
+                                            <span className="text-[10px]">
+                                                {sortBy === 'name' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕'}
+                                            </span>
+                                        </button>
+                                    </th>
                                     <th className="px-6 py-0 w-[10%] text-center">Preview</th>
                                     <th className="px-6 py-0 w-[10%] text-center whitespace-nowrap">Certs Issued</th>
                                     <th className="px-6 py-0 w-[10%] text-center">Status</th>
                                     <th className="px-6 py-0 w-[20%]">Placeholders</th>
                                     <th className="px-6 py-0 w-[30%] text-center">Action</th>
                                 </tr>
+
                             </thead>
                             <tbody className="divide-y divide-border">
                                 {templates.length > 0 ? (
@@ -191,20 +217,32 @@ export default function ExistingTemplatesPage() {
                                             <tr key={t._id} className={`hover:bg-gray-50/50 transition-all group h-[80px] ${t.enabled === false ? 'opacity-50 grayscale-[0.5]' : ''}`}>
                                                 <td className="px-6 py-0 text-xs text-gray-600 font-mono text-center">
                                                     <div className="h-[80px] flex items-center justify-center">
-                                                        {((page - 1) * limit) + index + 1}
+                                                        {((page - 1) * 5) + index + 1}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-0">
                                                     <div className="h-[80px] flex flex-col justify-center">
                                                         <div className={`text-sm font-normal tracking-tight transition-colors ${t.enabled !== false ? 'text-foreground group-hover:text-primary' : 'text-gray-400'}`}>
                                                             {t.name.replace(/\.[^/.]+$/, "")}
-                                                            {t.enabled === false && <span className="ml-2 text-[8px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-500 border border-border font-normal uppercase">DISABLED</span>}
                                                         </div>
-                                                        <div className="text-[10px] text-gray-600 font-mono mt-0.5">
-                                                            ID: {t._id.slice(-8)}
+                                                        <div className="text-[10px] text-gray-600 flex items-center gap-1.5 font-mono mt-0.5">
+                                                            <span>ID: {t._id.slice(-8)}</span>
+                                                            <span className="text-gray-300">|</span>
+                                                            <button
+                                                                onClick={() => {
+                                                                    if (sortBy === 'createdAt') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                                                                    else { setSortBy('createdAt'); setSortOrder('desc'); }
+                                                                }}
+                                                                className={`hover:text-primary flex items-center gap-0.5 ${sortBy === 'createdAt' ? 'text-primary font-bold' : ''}`}
+                                                                title="Sort by Date"
+                                                            >
+                                                                {new Date(t.createdAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
+                                                                <span className="text-[8px]">{sortBy === 'createdAt' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}</span>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </td>
+
                                                 <td className="px-6 py-0">
                                                     <div className="h-[80px] flex items-center justify-center">
                                                         <div className={`w-20 h-14 rounded-lg overflow-hidden border bg-gray-50 cursor-pointer transition-all shadow-sm ${t.enabled !== false ? 'border-border hover:border-primary/50' : 'border-border/50 opacity-50'}`} onClick={() => setPreviewTemplate(t)}>
@@ -317,8 +355,9 @@ export default function ExistingTemplatesPage() {
                     {totalPages > 1 && (
                         <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-border">
                             <div className="text-xs text-muted">
-                                Showing <span className="text-foreground font-medium">{((page - 1) * limit) + 1}</span> to <span className="text-foreground font-medium">{Math.min(page * limit, totalDocs)}</span> of <span className="text-foreground font-medium">{totalDocs}</span> templates
+                                Showing <span className="text-foreground font-medium">{((page - 1) * 5) + 1}</span> to <span className="text-foreground font-medium">{Math.min(page * 5, totalDocs)}</span> of <span className="text-foreground font-medium">{totalDocs}</span> templates
                             </div>
+
                             <div className="flex gap-2">
                                 <Button
                                     variant="ghost"

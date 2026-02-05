@@ -127,11 +127,38 @@ function DocumentsContent() {
                             <thead>
                                 <tr className="bg-gray-50 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-border h-[60px]">
                                     <th className="px-6 py-0 text-center w-[80px]">S.No</th>
-                                    <th className="px-6 py-0 text-center w-[20%]">Template</th>
+                                    <th className="px-6 py-0 w-[20%]">
+                                        <button
+                                            onClick={() => {
+                                                const newOrder = (filters.sortBy === 'template' && filters.sortOrder === 'asc') ? 'desc' : 'asc';
+                                                updateFilter({ sortBy: 'template', sortOrder: newOrder });
+                                            }}
+                                            className="flex items-center justify-center gap-1 hover:text-primary transition-colors uppercase w-full"
+                                        >
+                                            Template
+                                            <span className="text-[10px]">
+                                                {filters.sortBy === 'template' ? (filters.sortOrder === 'asc' ? '▲' : '▼') : '↕'}
+                                            </span>
+                                        </button>
+                                    </th>
                                     <th className="px-6 py-0 text-center w-[30%]">Details</th>
-                                    <th className="px-6 py-0 text-center w-[15%]">Generated On</th>
+                                    <th className="px-6 py-0 w-[15%]">
+                                        <button
+                                            onClick={() => {
+                                                const newOrder = (filters.sortBy === 'createdAt' && filters.sortOrder === 'asc') ? 'desc' : 'asc';
+                                                updateFilter({ sortBy: 'createdAt', sortOrder: newOrder });
+                                            }}
+                                            className="flex items-center justify-center gap-1 hover:text-primary transition-colors uppercase w-full"
+                                        >
+                                            Generated
+                                            <span className="text-[10px]">
+                                                {filters.sortBy === 'createdAt' ? (filters.sortOrder === 'asc' ? '▲' : '▼') : '↕'}
+                                            </span>
+                                        </button>
+                                    </th>
                                     <th className="px-6 py-0 text-center w-[25%]">Action</th>
                                 </tr>
+
                             </thead>
                             <tbody className="divide-y divide-border">
                                 {documents.length > 0 ? (

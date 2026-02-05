@@ -20,6 +20,8 @@ export const useDocuments = (initialFilters = {}, limit = 5) => {
         startDate: '',
         endDate: '',
         templateId: '',
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
         ...initialFilters
     });
 
@@ -50,13 +52,13 @@ export const useDocuments = (initialFilters = {}, limit = 5) => {
         } finally {
             setLoading(false);
         }
-    }, [filters.startDate, filters.endDate, filters.templateId, debouncedSearch, page, limit]);
+    }, [filters.startDate, filters.endDate, filters.templateId, filters.sortBy, filters.sortOrder, debouncedSearch, page, limit]);
 
     useEffect(() => {
         fetchDocuments();
     }, [fetchDocuments]);
 
-    // Reset page when filters change
+    // Reset page when search or date filters change (but NOT when just sorting)
     useEffect(() => {
         setPage(1);
     }, [debouncedSearch, filters.startDate, filters.endDate, filters.templateId]);
@@ -70,7 +72,9 @@ export const useDocuments = (initialFilters = {}, limit = 5) => {
             search: '',
             startDate: '',
             endDate: '',
-            templateId: ''
+            templateId: '',
+            sortBy: 'createdAt',
+            sortOrder: 'desc'
         });
         setPage(1);
     };
