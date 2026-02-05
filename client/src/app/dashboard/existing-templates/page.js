@@ -22,7 +22,8 @@ export default function ExistingTemplatesPage() {
     const [totalDocs, setTotalDocs] = useState(0);
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState('desc');
-    const limit = 5;
+    const limit = 10;
+
 
     const [previewTemplate, setPreviewTemplate] = useState(null);
     const [editingTemplate, setEditingTemplate] = useState(null);
@@ -217,8 +218,9 @@ export default function ExistingTemplatesPage() {
                                             <tr key={t._id} className={`hover:bg-gray-50/50 transition-all group h-[80px] ${t.enabled === false ? 'opacity-50 grayscale-[0.5]' : ''}`}>
                                                 <td className="px-6 py-0 text-xs text-gray-600 font-mono text-center">
                                                     <div className="h-[80px] flex items-center justify-center">
-                                                        {((page - 1) * 5) + index + 1}
+                                                        {((page - 1) * limit) + index + 1}
                                                     </div>
+
                                                 </td>
                                                 <td className="px-6 py-0">
                                                     <div className="h-[80px] flex flex-col justify-center">
@@ -355,8 +357,9 @@ export default function ExistingTemplatesPage() {
                     {totalPages > 1 && (
                         <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-border">
                             <div className="text-xs text-muted">
-                                Showing <span className="text-foreground font-medium">{((page - 1) * 5) + 1}</span> to <span className="text-foreground font-medium">{Math.min(page * 5, totalDocs)}</span> of <span className="text-foreground font-medium">{totalDocs}</span> templates
+                                Showing <span className="text-foreground font-medium">{((page - 1) * limit) + 1}</span> to <span className="text-foreground font-medium">{Math.min(page * limit, totalDocs)}</span> of <span className="text-foreground font-medium">{totalDocs}</span> templates
                             </div>
+
 
                             <div className="flex gap-2">
                                 <Button

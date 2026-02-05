@@ -8,7 +8,7 @@ import { useDebounce } from './useDebounce';
  * @param {number} limit - Documents per page
  * @returns {Object} Documents state and control functions
  */
-export const useDocuments = (initialFilters = {}, limit = 5) => {
+export const useDocuments = (initialFilters = {}, limit = 10) => {
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
