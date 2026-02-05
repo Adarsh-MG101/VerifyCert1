@@ -32,18 +32,46 @@ const upload = multer({ storage: storage });
 
 // Helper: Extract Placeholders
 async function extractPlaceholders(filePath) {
-    const result = await mammoth.extractRawText({ path: filePath });
-    const text = result.value;
-    // Match any placeholder, but normalize to uppercase for storage and UI
-    const regex = /\{\{(.*?)\}\}/g;
+    const buffer = fs.readFileSync(filePath);
+    const zip = new PizZip(buffer);
+    const xmlFiles = zip.file(/\.xml$/);
+
     const matches = new Set();
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-        const placeholder = match[1].trim().toUpperCase();
-        if (placeholder !== 'CERTIFICATE_ID' && placeholder !== 'QR_CODE' && placeholder !== 'QR') {
-            matches.add(placeholder);
+    const regex = /\{\{(.*?)\}\}/g;
+
+    xmlFiles.forEach(file => {
+        try {
+            const content = file.asText();
+            // Remove XML tags to bridge fragmentation and catch content in text boxes/headers/footers
+            // mammoth often ignores these, but A4/Letter templates use them heavily.
+            const cleanText = content.replace(/<[^>]+>/g, '');
+
+            let match;
+            while ((match = regex.exec(cleanText)) !== null) {
+                const placeholder = match[1].trim().toUpperCase();
+                const systemTags = ['CERTIFICATE_ID', 'QR_CODE', 'QR', 'IMAGE QR', 'IMAGE_QR', 'QRCODE'];
+                if (!systemTags.includes(placeholder) && placeholder.length > 0 && !placeholder.includes('IMAGE ')) {
+                    matches.add(placeholder);
+                }
+            }
+        } catch (e) {
+            console.error(`Error reading XML file ${file.name}:`, e);
         }
-    }
+    });
+
+    // Fallback/Supplement with mammoth for general text
+    try {
+        const result = await mammoth.extractRawText({ buffer });
+        let match;
+        while ((match = regex.exec(result.value)) !== null) {
+            const placeholder = match[1].trim().toUpperCase();
+            const systemTags = ['CERTIFICATE_ID', 'QR_CODE', 'QR', 'IMAGE QR', 'IMAGE_QR', 'QRCODE'];
+            if (!systemTags.includes(placeholder) && placeholder.length > 0 && !placeholder.includes('IMAGE ')) {
+                matches.add(placeholder);
+            }
+        }
+    } catch (e) { }
+
     return Array.from(matches);
 }
 
@@ -315,53 +343,45 @@ router.post('/generate', auth, async (req, res) => {
             QRCODE: qrImage
         };
 
-        // --- SAFE CASING MAPPER: Map source template tags to uppercase data ---
-        try {
-            const docTextObj = await mammoth.extractRawText({ path: template.filePath });
-            const docText = docTextObj.value;
-            const tagRegex = /\{\{(.*?)\}\}/g;
-            let m;
-            while ((m = tagRegex.exec(docText)) !== null) {
-                const rawTag = m[1].trim();
-                const capsTag = rawTag.toUpperCase();
-
-                // If it's an image command like {{IMAGE qr}}, map the data from finalData['QR']
-                if (capsTag.startsWith('IMAGE ') && rawTag !== capsTag) {
-                    const dataKey = capsTag.replace('IMAGE ', '');
-                    if (finalData[dataKey]) {
-                        finalData[rawTag] = finalData[dataKey];
-                    }
-                }
-
-                // If template has e.g. {{certificate_id}} and we have it in finalData as CERTIFICATE_ID, clone it
-                // BUT: We skip CERTIFICATE_ID if we want to preserve its original casing from the database
-                const idTags = ['CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID'];
-                if (idTags.includes(capsTag)) {
-                    finalData[rawTag] = uniqueId;
-                } else if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
-                    finalData[rawTag] = finalData[capsTag];
-                }
-            }
-
-
-        } catch (e) {
-            console.error('Casing mapper failed:', e);
-        }
-
-
-
-
-        // 1. NUCLEAR PRE-PROCESSOR: Bridge any and all XML fragmentation
+        // Read template once
         let templateBuffer = fs.readFileSync(template.filePath);
+
+        // --- SAFE CASING MAPPER: Map source template tags to uppercase data ---
         try {
             const zip = new PizZip(templateBuffer);
             const xmlFiles = zip.file(/\.xml$/);
+            const tagRegex = /\{\{(.*?)\}\}/g;
 
-            // This regex matches {{QR}} even if every single character is in its own XML node/tag
+            xmlFiles.forEach(file => {
+                const content = file.asText();
+                const cleanText = content.replace(/<[^>]+>/g, '');
+                let m;
+                while ((m = tagRegex.exec(cleanText)) !== null) {
+                    const rawTag = m[1].trim();
+                    const capsTag = rawTag.toUpperCase();
+
+                    // If it's an image command like {{IMAGE qr}}, map the data from finalData['QR']
+                    if (capsTag.startsWith('IMAGE ') && rawTag !== capsTag) {
+                        const dataKey = capsTag.replace('IMAGE ', '');
+                        if (finalData[dataKey]) {
+                            finalData[rawTag] = finalData[dataKey];
+                        }
+                    }
+
+                    // If template has e.g. {{certificate_id}} and we have it in finalData as CERTIFICATE_ID, clone it
+                    const idTags = ['CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID'];
+                    if (idTags.includes(capsTag)) {
+                        finalData[rawTag] = uniqueId;
+                    } else if (finalData[capsTag] !== undefined && finalData[rawTag] === undefined) {
+                        finalData[rawTag] = finalData[capsTag];
+                    }
+                }
+            });
+
+            // --- NUCLEAR PRE-PROCESSOR: Bridge any and all XML fragmentation ---
+            // Re-use zip and xmlFiles from above
             const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
             const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*[cC](<[^>]+>)*[oO](<[^>]+>)*[dD](<[^>]+>)*[eE](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
-
-
 
             let transformed = false;
             xmlFiles.forEach(file => {
@@ -375,20 +395,17 @@ router.post('/generate', auth, async (req, res) => {
                     docTransformed = true;
                 }
 
-
                 if (docTransformed) {
-
                     zip.file(file.name, content);
                     transformed = true;
                 }
             });
 
-
             if (transformed) {
                 templateBuffer = zip.generate({ type: 'nodebuffer' });
             }
         } catch (e) {
-            console.error('Nuclear pre-processing failed:', e);
+            console.error('Template pre-processing failed:', e);
         }
 
         // 2. Fill the DOCX Template with Image Support
@@ -524,19 +541,32 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
         const tagMapping = []; // Stores { rawTag, capsTag }
 
         try {
-            // Extract tags once using mammoth
-            const docTextObj = await mammoth.extractRawText({ buffer: baseTemplateBuffer });
-            const docText = docTextObj.value;
-            const tagRegex = /\{\{(.*?)\}\}/g;
-            let m;
-            while ((m = tagRegex.exec(docText)) !== null) {
-                const rawTag = m[1].trim();
-                tagMapping.push({ rawTag, capsTag: rawTag.toUpperCase() });
-            }
-
-            // Global Nuclear Check once
+            // Extract tags once using robust XML scanning (catches text boxes, headers, footers)
             const zip = new PizZip(baseTemplateBuffer);
             const xmlFiles = zip.file(/\.xml$/);
+            const tagRegex = /\{\{(.*?)\}\}/g;
+
+            xmlFiles.forEach(file => {
+                const content = file.asText();
+                const cleanText = content.replace(/<[^>]+>/g, '');
+                let m;
+                while ((m = tagRegex.exec(cleanText)) !== null) {
+                    const rawTag = m[1].trim();
+                    const capsTag = rawTag.toUpperCase();
+                    // System tags are handled separately
+                    const systemTags = ['CERTIFICATE_ID', 'QR_CODE', 'QR', 'IMAGE QR', 'IMAGE_QR', 'QRCODE'];
+                    if (!systemTags.includes(capsTag) && !capsTag.includes('IMAGE ')) {
+                        // Check if already mapped to avoid duplicates
+                        if (!tagMapping.some(t => t.capsTag === capsTag)) {
+                            tagMapping.push({ rawTag, capsTag });
+                        }
+                    }
+                }
+            });
+
+            console.log(`🔍 Pre-analysis found ${tagMapping.length} unique CSV-mappable tags.`);
+
+            // Global Nuclear Check once
             const nuclearQrRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
             const nuclearQrCodeRegex = /\{(<[^>]+>)*\{(<[^>]+>)*\s*[qQ](<[^>]+>)*[rR](<[^>]+>)*[cC](<[^>]+>)*[oO](<[^>]+>)*[dD](<[^>]+>)*[eE](<[^>]+>)*\s*\}(<[^>]+>)*\}/g;
 

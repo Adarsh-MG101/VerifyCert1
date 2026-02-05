@@ -12,47 +12,76 @@ export const useDocxTemplate = () => {
 
     const handleFileChange = useCallback(async (e, onAnalyzed) => {
         const selectedFile = e.target.files[0];
+        if (!selectedFile) return;
+
         setFile(selectedFile);
         setDetectedPlaceholders([]);
         setDuplicatePlaceholders([]);
 
-        if (selectedFile) {
+        try {
+            const arrayBuffer = await selectedFile.arrayBuffer();
+
+            // Primary Detection: PizZip (Deep XML Scan)
+            // Using dynamic import to avoid SSR issues in Next.js
+            const PizZip = (await import('pizzip')).default;
+            const zip = new PizZip(arrayBuffer);
+            const xmlFiles = zip.file(/\.xml$/);
+
+            const allMatches = new Set();
+            const rawMatches = []; // For duplicate detection
+            const regex = /\{\{(.*?)\}\}/g;
+
+            xmlFiles.forEach(file => {
+                try {
+                    const content = file.asText();
+                    // Strip XML tags to bridge fragmentation like {{ <tag> NAME </tag> }}
+                    const cleanText = content.replace(/<[^>]+>/g, '');
+                    let match;
+                    while ((match = regex.exec(cleanText)) !== null) {
+                        const tag = match[1].trim();
+                        if (tag) {
+                            rawMatches.push(tag.toUpperCase());
+                            allMatches.add(tag.toUpperCase());
+                        }
+                    }
+                } catch (e) { }
+            });
+
+            // Back-up: Mammoth (Standard Text Scan)
             try {
-                const arrayBuffer = await selectedFile.arrayBuffer();
                 const result = await mammoth.extractRawText({ arrayBuffer });
-                const text = result.value;
-
-                // Match all placeholders {{...}}
-                const allMatches = [];
-                const regex = /\{\{(.*?)\}\}/g;
                 let match;
-                while ((match = regex.exec(text)) !== null) {
-                    allMatches.push(match[1].trim());
+                while ((match = regex.exec(result.value)) !== null) {
+                    const tag = match[1].trim();
+                    if (tag) {
+                        rawMatches.push(tag.toUpperCase());
+                        allMatches.add(tag.toUpperCase());
+                    }
                 }
+            } catch (e) { }
 
-                // Filter for strictly uppercase only
-                const uppercasePlaceholders = allMatches.filter(p => p !== "" && /^[A-Z0-9_]+$/.test(p));
+            // Filter out system tags
+            const systemTags = ['QR', 'QRCODE', 'CERTIFICATE_ID', 'IMAGE QR', 'IMAGE_QR', 'CERTIFICATEID', 'ID'];
+            const finalPlaceholders = Array.from(allMatches).filter(p => !systemTags.includes(p));
 
-                // Find duplicates
-                const seen = new Set();
-                const duplicates = new Set();
-                uppercasePlaceholders.forEach(p => {
-                    if (seen.has(p)) duplicates.add(p);
-                    seen.add(p);
-                });
+            // Find true duplicates (tags appearing multiple times in the doc)
+            const counts = {};
+            rawMatches.forEach(tag => {
+                if (!systemTags.includes(tag)) {
+                    counts[tag] = (counts[tag] || 0) + 1;
+                }
+            });
+            const duplicates = Object.keys(counts).filter(tag => counts[tag] > 1);
 
-                // Unique list for display (filter out internal tags)
-                const uniqueDisplay = Array.from(new Set(uppercasePlaceholders))
-                    .filter(p => p !== 'QR' && p !== 'QRCODE' && p !== 'CERTIFICATE_ID');
+            setDetectedPlaceholders(finalPlaceholders);
+            setDuplicatePlaceholders(duplicates);
 
-                setDetectedPlaceholders(uniqueDisplay);
-                setDuplicatePlaceholders(Array.from(duplicates));
+            if (onAnalyzed) onAnalyzed(selectedFile, finalPlaceholders, duplicates);
 
-                if (onAnalyzed) onAnalyzed(selectedFile, uniqueDisplay, Array.from(duplicates));
-
-            } catch (err) {
-                console.error("Error analyzing file:", err);
-            }
+        } catch (err) {
+            console.error("Error analyzing file:", err);
+            // We don't use showAlert here because we don't have access to UIContext, 
+            // but the parent component will see empty placeholders and show its own error UI.
         }
     }, []);
 
