@@ -49,7 +49,12 @@ function LoginContent() {
             localStorage.setItem('user', JSON.stringify(data.user));
             router.replace('/dashboard');
         } catch (err) {
-            console.error(err);
+            // Quiet the console for expected 401/403 auth errors to avoid the Dev Overlay 'Issue' badge
+            if (err.response && [401, 403].includes(err.response.status)) {
+                console.debug('Auth failed:', err.response.data?.error);
+            } else {
+                console.error('Login error:', err);
+            }
             setError(err.response?.data?.error || 'Login failed');
         } finally {
             setLoading(false);
