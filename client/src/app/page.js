@@ -168,7 +168,7 @@ export default function Home() {
 
               <div className="w-full md:w-1/2 relative">
                 <div className="relative z-10 bg-white shadow-2xl rotate-2 transform transition-all duration-500 hover:rotate-0 group overflow-hidden">
-                  <div className="aspect-square relative overflow-hidden bg-white">
+                  <div className="aspect-4/3 relative overflow-hidden bg-white">
                     <img
                       src="/cert.png"
                       alt="Certificate Preview"
