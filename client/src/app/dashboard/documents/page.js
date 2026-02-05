@@ -252,17 +252,26 @@ function DocumentsContent() {
                                 >
                                     Previous
                                 </Button>
-                                {[...Array(totalPages)].map((_, i) => (
-                                    <button
-                                        key={i + 1}
-                                        onClick={() => setPage(i + 1)}
-                                        className={`w-8 h-8 rounded-lg text-[10px] font-medium transition-all ${page === i + 1
-                                            ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                            : 'bg-gray-50 text-muted hover:bg-gray-100 border border-border'
-                                            }`}
-                                    >
-                                        {i + 1}
-                                    </button>
+                                {(() => {
+                                    if (totalPages <= 6) {
+                                        return [...Array(totalPages)].map((_, i) => i + 1);
+                                    }
+                                    return [1, 2, 3, 4, 5, '...', totalPages];
+                                })().map((p, i) => (
+                                    p === '...' ? (
+                                        <span key={`dots-${i}`} className="w-8 h-8 flex items-center justify-center text-gray-400 text-xs font-bold">...</span>
+                                    ) : (
+                                        <button
+                                            key={p}
+                                            onClick={() => setPage(p)}
+                                            className={`w-8 h-8 rounded-lg text-[10px] font-medium transition-all ${page === p
+                                                ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                                                : 'bg-gray-50 text-muted hover:bg-gray-100 border border-border'
+                                                }`}
+                                        >
+                                            {p}
+                                        </button>
+                                    )
                                 ))}
                                 <Button
                                     variant="ghost"
