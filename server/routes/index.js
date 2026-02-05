@@ -1,4 +1,6 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
@@ -476,11 +478,13 @@ router.post('/generate', auth, async (req, res) => {
             uniqueId,
             data: finalData,
             filePath: pdfFilename,
-            template: template._id
+            template: template._id,
+            organization: req.user.organization // Keep track of which org created it
         });
         await newDoc.save();
 
         res.json({ success: true, document: newDoc, downloadUrl: `/${pdfFilename}` });
+
 
     } catch (err) {
         console.error('❌ Generation error:', err);
@@ -701,9 +705,11 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                     uniqueId,
                     data: finalData,
                     filePath: `uploads/batch_${batchId}/${uniqueId}.pdf`,
-                    template: template._id
+                    template: template._id,
+                    organization: req.user.organization
                 });
                 await newDoc.save();
+
 
                 generatedDocs.push({
                     uniqueId,
@@ -734,9 +740,13 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
         const archive = archiver('zip', { zlib: { level: 9 } });
 
         output.on('close', () => {
-            fs.rmSync(batchFolder, { recursive: true, force: true });
+            // DO NOT delete the batch folder anymore, as the user wants to see these in the library
+            // and be able to email/preview them later.
+            // fs.rmSync(batchFolder, { recursive: true, force: true });
+
             console.log(`✅ Bulk Generation Complete: ${generatedDocs.length} success, ${errors.length} failed.`);
             res.json({
+
                 success: true,
                 totalRows: csvData.length,
                 generated: generatedDocs.length,
@@ -850,8 +860,15 @@ router.get('/documents', auth, async (req, res) => {
         let query = {};
 
         if (templateId) {
-            query.template = templateId;
+            try {
+                // IMPORTANT: Transformation to ObjectId is REQUIRED for MongoDB Aggregation
+                query.template = new mongoose.Types.ObjectId(templateId);
+            } catch (e) {
+                // Fallback if ID is malformed
+                query.template = templateId;
+            }
         }
+
 
         if (search) {
             // Search in uniqueId or common data fields
