@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Button = ({ children, onClick, type = "button", variant = "primary", className = "", disabled, loading, ...props }) => {
-    const baseStyles = "px-5 py-2.5 rounded-lg font-normal transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2";
+    const baseStyles = "px-6 py-3 rounded-[2px] font-bold uppercase tracking-wider text-xs transition-all duration-300 cursor-pointer active:scale-95 flex items-center justify-center gap-2";
 
     const variants = {
         primary: "bg-primary text-white shadow-xl shadow-primary/10 hover:brightness-110",
