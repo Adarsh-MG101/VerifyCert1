@@ -137,22 +137,22 @@ function DocumentsContent() {
                                 {documents.length > 0 ? (
                                     <>
                                         {documents.map((doc, index) => (
-                                            <tr key={doc._id} className="hover:bg-gray-50/50 transition-all group h-[80px]">
+                                            <tr key={doc._id} className="hover:bg-gray-50/50 transition-all group h-[64px]">
                                                 <td className="px-6 py-0 text-xs text-gray-600 font-mono text-center">
-                                                    <div className="h-[80px] flex items-center justify-center">
+                                                    <div className="h-[64px] flex items-center justify-center">
                                                         {((page - 1) * limit) + index + 1}
                                                     </div>
                                                 </td>
 
                                                 <td className="px-6 py-0 text-center">
-                                                    <div className="h-[80px] flex items-center justify-center">
+                                                    <div className="h-[64px] flex items-center justify-center">
                                                         <div className="text-sm font-normal text-foreground tracking-tight group-hover:text-primary transition-colors line-clamp-1">
                                                             {doc.template?.name?.replace(/\.[^/.]+$/, "") || 'Unknown'}
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-0">
-                                                    <div className="h-[80px] flex flex-wrap gap-1 justify-center content-center max-w-[220px] mx-auto overflow-hidden">
+                                                    <div className="h-[64px] flex flex-wrap gap-1 justify-center content-center max-w-[220px] mx-auto overflow-hidden">
                                                         {Object.entries(doc.data || {})
                                                             .filter(([key, val]) =>
                                                                 !['QR', 'QRCODE', 'CERTIFICATE_ID', 'CERTIFICATE ID', 'CERTIFICATEID', 'ID', 'UNIQUE_ID', 'DOC_ID', 'certificate_id', 'IMAGE_QR', 'IMAGE QR'].includes(key.toUpperCase())
@@ -176,7 +176,7 @@ function DocumentsContent() {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-0 text-center">
-                                                    <div className="h-[80px] flex flex-col justify-center">
+                                                    <div className="h-[64px] flex flex-col justify-center">
                                                         <div className="text-xs text-gray-400">
                                                             {new Date(doc.createdAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
                                                         </div>
@@ -186,7 +186,7 @@ function DocumentsContent() {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-0 text-center">
-                                                    <div className="h-[80px] flex items-center justify-center gap-2">
+                                                    <div className="h-[64px] flex items-center justify-center gap-2">
                                                         <button
                                                             onClick={() => setSelectedDocForEmail(doc)}
                                                             className="inline-flex items-center justify-center w-9 h-9 text-primary hover:bg-primary/10 transition-all rounded-lg border border-primary/20"
@@ -217,8 +217,8 @@ function DocumentsContent() {
                                         ))}
                                         {documents.length < limit && documents.length > 0 &&
                                             [...Array(limit - documents.length)].map((_, i) => (
-                                                <tr key={`empty-${i}`} className="h-[80px]">
-                                                    <td colSpan="5"><div className="h-[80px]"></div></td>
+                                                <tr key={`empty-${i}`} className="h-[64px]">
+                                                    <td colSpan="5"><div className="h-[64px]"></div></td>
                                                 </tr>
                                             ))
                                         }
