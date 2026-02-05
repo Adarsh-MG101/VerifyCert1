@@ -167,15 +167,16 @@ export default function Home() {
               </div>
 
               <div className="w-full md:w-1/2 relative">
-                <div className="relative z-10 bg-white p-4 shadow-2xl rotate-3 transform transition-transform duration-500 hover:rotate-0 border border-gray-200">
-                  <div className="aspect-[4/3] bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300">
-                    <div className="text-center">
-                      <div className="mx-auto w-16 h-16 bg-gray-200 rounded-full mb-3 flex items-center justify-center text-3xl">📄</div>
-                      <span className="text-gray-400 text-sm font-bold uppercase">Certificate Preview</span>
-                    </div>
+                <div className="relative z-10 bg-white shadow-2xl rotate-2 transform transition-all duration-500 hover:rotate-0 group overflow-hidden">
+                  <div className="aspect-square relative overflow-hidden bg-white">
+                    <img
+                      src="/cert.png"
+                      alt="Certificate Preview"
+                      className="w-full h-full object-contain p-4"
+                    />
                   </div>
                 </div>
-                <div className="absolute inset-0 border-4 border-primary transform -translate-x-4 translate-y-4 -z-0"></div>
+                <div className="absolute inset-0 border-4 border-primary transform -translate-x-4 translate-y-4 z-0 opacity-20"></div>
               </div>
             </div>
           </div>
