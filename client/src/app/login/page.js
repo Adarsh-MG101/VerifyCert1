@@ -73,8 +73,8 @@ function LoginContent() {
                     )}
 
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg mb-6 text-sm">
-                            {error}
+                        <div className="text-red-500 text-sm mb-4 text-center font-medium animate-fade-in">
+                            {error === 'Invalid credentials' ? 'Email or password invalid' : error}
                         </div>
                     )}
 
