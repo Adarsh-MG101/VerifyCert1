@@ -62,6 +62,15 @@ export const deleteTemplate = async (templateId) => {
 };
 
 /**
+ * Save Visual Template data
+ * @param {string} templateId 
+ * @param {object} data - { canvasData, placeholders }
+ */
+export const saveVisualTemplate = async (templateId, data) => {
+    return put(`/api/templates/${templateId}/visual`, data);
+};
+
+/**
  * Get template placeholders
  * @param {string} templateId - Template ID
  * @returns {Promise<{placeholders: array}>}

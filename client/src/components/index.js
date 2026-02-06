@@ -12,3 +12,4 @@ export { default as PageHeader } from './PageHeader';
 export { default as TemplatePreview } from './TemplatePreview';
 export { default as TemplateSelector } from './TemplateSelector';
 export { default as ValidationError } from './ValidationError';
+export { default as TemplateEditor } from './TemplateEditor';

@@ -204,6 +204,28 @@ router.patch('/templates/:id/toggle', auth, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// 2.4 Save Visual Template (Protected)
+router.put('/templates/:id/visual', auth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { canvasData, placeholders } = req.body;
+
+        const template = await Template.findById(id);
+        if (!template) return res.status(404).json({ error: 'Template not found' });
+
+        template.canvasData = canvasData;
+        template.placeholders = placeholders;
+        template.isVisual = true;
+
+        await template.save();
+        res.json({ success: true, template });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 router.get('/templates', auth, async (req, res) => {
     try {
         const { search, onlyEnabled } = req.query;

@@ -4,10 +4,11 @@ import { useUI } from '@/context/UIContext';
 import {
     Card,
     Button,
-    TemplatePreview
+    TemplatePreview,
+    TemplateEditor
 } from '@/components';
 import Link from 'next/link';
-import { getTemplates, updateTemplateName, toggleTemplateStatus, deleteTemplate } from '@/services/TemplateLib';
+import { getTemplates, updateTemplateName, toggleTemplateStatus, deleteTemplate, saveVisualTemplate } from '@/services/TemplateLib';
 import { getApiUrl } from '@/services/apiService';
 
 export default function ExistingTemplatesPage() {
@@ -21,6 +22,7 @@ export default function ExistingTemplatesPage() {
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState('desc');
     const limit = 10;
+    const [editingVisualTemplate, setEditingVisualTemplate] = useState(null);
 
 
 
@@ -106,6 +108,18 @@ export default function ExistingTemplatesPage() {
                 }
             }
         );
+    };
+
+    const handleSaveVisual = async (visualData) => {
+        try {
+            await saveVisualTemplate(editingVisualTemplate._id, visualData);
+            setEditingVisualTemplate(null);
+            fetchTemplates();
+            showAlert('Success', 'Visual template updated successfully!', 'success');
+        } catch (err) {
+            console.error(err);
+            showAlert('Error', 'Failed to save visual changes', 'error');
+        }
     };
 
     return (
@@ -293,6 +307,13 @@ export default function ExistingTemplatesPage() {
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                                         </button>
                                                         <button
+                                                            onClick={() => setEditingVisualTemplate(t)}
+                                                            className="w-8 h-8 rounded-lg bg-gray-50 border border-border flex items-center justify-center text-gray-500 hover:bg-blue-500/20 hover:text-blue-500 transition-all"
+                                                            title="Visual Editor (Apryse)"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                                                        </button>
+                                                        <button
                                                             onClick={() => handleEditName(t)}
                                                             className="w-8 h-8 rounded-lg bg-gray-50 border border-border flex items-center justify-center text-gray-500 hover:bg-orange-500/20 hover:text-orange-500 transition-all"
                                                             title="Rename"
@@ -393,6 +414,13 @@ export default function ExistingTemplatesPage() {
                     )}
                 </div>
             )}
+
+            <TemplateEditor
+                isOpen={!!editingVisualTemplate}
+                template={editingVisualTemplate}
+                onSave={handleSaveVisual}
+                onClose={() => setEditingVisualTemplate(null)}
+            />
 
         </div>
     );
