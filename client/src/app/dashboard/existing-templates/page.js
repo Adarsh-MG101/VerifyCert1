@@ -112,10 +112,32 @@ export default function ExistingTemplatesPage() {
 
     const handleSaveVisual = async (visualData) => {
         try {
-            await saveVisualTemplate(editingVisualTemplate._id, visualData);
+            const { canvasData, placeholders, modifiedDocx } = visualData;
+
+            // Create FormData to send both JSON and file
+            const formData = new FormData();
+            formData.append('canvasData', canvasData);
+            formData.append('placeholders', JSON.stringify(placeholders));
+
+            if (modifiedDocx) {
+                // Append the modified DOCX file
+                formData.append('file', modifiedDocx, editingVisualTemplate.name || 'template.docx');
+                console.log('Uploading modified DOCX file');
+            }
+
+            // Send to server
+            await fetch(`${getApiUrl()}/api/templates/${editingVisualTemplate._id}/visual`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    // Don't set Content-Type - browser will set it with boundary for FormData
+                },
+                body: formData
+            });
+
             setEditingVisualTemplate(null);
             fetchTemplates();
-            showAlert('Success', 'Visual template updated successfully!', 'success');
+            showAlert('Success', 'Template updated successfully! Text edits and placeholders saved.', 'success');
         } catch (err) {
             console.error(err);
             showAlert('Error', 'Failed to save visual changes', 'error');

@@ -206,7 +206,7 @@ router.patch('/templates/:id/toggle', auth, async (req, res) => {
 });
 
 // 2.4 Save Visual Template (Protected)
-router.put('/templates/:id/visual', auth, async (req, res) => {
+router.put('/templates/:id/visual', auth, upload.single('file'), async (req, res) => {
     try {
         const { id } = req.params;
         const { canvasData, placeholders } = req.body;
@@ -214,14 +214,41 @@ router.put('/templates/:id/visual', auth, async (req, res) => {
         const template = await Template.findById(id);
         if (!template) return res.status(404).json({ error: 'Template not found' });
 
+        // Update canvas data and placeholders
         template.canvasData = canvasData;
-        template.placeholders = placeholders;
+
+        // Parse placeholders if it's a string
+        if (typeof placeholders === 'string') {
+            try {
+                template.placeholders = JSON.parse(placeholders);
+            } catch (e) {
+                template.placeholders = placeholders;
+            }
+        } else {
+            template.placeholders = placeholders;
+        }
+
         template.isVisual = true;
+
+        // If a modified DOCX file was uploaded, replace the original
+        if (req.file) {
+            console.log('Replacing original DOCX with modified version');
+
+            // Delete old file if it exists
+            if (template.filePath && fs.existsSync(template.filePath)) {
+                fs.unlinkSync(template.filePath);
+                console.log('Deleted old file:', template.filePath);
+            }
+
+            // Update file path to new file
+            template.filePath = req.file.path;
+            console.log('New file saved at:', req.file.path);
+        }
 
         await template.save();
         res.json({ success: true, template });
     } catch (err) {
-        console.error(err);
+        console.error('Visual template save error:', err);
         res.status(500).json({ error: err.message });
     }
 });

@@ -100,15 +100,38 @@ export default function TemplateEditor({ template, isOpen, onSave, onClose }) {
 
     const handleSave = async () => {
         if (!instance) return;
-        const { annotationManager } = instance.Core;
 
-        // Export annotations as XFDF
-        const xfdfString = await annotationManager.exportAnnotations();
+        setStatus('Saving...');
 
-        onSave({
-            canvasData: xfdfString,
-            placeholders: placeholders
-        });
+        try {
+            const { documentViewer, annotationManager } = instance.Core;
+
+            // Export annotations as XFDF
+            const xfdfString = await annotationManager.exportAnnotations();
+
+            // Export the modified DOCX file (includes text edits)
+            const doc = documentViewer.getDocument();
+            const data = await doc.getFileData({
+                // Download the file with all modifications
+                downloadType: 'office'
+            });
+
+            // Convert to Blob
+            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+            console.log('Exporting modified DOCX, size:', blob.size);
+
+            onSave({
+                canvasData: xfdfString,
+                placeholders: placeholders,
+                modifiedDocx: blob // Pass the modified DOCX file
+            });
+
+            setStatus('Ready');
+        } catch (error) {
+            console.error('Save error:', error);
+            setStatus('Error saving: ' + error.message);
+        }
     };
 
     // Portal to document.body
