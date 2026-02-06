@@ -121,8 +121,8 @@ export const UIProvider = ({ children }) => {
             <Modal
                 isOpen={preview.isOpen}
                 onClose={closePreview}
-                title="Template Preview"
-                subtitle={preview.template?.name?.replace(/\.[^/.]+$/, "")}
+                title={preview.template?.name?.replace(/\.[^/.]+$/, "")}
+                subtitle="Template Preview"
                 className="max-w-2xl"
             >
                 {preview.template && (
