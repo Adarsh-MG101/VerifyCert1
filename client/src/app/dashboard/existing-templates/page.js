@@ -4,16 +4,14 @@ import { useUI } from '@/context/UIContext';
 import {
     Card,
     Button,
-    TemplatePreview,
-    Modal,
-    Input
+    TemplatePreview
 } from '@/components';
 import Link from 'next/link';
 import { getTemplates, updateTemplateName, toggleTemplateStatus, deleteTemplate } from '@/services/TemplateLib';
 import { getApiUrl } from '@/services/apiService';
 
 export default function ExistingTemplatesPage() {
-    const { showAlert, showConfirm } = useUI();
+    const { showAlert, showConfirm, showTemplatePreview, showTemplateRename } = useUI();
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -25,10 +23,6 @@ export default function ExistingTemplatesPage() {
     const limit = 10;
 
 
-    const [previewTemplate, setPreviewTemplate] = useState(null);
-    const [editingTemplate, setEditingTemplate] = useState(null);
-    const [newName, setNewName] = useState('');
-    const [saving, setSaving] = useState(false);
 
     const fetchTemplates = async () => {
         setLoading(true);
@@ -71,24 +65,19 @@ export default function ExistingTemplatesPage() {
     }, [search, page, sortBy, sortOrder]);
 
 
-    const handleEditName = async (e) => {
-        e.preventDefault();
-        if (!editingTemplate || !newName || newName === editingTemplate.name) {
-            setEditingTemplate(null);
-            return;
-        }
-
-        setSaving(true);
-        try {
-            await updateTemplateName(editingTemplate._id, newName);
-            setEditingTemplate(null);
-            fetchTemplates();
-        } catch (err) {
-            console.error('Error updating template name:', err);
-            const errorMsg = err.response?.data?.error || 'Update failed';
-            showAlert('Failed', errorMsg, 'error');
-        }
-        setSaving(false);
+    const handleEditName = async (template) => {
+        showTemplateRename(template, async (newName) => {
+            if (!newName || newName === template.name) return;
+            try {
+                await updateTemplateName(template._id, newName);
+                fetchTemplates();
+            } catch (err) {
+                console.error('Error updating template name:', err);
+                const errorMsg = err.response?.data?.error || 'Update failed';
+                showAlert('Failed', errorMsg, 'error');
+                throw err;
+            }
+        });
     };
 
     const handleToggleStatus = async (id) => {
@@ -247,7 +236,7 @@ export default function ExistingTemplatesPage() {
 
                                                 <td className="px-6 py-0">
                                                     <div className="h-[80px] flex items-center justify-center">
-                                                        <div className={`w-20 h-14 rounded-lg overflow-hidden border bg-gray-50 cursor-pointer transition-all shadow-sm ${t.enabled !== false ? 'border-border hover:border-primary/50' : 'border-border/50 opacity-50'}`} onClick={() => setPreviewTemplate(t)}>
+                                                        <div className={`w-20 h-14 rounded-lg overflow-hidden border bg-gray-50 cursor-pointer transition-all shadow-sm ${t.enabled !== false ? 'border-border hover:border-primary/50' : 'border-border/50 opacity-50'}`} onClick={() => showTemplatePreview(t)}>
                                                             {t.thumbnailPath ? (
                                                                 <img src={getApiUrl(`/${t.thumbnailPath}`)} alt="" className="w-full h-full object-cover" />
                                                             ) : (
@@ -297,14 +286,14 @@ export default function ExistingTemplatesPage() {
                                                 <td className="px-6 py-0 text-center">
                                                     <div className="h-[80px] flex items-center justify-center gap-2">
                                                         <button
-                                                            onClick={() => setPreviewTemplate(t)}
+                                                            onClick={() => showTemplatePreview(t)}
                                                             className="w-8 h-8 rounded-lg bg-gray-50 border border-border flex items-center justify-center text-gray-500 hover:bg-primary/20 hover:text-primary transition-all"
                                                             title="Quick Preview"
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                                         </button>
                                                         <button
-                                                            onClick={() => { setEditingTemplate(t); setNewName(t.name); }}
+                                                            onClick={() => handleEditName(t)}
                                                             className="w-8 h-8 rounded-lg bg-gray-50 border border-border flex items-center justify-center text-gray-500 hover:bg-orange-500/20 hover:text-orange-500 transition-all"
                                                             title="Rename"
                                                         >
@@ -405,55 +394,6 @@ export default function ExistingTemplatesPage() {
                 </div>
             )}
 
-            {/* Modals */}
-            {previewTemplate && (
-                <Modal
-                    isOpen={!!previewTemplate}
-                    onClose={() => setPreviewTemplate(null)}
-                    title="Template Preview"
-                    subtitle={previewTemplate.name.replace(/\.[^/.]+$/, "")}
-                    className="max-w-2xl"
-                >
-                    <TemplatePreview
-                        template={previewTemplate}
-                        showLabel={false}
-                    />
-                </Modal>
-            )}
-
-            {editingTemplate && (
-                <Modal
-                    isOpen={!!editingTemplate}
-                    title="Rename Template"
-                    onClose={() => setEditingTemplate(null)}
-                >
-                    <form onSubmit={handleEditName} className="space-y-4">
-                        <Input
-                            label="New Name"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            placeholder="Enter new template name"
-                            required
-                        />
-                        <div className="flex justify-end gap-3">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                onClick={() => setEditingTemplate(null)}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                type="submit"
-                                variant="primary"
-                                loading={saving}
-                            >
-                                Save Changes
-                            </Button>
-                        </div>
-                    </form>
-                </Modal>
-            )}
         </div>
     );
 }

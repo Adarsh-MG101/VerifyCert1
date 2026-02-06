@@ -2,12 +2,18 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import Modal from '@/components/Modal';
 import Button from '@/components/Button';
+import TemplatePreview from '@/components/TemplatePreview';
+import Input from '@/components/Input';
 
 const UIContext = createContext();
 
 export const UIProvider = ({ children }) => {
     const [alert, setAlert] = useState({ isOpen: false, title: '', message: '', type: 'info' });
     const [confirm, setConfirm] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+    const [preview, setPreview] = useState({ isOpen: false, template: null });
+    const [rename, setRename] = useState({ isOpen: false, template: null, onSave: null });
+    const [renameValue, setRenameValue] = useState('');
+    const [savingRename, setSavingRename] = useState(false);
     const [theme, setTheme] = useState('light');
 
     // Initialize theme from localStorage
@@ -40,16 +46,47 @@ export const UIProvider = ({ children }) => {
         setConfirm({ isOpen: true, title, message, onConfirm });
     }, []);
 
+    const showTemplatePreview = useCallback((template) => {
+        setPreview({ isOpen: true, template });
+    }, []);
+
+    const showTemplateRename = useCallback((template, onSave) => {
+        setRename({ isOpen: true, template, onSave });
+        setRenameValue(template.name);
+    }, []);
+
     const closeAlert = () => setAlert(prev => ({ ...prev, isOpen: false }));
     const closeConfirm = () => setConfirm(prev => ({ ...prev, isOpen: false }));
+    const closePreview = () => setPreview(prev => ({ ...prev, isOpen: false }));
+    const closeRename = () => setRename(prev => ({ ...prev, isOpen: false }));
 
     const handleConfirm = () => {
         if (confirm.onConfirm) confirm.onConfirm();
         closeConfirm();
     };
 
+    const handleRenameSubmit = async (e) => {
+        e.preventDefault();
+        if (rename.onSave) {
+            setSavingRename(true);
+            try {
+                await rename.onSave(renameValue);
+                closeRename();
+            } finally {
+                setSavingRename(false);
+            }
+        }
+    };
+
     return (
-        <UIContext.Provider value={{ showAlert, showConfirm, theme, toggleTheme }}>
+        <UIContext.Provider value={{
+            showAlert,
+            showConfirm,
+            showTemplatePreview,
+            showTemplateRename,
+            theme,
+            toggleTheme
+        }}>
             {children}
 
             {/* Alert Modal */}
@@ -78,6 +115,58 @@ export const UIProvider = ({ children }) => {
                         <Button variant="danger" className="flex-1" onClick={handleConfirm}>Confirm</Button>
                     </div>
                 </div>
+            </Modal>
+
+            {/* Global Template Preview Modal */}
+            <Modal
+                isOpen={preview.isOpen}
+                onClose={closePreview}
+                title="Template Preview"
+                subtitle={preview.template?.name?.replace(/\.[^/.]+$/, "")}
+                className="max-w-2xl"
+            >
+                {preview.template && (
+                    <TemplatePreview
+                        template={preview.template}
+                        showLabel={false}
+                        maxWidth="100%"
+                    />
+                )}
+            </Modal>
+
+            {/* Global Template Rename Modal */}
+            <Modal
+                isOpen={rename.isOpen}
+                onClose={closeRename}
+                title="Rename Template"
+            >
+                {rename.template && (
+                    <form onSubmit={handleRenameSubmit} className="space-y-6">
+                        <Input
+                            label="New Name"
+                            value={renameValue}
+                            onChange={(e) => setRenameValue(e.target.value)}
+                            placeholder="Enter new template name"
+                            required
+                        />
+                        <div className="flex justify-end gap-3 pt-4 border-t border-border">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={closeRename}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="primary"
+                                loading={savingRename}
+                            >
+                                Save Changes
+                            </Button>
+                        </div>
+                    </form>
+                )}
             </Modal>
         </UIContext.Provider>
     );

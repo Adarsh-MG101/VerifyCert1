@@ -38,9 +38,8 @@ function GenerateContent() {
     const [generatedDoc, setGeneratedDoc] = useState(null);
     const [generating, setGenerating] = useState(false);
     const [recipientEmail, setRecipientEmail] = useState('');
-    const [showPreview, setShowPreview] = useState(false);
 
-    const { showAlert } = useUI();
+    const { showAlert, showTemplatePreview } = useUI();
 
     useEffect(() => {
         if (templateIdParam && templates.length > 0) {
@@ -125,7 +124,7 @@ function GenerateContent() {
                                 <Button
                                     type="button"
                                     variant="ghost"
-                                    onClick={() => setShowPreview(true)}
+                                    onClick={() => showTemplatePreview(selectedTemplate)}
                                     className="mt-6 border border-border hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -134,20 +133,6 @@ function GenerateContent() {
                             )}
                         </div>
 
-                        {selectedTemplate && (
-                            <Modal
-                                isOpen={showPreview}
-                                onClose={() => setShowPreview(false)}
-                                title="Template Preview"
-                                subtitle={selectedTemplate.name.replace(/\.[^/.]+$/, "")}
-                                className="max-w-2xl"
-                            >
-                                <TemplatePreview
-                                    template={selectedTemplate}
-                                    showLabel={false}
-                                />
-                            </Modal>
-                        )}
 
 
                         {selectedTemplate && (
