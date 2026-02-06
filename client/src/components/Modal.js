@@ -21,7 +21,7 @@ const Modal = ({ isOpen, onClose, title, subtitle, children, className = "" }) =
     // We use createPortal to render the modal at the root of the document body.
     // This bypasses any CSS transforms or z-index issues in parent layouts.
     return createPortal(
-        <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed top-0 left-0 right-0 bottom-0 z-9999 flex items-center justify-center p-4 sm:p-6">
             {/* Backdrop - darker and more blurred for focus */}
             <div
                 className="absolute inset-0 bg-gray-900/60 backdrop-blur-md transition-opacity duration-300"
