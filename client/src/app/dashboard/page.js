@@ -53,9 +53,9 @@ export default function DashboardPage() {
                 <Card title="Quick Actions" subtitle="Frequently used administrative tools">
                     <div className="grid grid-cols-1 gap-3 mt-4">
                         {[
-                            { name: 'Manage Templates', path: '/dashboard/templates', icon: '📄' },
-                            { name: 'Generate Single Certificate', path: '/dashboard/generate', icon: '✨' },
-                            { name: 'Bulk Generate from CSV', path: '/dashboard/bulk-generate', icon: '🚀' },
+                            { name: 'Manage Templates', path: '/dashboard/templates', icon: '' },
+                            { name: 'Generate Single Certificate', path: '/dashboard/generate', icon: '' },
+                            { name: 'Bulk Generate from CSV', path: '/dashboard/bulk-generate', icon: '' },
                         ].map((action) => (
                             <Link
                                 key={action.path}
