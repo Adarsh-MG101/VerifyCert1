@@ -114,7 +114,7 @@ export default function TemplatesPage() {
 
                                     {duplicatePlaceholders.length > 0 && (
                                         <div className="bg-yellow-500/5 border border-yellow-500/20 p-4 rounded-xl">
-                                            <p className="text-[10px] text-yellow-400/80">
+                                            <p className="text-sm text-yellow-500/90 font-medium">
                                                 ⚠️ {duplicatePlaceholders.length} duplicate tags will be filled with same value.
                                             </p>
                                         </div>

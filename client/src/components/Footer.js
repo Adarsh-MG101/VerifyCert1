@@ -8,8 +8,8 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     {/* Brand */}
                     <div className="col-span-1 md:col-span-1">
-                        <div className="text-2xl font-bold text-white mb-6 uppercase tracking-wider font-header">
-                            Verify<span className="text-primary">Cert</span>
+                        <div className="text-3xl font-bold text-primary mb-6 font-header">
+                            VerifyCert
                         </div>
                         <p className="text-sm leading-relaxed mb-6">
                             The industrial standard for secure document issuance and verification. Trusted by organizations worldwide for immutable proof of authenticity.
