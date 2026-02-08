@@ -28,50 +28,58 @@ export const useDocxTemplate = () => {
             const xmlFiles = zip.file(/\.xml$/);
 
             const allMatches = new Set();
-            const rawMatches = []; // For duplicate detection
+            const counts = {}; // To track occurrences for true duplicate detection
             const regex = /\{\{(.*?)\}\}/g;
 
+            // 1. Primary Detection & Counting: Mammoth (Unified Text Scan)
+            // Mammoth is best for seeing the document's flow and counting actual occurrences.
+            let docText = "";
+            try {
+                const result = await mammoth.extractRawText({ arrayBuffer });
+                docText = result.value;
+                let match;
+                while ((match = regex.exec(docText)) !== null) {
+                    const tag = match[1].trim().toUpperCase();
+                    if (tag) {
+                        allMatches.add(tag);
+                        counts[tag] = (counts[tag] || 0) + 1;
+                    }
+                }
+            } catch (e) {
+                console.error("Mammoth scan failed:", e);
+            }
+
+            // 2. Supplemental Detection: PizZip (Deep XML Scan)
+            // Good for catching fragmented tags or tags in areas Mammoth might skip.
+            // We only increment counts if Mammoth missed something, or we can just add to detection set.
             xmlFiles.forEach(file => {
                 try {
                     const content = file.asText();
-                    // Strip XML tags to bridge fragmentation like {{ <tag> NAME </tag> }}
                     const cleanText = content.replace(/<[^>]+>/g, '');
                     let match;
                     while ((match = regex.exec(cleanText)) !== null) {
-                        const tag = match[1].trim();
+                        const tag = match[1].trim().toUpperCase();
                         if (tag) {
-                            rawMatches.push(tag.toUpperCase());
-                            allMatches.add(tag.toUpperCase());
+                            allMatches.add(tag);
+                            // If Mammoth detected this tag, we trust its count and ignore PizZip
+                            // to avoid double counting or case-mismatch issues.
+                            // Only if counts[tag] is undefined or 0 do we trust PizZip.
+                            if (!counts[tag]) {
+                                counts[tag] = (counts[tag] || 0) + 1;
+                            }
                         }
                     }
                 } catch (e) { }
             });
 
-            // Back-up: Mammoth (Standard Text Scan)
-            try {
-                const result = await mammoth.extractRawText({ arrayBuffer });
-                let match;
-                while ((match = regex.exec(result.value)) !== null) {
-                    const tag = match[1].trim();
-                    if (tag) {
-                        rawMatches.push(tag.toUpperCase());
-                        allMatches.add(tag.toUpperCase());
-                    }
-                }
-            } catch (e) { }
-
             // Filter out system tags
             const systemTags = ['QR', 'QRCODE', 'CERTIFICATE_ID', 'IMAGE QR', 'IMAGE_QR', 'CERTIFICATEID', 'ID'];
             const finalPlaceholders = Array.from(allMatches).filter(p => !systemTags.includes(p));
 
-            // Find true duplicates (tags appearing multiple times in the doc)
-            const counts = {};
-            rawMatches.forEach(tag => {
-                if (!systemTags.includes(tag)) {
-                    counts[tag] = (counts[tag] || 0) + 1;
-                }
+            // Identify true duplicates (tags appearing multiple times in the doc)
+            const duplicates = Object.keys(counts).filter(tag => {
+                return !systemTags.includes(tag) && counts[tag] > 1;
             });
-            const duplicates = Object.keys(counts).filter(tag => counts[tag] > 1);
 
             setDetectedPlaceholders(finalPlaceholders);
             setDuplicatePlaceholders(duplicates);
