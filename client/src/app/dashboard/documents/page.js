@@ -242,13 +242,6 @@ function DocumentsContent() {
                                                 </td>
                                             </tr>
                                         ))}
-                                        {documents.length < limit && documents.length > 0 &&
-                                            [...Array(limit - documents.length)].map((_, i) => (
-                                                <tr key={`empty-${i}`} className="h-[64px]">
-                                                    <td colSpan="5"><div className="h-[64px]"></div></td>
-                                                </tr>
-                                            ))
-                                        }
                                     </>
                                 ) : (
                                     <tr>

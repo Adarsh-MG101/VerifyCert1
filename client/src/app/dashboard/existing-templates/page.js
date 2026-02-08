@@ -361,15 +361,6 @@ export default function ExistingTemplatesPage() {
                                                 </td>
                                             </tr>
                                         ))}
-                                        {templates.length < limit && templates.length > 0 &&
-                                            [...Array(limit - templates.length)].map((_, i) => (
-                                                <tr key={`empty-${i}`} className="h-[80px]">
-                                                    <td colSpan="7" className="px-6 py-0">
-                                                        <div className="h-[80px]"></div>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        }
                                     </>
                                 ) : (
                                     <tr>
