@@ -5,7 +5,8 @@ import {
     Card,
     Button,
     TemplatePreview,
-    TemplateEditor
+    TemplateEditor,
+    Modal
 } from '@/components';
 import Link from 'next/link';
 import { getTemplates, updateTemplateName, toggleTemplateStatus, deleteTemplate, saveVisualTemplate } from '@/services/TemplateLib';
@@ -110,6 +111,8 @@ export default function ExistingTemplatesPage() {
         );
     };
 
+    const [analysisResult, setAnalysisResult] = useState(null);
+
     const handleSaveVisual = async (visualData) => {
         try {
             const { canvasData, placeholders, modifiedDocx } = visualData;
@@ -126,7 +129,7 @@ export default function ExistingTemplatesPage() {
             }
 
             // Send to server
-            await fetch(`${getApiUrl()}/api/templates/${editingVisualTemplate._id}/visual`, {
+            const response = await fetch(`${getApiUrl()}/api/templates/${editingVisualTemplate._id}/visual`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -135,12 +138,22 @@ export default function ExistingTemplatesPage() {
                 body: formData
             });
 
-            setEditingVisualTemplate(null);
-            fetchTemplates();
-            showAlert('Success', 'Template updated successfully! Text edits and placeholders saved.', 'success');
+            const result = await response.json();
+
+            if (result.success) {
+                setEditingVisualTemplate(null);
+                fetchTemplates();
+                // Show analysis result with detected placeholders
+                setAnalysisResult({
+                    name: result.template.name,
+                    placeholders: result.template.placeholders || []
+                });
+            } else {
+                throw new Error(result.error || 'Failed to save');
+            }
         } catch (err) {
             console.error(err);
-            showAlert('Error', 'Failed to save visual changes', 'error');
+            showAlert('Error', 'Failed to save visual changes: ' + err.message, 'error');
         }
     };
 
@@ -434,6 +447,52 @@ export default function ExistingTemplatesPage() {
                 onSave={handleSaveVisual}
                 onClose={() => setEditingVisualTemplate(null)}
             />
+
+            {/* Analysis Result Modal */}
+            <Modal
+                isOpen={!!analysisResult}
+                onClose={() => setAnalysisResult(null)}
+                title="Template Analyzed"
+                subtitle="Post-Save Analysis"
+            >
+                <div className="space-y-6">
+                    <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-foreground">Save Successful</p>
+                            <p className="text-[10px] text-muted uppercase tracking-wider">{analysisResult?.name}</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-3">
+                        <div className="text-[10px] font-medium text-muted uppercase tracking-widest">Detected Placeholders</div>
+                        {analysisResult?.placeholders.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {analysisResult.placeholders.map(p => (
+                                    <span key={p} className="bg-primary/5 text-[10px] px-2.5 py-1 rounded-md text-primary font-mono border border-primary/10">
+                                        {p}
+                                    </span>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-4 bg-red-500/5 border border-red-500/10 rounded-lg text-center">
+                                <p className="text-xs text-red-400 font-medium">No placeholders detected in document!</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="pt-4 border-t border-border mt-6">
+                        <Button
+                            onClick={() => setAnalysisResult(null)}
+                            className="w-full py-3 text-xs uppercase tracking-widest font-bold"
+                        >
+                            Got it
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
 
         </div>
     );
