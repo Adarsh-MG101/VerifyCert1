@@ -243,6 +243,18 @@ router.put('/templates/:id/visual', auth, upload.single('file'), async (req, res
             // Update file path to new file
             template.filePath = req.file.path;
             console.log('New file saved at:', req.file.path);
+
+            // 🤖 AUTO-SCAN: Extract placeholders from the new file
+            try {
+                const extracted = await extractPlaceholders(req.file.path);
+                console.log('📝 Auto-extracted placeholders from visual edit:', extracted);
+                if (extracted && extracted.length > 0) {
+                    template.placeholders = extracted;
+                }
+            } catch (scanErr) {
+                console.error('Failed to auto-scan placeholders after visual edit:', scanErr);
+                // We keep the body.placeholders if scan fails
+            }
         }
 
         await template.save();
@@ -471,7 +483,13 @@ router.post('/generate', auth, async (req, res) => {
                 cmdDelimiter: ['{{', '}}'],
                 additionalJsContext: {
                     IMAGE: (data) => data
-                }
+                },
+                // Robust handling for missing placeholders
+                errorHandler: (err, command_code) => {
+                    console.warn(`Template Warning (Single Gen): ${err.message} in command: ${command_code}`);
+                    return ' '; // Return space instead of crashing
+                },
+                failFast: false
             });
         } catch (error) {
 
@@ -727,7 +745,13 @@ router.post('/generate-bulk', auth, upload.single('csvFile'), async (req, res) =
                     template: baseTemplateBuffer,
                     data: finalData,
                     cmdDelimiter: ['{{', '}}'],
-                    additionalJsContext: { IMAGE: (data) => data }
+                    additionalJsContext: { IMAGE: (data) => data },
+                    // Robust handling for missing placeholders
+                    errorHandler: (err, command_code) => {
+                        console.warn(`Template Warning (Bulk): ${err.message} in command: ${command_code}`);
+                        return ' '; // Return space instead of crashing
+                    },
+                    failFast: false
                 });
 
                 // Save temp DOCX
