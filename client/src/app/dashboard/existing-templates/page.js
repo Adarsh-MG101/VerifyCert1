@@ -123,9 +123,14 @@ export default function ExistingTemplatesPage() {
             formData.append('placeholders', JSON.stringify(placeholders));
 
             if (modifiedDocx) {
-                // Append the modified DOCX file
-                formData.append('file', modifiedDocx, editingVisualTemplate.name || 'template.docx');
-                console.log('Uploading modified DOCX file');
+                // Ensure filename has .docx extension so server and WebViewer recognize it
+                let filename = editingVisualTemplate.name || 'template';
+                if (!filename.toLowerCase().endsWith('.docx')) {
+                    filename += '.docx';
+                }
+
+                formData.append('file', modifiedDocx, filename);
+                console.log('Uploading modified DOCX file as:', filename);
             }
 
             // Send to server
