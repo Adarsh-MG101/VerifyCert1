@@ -32,49 +32,54 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Helper: Extract Placeholders
 async function extractPlaceholders(filePath) {
+    console.log(`🔍 Scanning for placeholders in: ${filePath}`);
     const buffer = fs.readFileSync(filePath);
-    const zip = new PizZip(buffer);
-    const xmlFiles = zip.file(/\.xml$/);
-
     const matches = new Set();
     const regex = /\{\{(.*?)\}\}/g;
 
-    xmlFiles.forEach(file => {
-        try {
-            const content = file.asText();
-            // Remove XML tags to bridge fragmentation and catch content in text boxes/headers/footers
-            // mammoth often ignores these, but A4/Letter templates use them heavily.
-            const cleanText = content.replace(/<[^>]+>/g, '');
-
-            let match;
-            while ((match = regex.exec(cleanText)) !== null) {
-                const placeholder = match[1].trim().toUpperCase();
-                const systemTags = ['CERTIFICATE_ID', 'QR_CODE', 'QR', 'IMAGE QR', 'IMAGE_QR', 'QRCODE'];
-                if (!systemTags.includes(placeholder) && placeholder.length > 0 && !placeholder.includes('IMAGE ')) {
-                    matches.add(placeholder);
-                }
-            }
-        } catch (e) {
-            console.error(`Error reading XML file ${file.name}:`, e);
-        }
-    });
-
-    // Fallback/Supplement with mammoth for general text
+    // Method 1: Mammoth (Clean Text Extraction)
     try {
         const result = await mammoth.extractRawText({ buffer });
+        const text = result.value;
         let match;
-        while ((match = regex.exec(result.value)) !== null) {
+        while ((match = regex.exec(text)) !== null) {
             const placeholder = match[1].trim().toUpperCase();
-            const systemTags = ['CERTIFICATE_ID', 'QR_CODE', 'QR', 'IMAGE QR', 'IMAGE_QR', 'QRCODE'];
-            if (!systemTags.includes(placeholder) && placeholder.length > 0 && !placeholder.includes('IMAGE ')) {
+            if (placeholder && !placeholder.startsWith('#') && !placeholder.startsWith('/')) {
                 matches.add(placeholder);
             }
         }
-    } catch (e) { }
+    } catch (e) {
+        console.error('Mammoth extraction failed:', e);
+    }
 
-    return Array.from(matches);
+    // Method 2: PizZip (Deep XML Scan for headers/footers/textboxes)
+    try {
+        const zip = new PizZip(buffer);
+        const xmlFiles = zip.file(/\.xml$/);
+        xmlFiles.forEach(file => {
+            const content = file.asText();
+            // Aggressive XML tag removal
+            const cleanText = content.replace(/<[^>]+>/g, ' ');
+            let match;
+            while ((match = regex.exec(cleanText)) !== null) {
+                const placeholder = match[1].trim().toUpperCase();
+                if (placeholder && !placeholder.startsWith('#') && !placeholder.startsWith('/')) {
+                    matches.add(placeholder);
+                }
+            }
+        });
+    } catch (e) {
+        console.error('PizZip extraction failed:', e);
+    }
+
+    const systemTags = ['CERTIFICATE_ID', 'QR_CODE', 'QR', 'IMAGE QR', 'IMAGE_QR', 'QRCODE', 'CERTIFICATEID', 'ID'];
+    const finalMatches = Array.from(matches)
+        .filter(tag => !systemTags.includes(tag) && !tag.includes('IMAGE '))
+        .sort();
+
+    console.log('✅ Found placeholders:', finalMatches);
+    return finalMatches;
 }
 
 // Helper: Generate Template Preview Thumbnail

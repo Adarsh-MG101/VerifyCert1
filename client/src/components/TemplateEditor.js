@@ -75,62 +75,101 @@ export default function TemplateEditor({ template, isOpen, onSave, onClose }) {
         return () => clearTimeout(timer);
     }, [instance, template, isOpen]); // Re-run when these change
 
-    const addPlaceholder = (text) => {
+    const addPlaceholder = async (text) => {
         if (!instance) return;
-        const { documentViewer, annotationManager, Annotations } = instance.Core;
-        const page = documentViewer.getCurrentPage();
+        console.log('Inserting placeholder:', text);
 
-        const txt = new Annotations.FreeTextAnnotation();
-        txt.PageNumber = page;
-        txt.X = 100; // Default position
-        txt.Y = 100;
-        txt.Width = 200;
-        txt.Height = 50;
-        txt.setPadding(new Annotations.Rect(0, 0, 0, 0));
-        txt.Contents = text;
-        txt.FillColor = new Annotations.Color(255, 255, 255, 0); // Transparent
-        txt.TextColor = new Annotations.Color(0, 0, 0);
-        txt.FontSize = '12pt';
-        txt.TextAlign = 'center';
+        try {
+            // BEST: Direct text insertion into document flow (detected by scanner)
+            if (instance.UI.typeText) {
+                instance.UI.typeText(text);
+                return;
+            }
 
-        annotationManager.addAnnotation(txt);
-        annotationManager.redrawAnnotation(txt);
-        annotationManager.selectAnnotation(txt);
+            // FALLBACK: If typeText isn't available, use floating annotation
+            const { documentViewer, annotationManager, Annotations } = instance.Core;
+            const page = documentViewer.getCurrentPage();
+
+            const txt = new Annotations.FreeTextAnnotation();
+            txt.PageNumber = page;
+            txt.X = 150;
+            txt.Y = 150;
+            txt.Width = 200;
+            txt.Height = 35;
+            txt.Contents = text;
+            txt.TextColor = new Annotations.Color(0, 0, 0);
+            txt.FontSize = '12pt';
+            txt.TextAlign = 'center';
+
+            annotationManager.addAnnotation(txt);
+            annotationManager.redrawAnnotation(txt);
+            annotationManager.selectAnnotation(txt);
+
+            showAlert('Annotation Added', 'Note: Floating labels might not be detected by the scanner. Try typing the tag directly into the document for best results.');
+        } catch (e) {
+            console.error('Placeholder insertion error:', e);
+        }
     };
 
     const handleSave = async () => {
         if (!instance) return;
 
-        setStatus('Saving...');
+        setStatus('Preparing for save...');
 
         try {
             const { documentViewer, annotationManager } = instance.Core;
+
+            // 🛡️ FIX: Aggressively exit any active typing/selection modes to avoid "Cursor 0" error
+            try {
+                // 1. Switch tool to "Pan" (neutral state)
+                if (instance.UI.setToolMode) {
+                    instance.UI.setToolMode('Pan');
+                }
+
+                // 2. Clear visual selection
+                if (documentViewer.clearSelection) {
+                    documentViewer.clearSelection();
+                }
+
+                // 3. Take focus away from the iframe/canvas
+                if (viewerDiv.current) viewerDiv.current.blur();
+                window.focus();
+
+            } catch (e) { console.warn('State reset failed:', e); }
+
+            setStatus('Exporting document data... (Waiting for engine sync)');
+            // Give the internal workers more time to settle (500ms)
+            await new Promise(r => setTimeout(r, 500));
 
             // Export annotations as XFDF
             const xfdfString = await annotationManager.exportAnnotations();
 
             // Export the modified DOCX file (includes text edits)
             const doc = documentViewer.getDocument();
+            if (!doc) throw new Error('Document instance is lost');
+
             const data = await doc.getFileData({
-                // Download the file with all modifications
                 downloadType: 'office'
             });
+
+            if (!data || data.byteLength === 0) throw new Error('Exported empty document');
 
             // Convert to Blob
             const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
 
-            console.log('Exporting modified DOCX, size:', blob.size);
+            console.log('✅ Export complete, size:', blob.size);
+            setStatus('Ready');
 
             onSave({
                 canvasData: xfdfString,
                 placeholders: placeholders,
-                modifiedDocx: blob // Pass the modified DOCX file
+                modifiedDocx: blob
             });
 
-            setStatus('Ready');
         } catch (error) {
             console.error('Save error:', error);
-            setStatus('Error saving: ' + error.message);
+            setStatus('Error: ' + error.message);
+            showAlert('Save Failed', 'The editor encountered an error while exporting. Try clicking "Save" again. Details: ' + error.message, 'error');
         }
     };
 
