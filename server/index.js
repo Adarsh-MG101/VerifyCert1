@@ -48,6 +48,7 @@ const seedAdmin = async () => {
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/ai', require('./routes/ai'));
 app.use('/api', require('./routes/index'));
 app.get('/', (req, res) => res.send('VerifyCert API Running'));
 
