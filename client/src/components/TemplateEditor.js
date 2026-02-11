@@ -378,100 +378,102 @@ export default function TemplateEditor({ template, isOpen, onSave, onClose }) {
     if (typeof document === 'undefined') return null;
 
     return createPortal(
-        <div
-            className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-            style={{ zIndex: 9999 }}
-        >
-            <div className={`bg-white w-full h-full max-w-7xl max-h-[95vh] rounded-xl flex shadow-2xl overflow-hidden flex-col transition-transform duration-200 ${isOpen ? 'scale-100' : 'scale-95'}`}>
-                {/* Header */}
-                <div className="h-16 border-b px-6 flex items-center justify-between bg-white shrink-0">
-                    <h2 className="text-xl font-bold text-gray-800">Template Editor (Fast-Load Shared Engine)</h2>
-                    <div className="flex gap-3">
-                        {!isReady && <div className="text-orange-500 text-sm font-bold flex items-center gap-2">
-                            <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                            Engine Initializing...
-                        </div>}
-                        <span className="text-sm text-gray-500 self-center mr-4">{status}</span>
-                        <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
-                        <button onClick={handleSave} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Save Template</button>
+        <>
+            <div
+                className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                style={{ zIndex: 9999 }}
+            >
+                <div className={`bg-white w-full h-full max-w-7xl max-h-[95vh] rounded-xl flex shadow-2xl overflow-hidden flex-col transition-transform duration-200 ${isOpen ? 'scale-100' : 'scale-95'}`}>
+                    {/* Header */}
+                    <div className="h-16 border-b px-6 flex items-center justify-between bg-white shrink-0">
+                        <h2 className="text-xl font-bold text-gray-800">Template Editor (Fast-Load Shared Engine)</h2>
+                        <div className="flex gap-3">
+                            {!isReady && <div className="text-orange-500 text-sm font-bold flex items-center gap-2">
+                                <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                                Engine Initializing...
+                            </div>}
+                            <span className="text-sm text-gray-500 self-center mr-4">{status}</span>
+                            <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+                            <button onClick={handleSave} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Save Template</button>
+                        </div>
                     </div>
-                </div>
 
-                {/* Body */}
-                <div className="flex-1 flex overflow-hidden">
-                    {/* AI Toolkit remains the same logic */}
-                    {aiToolkit.visible && (
-                        <div
-                            className="fixed bg-white border border-gray-200 rounded-xl shadow-2xl p-1 flex items-center gap-1"
-                            style={{
-                                left: `${aiToolkit.x}px`,
-                                top: `${aiToolkit.y}px`,
-                                transform: 'translateX(-50%)',
-                                zIndex: 10001 // Above the persistent viewer (10000)
-                            }}
-                        >
-                            {aiToolkit.mode === 'suggest' ? (
-                                <>
-                                    <button onClick={() => handleAISuggest('grammar')} className="p-2 hover:bg-gray-100 text-xs font-bold flex items-center gap-1">Fix Errors</button>
-                                    <button onClick={() => handleAISuggest('professional')} className="p-2 hover:bg-gray-100 text-xs font-bold flex items-center gap-1">Professional</button>
-                                    <button onClick={() => {
-                                        const pr = prompt("How should AI edit this?");
-                                        if (pr) handleAISuggest('custom', pr);
-                                    }} className="p-2 hover:bg-gray-100 text-xs font-bold flex items-center gap-1">Ask AI...</button>
-                                </>
-                            ) : (
-                                <div className="p-3 max-w-[300px] flex flex-col gap-1">
-                                    <span className="text-[10px] font-bold text-gray-400">AI CORRECTION</span>
-                                    <p className="text-xs text-gray-500 italic line-through decoration-red-300">"{aiToolkit.text}"</p>
-                                    <div className="flex items-center gap-2 bg-green-50 p-2 rounded-lg border border-green-100">
-                                        <p className="text-sm font-bold text-green-700">{aiToolkit.suggestion}</p>
-                                        <button onClick={() => applyAISuggestion(aiToolkit.suggestion)} className="ml-auto bg-green-600 text-white px-3 py-1 rounded-md text-[10px] font-bold">Apply</button>
+                    {/* Body */}
+                    <div className="flex-1 flex overflow-hidden">
+                        {/* Sidebar */}
+                        <div className="w-64 bg-gray-50 border-r p-4 overflow-y-auto shrink-0">
+                            <button
+                                onClick={() => handleScanDocument(false)}
+                                disabled={aiLoading || !isReady}
+                                className="w-full bg-linear-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-lg font-bold text-sm shadow-lg disabled:opacity-50"
+                            >
+                                {aiLoading ? 'Scanning...' : 'Scan Template'}
+                            </button>
+                            <div className="mt-8">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest">Placeholders</h3>
+                                <div className="space-y-2">
+                                    {placeholders.map(ph => (
+                                        <button key={ph} onClick={() => addPlaceholder(ph)} className="w-full text-left p-3 bg-white border border-gray-200 rounded-lg hover:border-blue-500 font-mono text-xs">{ph}</button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Editor Area */}
+                        <div ref={viewerAnchor} className="flex-1 bg-gray-200 relative overflow-hidden">
+                            {!isReady && (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 gap-4">
+                                    <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                    <p className="text-gray-500 font-medium">Initializing Apryse Engine...</p>
+                                </div>
+                            )}
+                            {isReady && status === 'Downloading template...' && (
+                                <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+                                    <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-xl border border-gray-100">
+                                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                                        <span className="text-sm font-bold text-gray-700">Loading "{template?.name}"...</span>
                                     </div>
-                                    <p className="text-[10px] text-gray-400">{aiToolkit.reason}</p>
                                 </div>
                             )}
                         </div>
-                    )}
-
-                    {/* Sidebar */}
-                    <div className="w-64 bg-gray-50 border-r p-4 overflow-y-auto shrink-0">
-                        <button
-                            onClick={() => handleScanDocument(false)}
-                            disabled={aiLoading || !isReady}
-                            className="w-full bg-linear-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-lg font-bold text-sm shadow-lg disabled:opacity-50"
-                        >
-                            {aiLoading ? 'Scanning...' : 'Scan Template'}
-                        </button>
-                        <div className="mt-8">
-                            <h3 className="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest">Placeholders</h3>
-                            <div className="space-y-2">
-                                {placeholders.map(ph => (
-                                    <button key={ph} onClick={() => addPlaceholder(ph)} className="w-full text-left p-3 bg-white border border-gray-200 rounded-lg hover:border-blue-500 font-mono text-xs">{ph}</button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Editor Area - Use the anchor ref for shared viewer positioning */}
-                    <div ref={viewerAnchor} className="flex-1 bg-gray-200 relative overflow-hidden">
-                        {!isReady && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 gap-4">
-                                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                                <p className="text-gray-500 font-medium">Initializing Apryse Engine...</p>
-                            </div>
-                        )}
-                        {isReady && status === 'Downloading template...' && (
-                            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-                                <div className="flex items-center gap-3 p-4 bg-white rounded-xl shadow-xl border border-gray-100">
-                                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                                    <span className="text-sm font-bold text-gray-700">Loading "{template?.name}"...</span>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
-        </div>,
+
+            {/* AI Toolkit Layer - Directly in portal sibling to modal, with highest Z-index */}
+            {aiToolkit.visible && isOpen && (
+                <div
+                    className="fixed bg-white border border-gray-200 rounded-xl shadow-2xl p-1 flex items-center gap-1 animate-in fade-in zoom-in duration-200"
+                    style={{
+                        left: `${aiToolkit.x}px`,
+                        top: `${aiToolkit.y - 12}px`, // Adjusted for mouse pointer
+                        transform: 'translateX(-50%) translateY(-100%)',
+                        zIndex: 11000 // Above persistent viewer (10000)
+                    }}
+                >
+                    {aiToolkit.mode === 'suggest' ? (
+                        <>
+                            <button onClick={() => handleAISuggest('grammar')} className="p-2 hover:bg-gray-100 text-xs font-bold flex items-center gap-1 transition-colors rounded-lg">Fix Errors</button>
+                            <button onClick={() => handleAISuggest('professional')} className="p-2 hover:bg-gray-100 text-xs font-bold flex items-center gap-1 transition-colors rounded-lg">Professional</button>
+                            <button onClick={() => {
+                                const pr = prompt("How should AI edit this?");
+                                if (pr) handleAISuggest('custom', pr);
+                            }} className="p-2 hover:bg-gray-100 text-xs font-bold flex items-center gap-1 transition-colors rounded-lg">Ask AI...</button>
+                        </>
+                    ) : (
+                        <div className="p-3 max-w-[300px] flex flex-col gap-1">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">AI Correction</span>
+                            <p className="text-xs text-gray-500 italic line-through decoration-red-300">"{aiToolkit.text}"</p>
+                            <div className="flex items-center gap-2 bg-green-50 p-2 rounded-lg border border-green-100">
+                                <p className="text-sm font-bold text-green-700">{aiToolkit.suggestion}</p>
+                                <button onClick={() => applyAISuggestion(aiToolkit.suggestion)} className="ml-auto bg-green-600 text-white px-3 py-1 rounded-md text-[10px] font-bold">Apply</button>
+                            </div>
+                            <p className="text-[10px] text-gray-400">{aiToolkit.reason}</p>
+                        </div>
+                    )}
+                </div>
+            )}
+        </>,
         document.body
     );
 }
