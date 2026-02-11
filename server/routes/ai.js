@@ -4,7 +4,7 @@ const auth = require('../middleware/auth');
 
 // Simple fetch call to Gemini API
 async function callGemini(prompt) {
-    const apiKey = process.env.AI_SUDIO || process.env.AI_STUDIO;
+    const apiKey = process.env.AI_STUDIO;
     if (!apiKey) {
         throw new Error('AI_STUDIO API key not found in environment variables. Please check your .env file.');
     }
@@ -12,8 +12,8 @@ async function callGemini(prompt) {
     // Confirming key loading (redacted)
     console.log('🔑 API Key Check:', apiKey ? `Found (Starts with ${apiKey.substring(0, 4)}...)` : 'NOT FOUND');
 
-    // Using v1beta for -latest model alias
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+    // Using v1 (Stable) and gemini-1.5-flash (Fixed name)
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const body = {
         contents: [{
@@ -115,6 +115,22 @@ router.post('/suggest', auth, async (req, res) => {
     } catch (err) {
         console.error('AI Route Error:', err);
         res.status(500).json({ error: err.message, stack: process.env.NODE_ENV === 'development' ? err.stack : undefined });
+    }
+});
+
+// Diagnostic route to see available models
+router.get('/debug-models', auth, async (req, res) => {
+    try {
+        const apiKey = process.env.AI_STUDIO;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+
+        console.log('🔍 Fetching available models...');
+        const response = await fetch(url);
+        const data = await response.json();
+
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
