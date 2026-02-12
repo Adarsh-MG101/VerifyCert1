@@ -12,8 +12,8 @@ async function callGemini(prompt) {
     // Confirming key loading (redacted)
     console.log('🔑 API Key Check:', apiKey ? `Found (Starts with ${apiKey.substring(0, 4)}...)` : 'NOT FOUND');
 
-    // Using v1beta for -latest model alias
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+    // Using v1beta and gemini-2.0-flash as per user's successful curl test
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     const body = {
         contents: [{
